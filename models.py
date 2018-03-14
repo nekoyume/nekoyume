@@ -2,7 +2,6 @@ import datetime
 from hashlib import sha256 as h
 
 from bencode import bencode
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import seccure
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -12,9 +11,7 @@ import tablib
 import hashcash
 
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 
 class InvalidNameError(Exception):
@@ -43,6 +40,13 @@ class Block(db.Model):
     difficulty = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.now())
+
+    @property
+    def valid(self):
+        return (self.hash ==
+                h(
+                    (self.serialize() + self.suffix.encode('utf-8'))
+                ).hexdigest())
 
     def serialize(self, use_bencode=True, include_suffix=False):
         serialized = dict(
@@ -164,11 +168,14 @@ class HackAndSlash(Move):
         'polymorphic_identity':'hack_and_slash',
     }
 
-    def execute(self):
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
         monsters = tablib.Dataset().load(open('monsters.csv').read()).dict
         randoms = self.get_randoms()
         monster = monsters[randoms.pop() % len(monsters)]
-        avatar = Avatar.query.get(self.user)
+        battle_status = []
+
         for key in ('hp', 'piercing', 'armor'):
             monster[key] = int(monster[key])
 
@@ -176,36 +183,71 @@ class HackAndSlash(Move):
             try:
                 rolled = self.roll(randoms, '2d6')
                 if rolled in (7, 8, 9, 10, 11, 12):
-                    monster['hp'] = monster['hp'] - self.roll(randoms,
-                                                              avatar.damage)
-                    print(f'{monster["id"]}({monster["hp"]})가 맞았다.')
+                    damage = self.roll(randoms, avatar.damage)
+                    battle_status.append({
+                        'type': 'attack_monster',
+                        'damage': damage,
+                        'monster': monster.copy(),
+                    })
+                    monster['hp'] = monster['hp'] - damage
+
                 elif rolled in (2, 3, 4, 5, 6, 7, 8, 9):
-                    avatar.hp -= self.roll(randoms, monster['damage'])
-                    print(f'{avatar.user}({avatar.hp})가 맞았다.')
+                    monster_damage = self.roll(randoms, monster['damage'])
+                    battle_status.append({
+                        'type': 'attacked_by_monster',
+                        'damage': monster_damage,
+                        'monster': monster.copy(),
+                    })
+                    avatar.hp -= monster_damage
                     if rolled <= 6:
+                        battle_status.append({
+                            'type': 'get_xp',
+                        })
                         avatar.xp += 1
-                        print(f'{avatar.user}는 아까의 과오에서 깨달은 게 있다.')
 
                 if monster['hp'] <= 0:
-                    print(f'{monster["id"]}({monster["hp"]})가 죽었다.')
-                    return True
+                    battle_status.append({
+                        'type': 'kill_monster',
+                        'monster': monster.copy(),
+                    })
+                    return (avatar, dict(
+                        type='hack_and_slash',
+                        result='win',
+                        battle_status=battle_status,
+                    ))
+
                 if avatar.hp <= 0:
-                    print(f'{avatar.user}({avatar.hp})가 죽었다.')
-                    return True
+                    battle_status.append({
+                        'type': 'killed_by_monster',
+                        'monster': monster.copy(),
+                    })
+                    return (avatar, dict(
+                        type='hack_and_slash',
+                        result='lose',
+                        battle_status=battle_status,
+                    ))
+
             except OutOfRandomError:
-                return True
+                return (avatar, dict(
+                    type='hack_and_slash',
+                    result='finish',
+                    battle_status=battle_status,
+                ))
 
 
-class Sell(Move):
+class Sleep(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'sell',
+        'polymorphic_identity':'sleep',
     }
 
-
-class Buy(Move):
-    __mapper_args__ = {
-        'polymorphic_identity':'buy',
-    }
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
+        avatar.hp = avatar.max_hp
+        return avatar, dict(
+            type='sleep',
+            result='success',
+        )
 
 
 class CreateNovice(Move):
@@ -213,12 +255,7 @@ class CreateNovice(Move):
         'polymorphic_identity':'create_novice',
     }
 
-    def execute(self):
-        origin = Avatar.query.filter_by(user=self.user).first()
-        if origin:
-            db.session.delete(origin)
-            db.session.commit()
-
+    def execute(self, avatar=None):
         avatar = Novice()
 
         avatar.strength = int(self.details['strength'])
@@ -230,10 +267,13 @@ class CreateNovice(Move):
         avatar.user = self.user
         avatar.current_block = self.block
         avatar.hp = avatar.max_hp
+        avatar.xp = 0
+        avatar.lv = 1
 
-        db.session.add(avatar)
-        db.session.commit()
-        return True
+        return (avatar, dict(
+            type='create_novice',
+            result='success',
+        ))
 
 
 class LevelUp(Move):
@@ -241,9 +281,52 @@ class LevelUp(Move):
         'polymorphic_identity':'level_up',
     }
 
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
+        if avatar.xp < avatar.lv + 7:
+            return avatar, dict(
+                type='level_up',
+                result='failed',
+                message="You don't have enough xp.",
+            )
+
+        avatar.xp -= avatar.lv + 7
+        avatar.lv += 1
+        setattr(avatar, self.details['new_status'],
+                getattr(avatar, self.details['new_status']) + 1)
+        if self.details['new_status'] == 'constitution':
+            avatar.hp += 1
+        return avatar, dict(
+            type='level_up',
+            result='success',
+        )
+
+
 class Say(Move):
     __mapper_args__ = {
         'polymorphic_identity':'say',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
+
+        return avatar, dict(
+            type='say',
+            message=self.details['content'],
+        )
+
+
+class Sell(Move):
+    __mapper_args__ = {
+        'polymorphic_identity':'sell',
+    }
+
+
+class Buy(Move):
+    __mapper_args__ = {
+        'polymorphic_identity':'buy',
     }
 
 
@@ -267,6 +350,12 @@ class User():
         ))
         self.address = h(self.public_key.encode('utf-8')).hexdigest()[:30]
 
+    @property
+    def moves(self):
+        return Move.query.filter_by(user=self.address).filter(
+            Move.block != None
+        ).order_by(Move.created_at.desc())
+
     def move(self, new_move, tax=0, commit=True):
         new_move.user=self.address
         new_move.tax=tax
@@ -285,6 +374,9 @@ class User():
     def hack_and_slash(self, spot=''):
         return self.move(HackAndSlash(details={'spot': spot}))
 
+    def sleep(self, spot=''):
+        return self.move(Sleep())
+
     def sell(self, item_code, price):
         return self.move(Sell(details={'item_code': item_code,
                                        'price': price}))
@@ -295,10 +387,9 @@ class User():
     def create_novice(self, details):
         return self.move(CreateNovice(details=details))
 
-    def level_up(self, new_status, new_advanced_move):
+    def level_up(self, new_status):
         return self.move(LevelUp(details={
             'new_status': new_status,
-            'new_advanced_move': new_advanced_move,
         }))
 
     def say(self, content):
@@ -322,10 +413,10 @@ class User():
             block.prev_hash = prev_block.hash
             block.difficulty = prev_block.difficulty
             if (block.created_at - prev_block.created_at <=
-               datetime.timedelta(0, 15)):
+               datetime.timedelta(0, 5)):
                 block.difficulty = block.difficulty + 1
             elif (block.created_at - prev_block.created_at >=
-               datetime.timedelta(30)):
+               datetime.timedelta(0, 15)):
                 block.difficulty = block.difficulty - 1
         else: # genesis block
             block.id = 1
@@ -341,7 +432,6 @@ class User():
 
         for move in moves:
             move.block = block
-            move.execute()
 
         if commit:
             db.session.add(block)
@@ -349,41 +439,32 @@ class User():
 
         return block
 
+    def avatar(self, block_id=None):
+        if not block_id:
+            block_id = Block.query.order_by(Block.id.desc()).first().id
+        return Avatar.get(self.address, block_id)
 
-class Avatar(db.Model):
-    user = db.Column(db.String, nullable=False, primary_key=True)
-    job = db.Column(db.String, nullable=False, default='avatar')
 
-    current_block_id = db.Column(db.Integer, db.ForeignKey('block.id'),
-                                 nullable=True, index=True)
-    current_block = db.relationship('Block', uselist=False, backref='avatars')
-
-    level = db.Column(db.Integer, nullable=False, default=1)
-    hp = db.Column(db.Integer, nullable=False, default=1)
-    xp = db.Column(db.Integer, nullable=False, default=0)
-
-    strength = db.Column(db.Integer, nullable=False, default=0)
-    weak = db.Column(db.Boolean, nullable=False, default=False)
-
-    dexterity = db.Column(db.Integer, nullable=False, default=0)
-    shaky = db.Column(db.Boolean, nullable=False, default=False)
-
-    constitution = db.Column(db.Integer, nullable=False, default=0)
-    sick = db.Column(db.Boolean, nullable=False, default=False)
-
-    intelligence = db.Column(db.Integer, nullable=False, default=0)
-    stunned = db.Column(db.Boolean, nullable=False, default=False)
-
-    wisdom = db.Column(db.Integer, nullable=False, default=0)
-    confused = db.Column(db.Boolean, nullable=False, default=False)
-
-    charisma = db.Column(db.Integer, nullable=False, default=0)
-    scarred = db.Column(db.Boolean, nullable=False, default=False)
-
-    __mapper_args__ = {
-        'polymorphic_identity':'avatar',
-        'polymorphic_on':job,
-    }
+class Avatar():
+    @classmethod
+    def get(cls, user_addr, block_id):
+        create_move = Move.query.filter_by(user=user_addr).filter(
+            Move.block_id <= block_id).order_by(Move.block_id.desc()
+        ).filter(
+            Move.name.like('create_%')
+        ).first()
+        if not create_move or block_id < create_move.block_id:
+            return None
+        moves = Move.query.filter_by(
+            user=user_addr
+        ).filter(
+            Move.block_id >= create_move.block_id,
+            Move.block_id <= block_id
+        )
+        avatar = create_move.execute(None)
+        for move in moves:
+            avatar, result = move.execute(avatar)
+        return avatar
 
     @property
     def damage(self):

@@ -94,3 +94,5 @@ ENV/
 .ropeproject
 
 dev.py
+
+yume.db

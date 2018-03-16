@@ -1,6 +1,13 @@
 {% extends 'layout.html' %}
 {% set avatar = g.user.avatar() %}
 {% block title -%} Dashboard {%- endblock %}
+
+{% block meta %}
+{% if unconfirmed_move %}
+  <meta http-equiv="refresh" content="15">
+{% endif %}
+{% endblock %}
+
 {% block style %}
 <style>
     .move, .move-bar, .in-progress {
@@ -34,8 +41,13 @@
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation. We hide it in small screens. -->
           <nav class="mdl-navigation mdl-layout--large-screen-only">
-            <span><strong>HP:&nbsp;</strong> {{ avatar.hp }} / {{ avatar.max_hp }}</span>
+            <span><strong>주소:&nbsp;</strong> {{ g.user.address }}</span>
           </nav>
+        </div>
+        <!-- Tabs -->
+        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+          <a href="#scroll-tab-1" class="mdl-layout__tab is-active">모험</a>
+          <a href="#scroll-tab-2" class="mdl-layout__tab">거래소</a>
         </div>
       </header>
       <div class="mdl-layout__drawer">
@@ -56,6 +68,12 @@
           <a class="mdl-navigation__link">
             <strong>STR</strong>
             {{ avatar.strength }}
+            {% if avatar.modifier('strength') != 0 %}
+              (<strong id="strength-modifier">{{ avatar.modifier('strength')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="strength-modifier">
+                +STR 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('strength')">🔼</span>
             {% endif %}
@@ -63,6 +81,12 @@
           <a class="mdl-navigation__link">
             <strong>DEX</strong>
             {{ avatar.dexterity }}
+            {% if avatar.modifier('dexterity') != 0 %}
+              (<strong id="dexterity-modifier">{{ avatar.modifier('dexterity')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="dexterity-modifier">
+                +DEX 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('dexterity')">🔼</span>
             {% endif %}
@@ -70,6 +94,12 @@
           <a class="mdl-navigation__link">
             <strong>CON</strong>
             {{ avatar.constitution }}
+            {% if avatar.modifier('constitution') != 0 %}
+              (<strong id="constitution-modifier">{{ avatar.modifier('constitution')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="constitution-modifier">
+                +CON 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('constitution')">🔼</span>
             {% endif %}
@@ -77,6 +107,12 @@
           <a class="mdl-navigation__link">
             <strong>INT</strong>
             {{ avatar.intelligence }}
+            {% if avatar.modifier('intelligence') != 0 %}
+              (<strong id="intelligence-modifier">{{ avatar.modifier('intelligence')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="intelligence-modifier">
+                +INT 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('intelligence')">🔼</span>
             {% endif %}
@@ -84,6 +120,12 @@
           <a class="mdl-navigation__link">
             <strong>WIS</strong>
             {{ avatar.wisdom }}
+            {% if avatar.modifier('wisdom') != 0 %}
+              (<strong id="wisdom-modifier">{{ avatar.modifier('wisdom')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="wisdom-modifier">
+                +WIS 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('wisdom')">🔼</span>
             {% endif %}
@@ -91,10 +133,25 @@
           <a class="mdl-navigation__link">
             <strong>CHA</strong>
             {{ avatar.charisma }}
+            {% if avatar.modifier('charisma') != 0 %}
+              (<strong id="charisma-modifier">{{ avatar.modifier('charisma')}}</strong>)
+              <div class="mdl-tooltip" data-mdl-for="charisma-modifier">
+                +CHA 판정시의 보정치입니다.
+              </div>
+            {% endif %}
             {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
                 <span class="level-up-button" onclick="levelUp('charisma')">🔼</span>
             {% endif %}
           </a>
+        </nav>
+        <span class="mdl-layout-title">Items</span>
+        <nav class="mdl-navigation">
+          {% for name, amount in avatar.items.items() %}
+          <a class="mdl-navigation__link">
+            <strong>{{ name }}</strong>
+            {{ amount }}
+          </a>
+          {% endfor %}
         </nav>
         <form method="POST" class="level-up-form"
                             action="{{ url_for('post_move') }}"
@@ -103,187 +160,233 @@
           <input type="hidden" name="new_status">
         </form>
       </div>
-        <main class="mdl-layout__content">
-            <div class="mdl-grid">
-              <div class="mdl-cell mdl-cell--2-col">
-              </div>
-              <div class="mdl-cell mdl-cell--8-col">
-                <section class="move-bar mdl-card mdl-shadow--2dp"">
-                    {% if not unconfirmed_move %}
-                    <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-                      <div class="mdl-tabs__tab-bar">
-                          <a href="#hack-and-slash-panel" class="mdl-tabs__tab is-active">⚔️ 접근전</a>
-                          <a href="#sleep-panel" class="mdl-tabs__tab">💤 수면</a>
-                          <a href="#say-panel" class="mdl-tabs__tab">🗣 말하기</a>
-                      </div>
-
-                      <div class="mdl-tabs__panel is-active" id="hack-and-slash-panel">
-                          <div class="mdl-card__supporting-text" style="width: auto;">
-                              <center>인근의 괴물과 조우하여 전투를 벌입니다.</center>
-                          </div>
-                          <div class="mdl-card__actions">
-                              <form method="POST" action="{{ url_for('post_move') }}">
-                                  <input type="hidden" name="name" value="hack_and_slash">
-                                  <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="괴물을 찾아 나섭니다."></center>
-                              </form>
-                          </div>
-                      </div>
-                      <div class="mdl-tabs__panel" id="sleep-panel">
-                          <div class="mdl-card__supporting-text" style="width: auto;">
-                              <center>수면을 취하여 체력을 회복합니다.</center>
-                          </div>
-                          <div class="mdl-card__actions">
-                              <form method="POST" action="{{ url_for('post_move') }}">
-                                  <input type="hidden" name="name" value="sleep">
-                                  <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="침대에 눕습니다."></center>
-                              </form>
-                          </div>
-                      </div>
-                      <div class="mdl-tabs__panel" id="say-panel">
-                          <div class="mdl-card__actions">
-                              <form method="POST" action="{{ url_for('post_move') }}" style="text-align: center">
-                                  <input type="hidden" name="name" value="say">
-                                  <div class="mdl-textfield mdl-js-textfield">
-                                    <input class="mdl-textfield__input" type="text" id="content" name="content">
-                                    <label class="mdl-textfield__label" for="content">할 말을 남깁니다.</label>
-                                  </div>
-                                  <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="확인">
-                              </form>
-                          </div>
-                      </div>
-                    </div>
-                    {% else %}
-                    <div class="move-bar mdl-card in-progress">
-                      <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate" style="width:100%"></div>
-                      <div class="mdl-card__title mdl-card--expand" style="width: auto;">
-                      <h2 class="mdl-card__title-text">현재 진행중...</h2>
-                      </div>
-                    </div>
-                    {% endif %}
-                </section>
-              </div>
+      <main class="mdl-layout__content">
+          <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--2-col">
             </div>
-            {% for move in g.user.moves.limit(10) %}
-            <div class="mdl-grid">
-              <div class="mdl-cell mdl-cell--2-col">
-              </div>
-              <div class="mdl-cell mdl-cell--8-col">
-                {% set result = move.execute()[1] %}
-                {% if result.type == 'create_novice' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">👶 초심자 탄생!</h2>
+            <div class="mdl-cell mdl-cell--8-col">
+              <section class="move-bar mdl-card mdl-shadow--2dp"">
+                  {% if not unconfirmed_move %}
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                        <a href="#hack-and-slash-panel" class="mdl-tabs__tab is-active">⚔️ 접근전</a>
+                        <a href="#sleep-panel" class="mdl-tabs__tab">💤 수면</a>
+                        <a href="#say-panel" class="mdl-tabs__tab">🗣 말하기</a>
+                        <a href="#send-panel" class="mdl-tabs__tab">➡️ 전달</a>
                     </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'hack_and_slash' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    {% if result.result == 'win' %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">👍 전투 승리!</h2>
-                    </div>
-                    {% else %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">😭 전투 패배!</h2>
-                    </div>
-                    {% endif %}
-                    <div class="mdl-card__supporting-text">
-                        <ol>
-                            {% for status in result.battle_status %}
-                            {% if status['type'] == 'attack_monster' %}
-                            <li>
-                              💥
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게
-                              <strong>{{ status['damage'] }}</strong> 데미지를 입혔다.
-                              (HP {{status['monster']['hp'] }} → {{status['monster']['hp'] - status['damage'] }})
-                            </li>
-                            {% elif status['type'] == 'attacked_by_monster' %}
-                            <li>
-                              😫
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 공격받아
-                              <strong>{{ status['damage'] }}</strong> 데미지를 입었다.
-                            </li>
-                            {% elif status['type'] == 'get_xp' %}
-                            <li>
-                              🤔
-                              나는 아까의 과오에서 배움을 얻었다.
-                            </li>
-                            {% elif status['type'] == 'kill_monster' %}
-                            <li>
-                              ☠️
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>를(을) 해치웠다!
-                            </li>
-                            {% elif status['type'] == 'killed_by_monster' %}
-                            <li>
-                              ☠️
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 패배했다...
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-                        </ol>
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'level_up' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    {% if result.result == 'success' %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">🆙 레벨 업!</h2>
-                    </div>
-                    {% else %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">😐 레벨 업 실패</h2>
-                    </div>
-                    {% endif %}
-                    <div class="mdl-card__supporting-text">
-                        {% if result.message %}
-                        <p>{{ result.message }}</p>
-                        {% endif %}
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'sleep' %}
-                <div class="move sleep mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">💤 수면을 통해 체력 회복</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'say' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">🗣 {{ result['message'] }}</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% else %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">행동</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <p>{{ result }}</p>
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-            {% endfor %}
 
-            <script>
-            var levelUp = function(new_status) {
-                $('.level-up-form > input[name=new_status]').val(new_status);
-                $('.level-up-form').submit();
-            }
-            </script>
-        </main>
+                    <div class="mdl-tabs__panel is-active" id="hack-and-slash-panel">
+                        <div class="mdl-card__supporting-text" style="width: auto;">
+                            <center>인근의 괴물과 조우하여 전투를 벌입니다.</center>
+                        </div>
+                        <div class="mdl-card__actions">
+                            <form method="POST" action="{{ url_for('post_move') }}">
+                                <input type="hidden" name="name" value="hack_and_slash">
+                                <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="괴물을 찾아 나섭니다."></center>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="sleep-panel">
+                        <div class="mdl-card__supporting-text" style="width: auto;">
+                            <center>수면을 취하여 체력을 회복합니다.</center>
+                        </div>
+                        <div class="mdl-card__actions">
+                            <form method="POST" action="{{ url_for('post_move') }}">
+                                <input type="hidden" name="name" value="sleep">
+                                <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="침대에 눕습니다."></center>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="say-panel">
+                        <div class="mdl-card__actions">
+                            <form method="POST" action="{{ url_for('post_move') }}" style="text-align: center">
+                                <input type="hidden" name="name" value="say">
+                                <div class="mdl-textfield mdl-js-textfield">
+                                  <input class="mdl-textfield__input" type="text" id="content" name="content">
+                                  <label class="mdl-textfield__label" for="content">할 말을 남깁니다.</label>
+                                </div>
+                                <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="확인">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="send-panel">
+                        <div class="mdl-card__actions">
+                            <form method="POST" action="{{ url_for('post_move') }}" style="text-align: center">
+                                <input type="hidden" name="name" value="send">
+                                <select name="item">
+                                  {% for k, v in avatar.items.items() %}
+                                  <option value="{{ k }}">{{ k }}({{ v }})</option>
+                                  {% endfor %}
+                                </select>
+                                <div class="mdl-textfield mdl-js-textfield" style="width: 40px">
+                                  <input class="mdl-textfield__input" type="number" id="amount" name="amount">
+                                  <label class="mdl-textfield__label" for="amount">수량</label>
+                                </div>
+                                <div class="mdl-textfield mdl-js-textfield">
+                                  <input class="mdl-textfield__input" type="text" id="receiver" name="receiver">
+                                  <label class="mdl-textfield__label" for="receiver">보낼 주소를 써주세요.</label>
+                                </div>
+                                <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="확인">
+                            </form>
+                        </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="move-bar mdl-card in-progress">
+                    <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate" style="width:100%"></div>
+                    <div class="mdl-card__title mdl-card--expand" style="width: auto;">
+                    <h2 class="mdl-card__title-text">현재 진행중...</h2>
+                    </div>
+                  </div>
+                  {% endif %}
+              </section>
+            </div>
+          </div>
+          {% for move in g.user.moves.limit(10) %}
+          <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--2-col">
+            </div>
+            <div class="mdl-cell mdl-cell--8-col">
+              {% set result = move.execute()[1] %}
+              {% if result.type == 'create_novice' %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">👶 초심자 탄생!</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% elif result.type == 'hack_and_slash' %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  {% if result.result == 'win' %}
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">👍 전투 승리!</h2>
+                  </div>
+                  {% elif result.result == 'finish' %}
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">😐 전투 종료!</h2>
+                  </div>
+                  {% else %}
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">😭 전투 패배!</h2>
+                  </div>
+                  {% endif %}
+                  <div class="mdl-card__supporting-text">
+                      <ol>
+                          {% for status in result.battle_status %}
+                          {% if status['type'] == 'attack_monster' %}
+                          <li>
+                            💥
+                            <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게
+                            <strong>{{ status['damage'] }}</strong> 데미지를 입혔다.
+                            (HP {{status['monster']['hp'] }} → {{status['monster']['hp'] - status['damage'] }})
+                          </li>
+                          {% elif status['type'] == 'attacked_by_monster' %}
+                          <li>
+                            😫
+                            <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 공격받아
+                            <strong>{{ status['damage'] }}</strong> 데미지를 입었다.
+                          </li>
+                          {% elif status['type'] == 'get_xp' %}
+                          <li>
+                            🤔
+                            나는 아까의 과오에서 배움을 얻었다.
+                          </li>
+                          {% elif status['type'] == 'kill_monster' %}
+                          <li>
+                            ☠️
+                            <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>를(을) 해치웠다!
+                          </li>
+                          {% elif status['type'] == 'killed_by_monster' %}
+                          <li>
+                            ☠️
+                            <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 패배했다...
+                          </li>
+                          {% elif status['type'] == 'run' %}
+                          <li>
+                            🏃
+                            <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>는(은) 도망가버렸다...
+                          </li>
+                          {% elif status['type'] == 'get_item' %}
+                          <li>
+                            🎁
+                            {{ status['item'] }}을(를) 얻었다!
+                          </li>
+                          {% endif %}
+                          {% endfor %}
+                      </ol>
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% elif result.type == 'level_up' %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  {% if result.result == 'success' %}
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">🆙 레벨 업!</h2>
+                  </div>
+                  {% else %}
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">😐 레벨 업 실패</h2>
+                  </div>
+                  {% endif %}
+                  <div class="mdl-card__supporting-text">
+                      {% if result.message %}
+                      <p>{{ result.message }}</p>
+                      {% endif %}
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% elif result.type == 'sleep' %}
+              <div class="move sleep mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">💤 수면을 통해 체력 회복</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% elif result.type == 'say' %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">🗣 {{ result['message'] }}</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% elif result.type == 'send' %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">🎁 {{ move.details['item_name'] }} {{ move.details['amount'] }}개를 전달했습니다.</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                      <p>받은 사람: {{ move.details['receiver'] }} </p>
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% else %}
+              <div class="move mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title mdl-card--expand">
+                      <h2 class="mdl-card__title-text">행동</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                      <p>{{ result }}</p>
+                      <sub>{{ move.created_at }}</sub>
+                  </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+
+          <script>
+          var levelUp = function(new_status) {
+              $('.level-up-form > input[name=new_status]').val(new_status);
+              $('.level-up-form').submit();
+          }
+          </script>
+      </main>
     </div>
 </div>
 {% endblock %}

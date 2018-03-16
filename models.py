@@ -3,27 +3,42 @@ from hashlib import sha256 as h
 
 from bencode import bencode
 from flask_sqlalchemy import SQLAlchemy
+import requests
 import seccure
+from sqlalchemy import or_
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 import tablib
 
+from exc import *
 import hashcash
-
 
 db = SQLAlchemy()
 
 
-class InvalidNameError(Exception):
-    pass
+class Node(db.Model):
+    url = db.Column(db.String, primary_key=True)
+    last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
+    get_blocks_endpoint = '/blocks'
+    post_block_endpoint = '/blocks'
+    post_move_endpoint = '/moves'
 
-class InvalidMoveError(Exception):
-    pass
-
-
-class OutOfRandomError(Exception):
-    pass
+    @classmethod
+    def broadcast(cls, endpoint, serialized_obj, sent_node=None, my_node=None):
+        for node in cls.query:
+            if sent_node and sent_node.url == node.url:
+                continue
+            try:
+                if my_node:
+                    serialized_obj['sent_node'] = my_node.url
+                r = requests.post(node.url + endpoint,
+                                  json=serialized_obj)
+                node.last_connected_at = datetime.datetime.now()
+                db.session.add(node)
+            except requests.exceptions.ConnectionError:
+                continue
+        db.session.commit()
 
 
 class Block(db.Model):
@@ -48,7 +63,10 @@ class Block(db.Model):
                     (self.serialize() + self.suffix.encode('utf-8'))
                 ).hexdigest())
 
-    def serialize(self, use_bencode=True, include_suffix=False):
+    def serialize(self, use_bencode=True,
+                  include_suffix=False,
+                  include_moves=False,
+                  include_hash=False):
         serialized = dict(
             id=self.id,
             creator=self.creator,
@@ -59,11 +77,106 @@ class Block(db.Model):
         )
         if include_suffix:
             serialized['suffix'] = self.suffix
+
+        if include_moves:
+            serialized['moves'] = [m.serialize(
+                use_bencode=False,
+                include_signature=True,
+                include_id=True,
+            ) for m in self.moves]
+
+        if include_hash:
+            serialized['hash'] = self.hash
+
         if use_bencode:
             if self.prev_hash is None:
                del serialized['prev_hash']
             serialized = bencode(serialized)
         return serialized
+
+    def broadcast(self, sent_node=None, my_node=None):
+        Node.broadcast(Node.post_block_endpoint,
+                       self.serialize(False, True, True, True),
+                       sent_node, my_node)
+
+    @classmethod
+    def sync(cls, node):
+        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
+        last_block = Block.query.order_by(Block.id.desc()).first()
+
+        #: If my chain is the longest one, we don't need to do anything.
+        if last_block and last_block.id >= response.json()['block']['id']:
+            return True
+
+        def find_branch_point(value, high):
+            mid = int((value + high) / 2)
+            response = requests.get((f"{node.url}{Node.get_blocks_endpoint}/"
+                                     f"{mid}"))
+            if value > high:
+                return 0
+            if response.json()['block']:
+                if value == mid:
+                        return value
+                return find_branch_point(mid, high)
+            else:
+                return find_branch_point(value, mid - 1)
+        if last_block:
+            # TODO: Very hard to understand. fix this easily.
+            if find_branch_point(last_block.id,
+                                 last_block.id) == last_block.id:
+                branch_point = last_block.id
+            else:
+                branch_point = find_branch_point(0, last_block.id)
+        else:
+            branch_point = 0
+
+        for block in Block.query.filter(Block.id > branch_point):
+            for move in block.moves:
+                move.block_id = None
+            db.session.delete(block)
+
+        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
+                                params={ 'from': branch_point + 1 })
+
+        for new_block in response.json()['blocks']:
+            block = Block()
+            block.id = new_block['id']
+            block.creator = new_block['creator']
+            block.created_at = datetime.datetime.strptime(
+                new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
+            block.prev_hash = new_block['prev_hash']
+            block.hash = new_block['hash']
+            block.difficulty = new_block['difficulty']
+            block.suffix = new_block['suffix']
+            block.root_hash = new_block['root_hash']
+
+            for new_move in new_block['moves']:
+                move = Move.query.get(new_move['id'])
+                if not move:
+                    move = Move(
+                        id=new_move['id'],
+                        user=new_move['user'],
+                        name=new_move['name'],
+                        signature=new_move['signature'],
+                        tax=new_move['tax'],
+                        details=new_move['details'],
+                        created_at= datetime.datetime.strptime(
+                            new_move['created_at'],
+                            '%Y-%m-%d %H:%M:%S.%f'),
+                        block_id=block.id,
+                    )
+                if not move.valid:
+                    db.session.rollback()
+                    raise InvalidMoveError
+                block.moves.append(move)
+
+            if not block.valid:
+                db.session.rollback()
+                raise InvalidBlockError
+            db.session.add(block)
+
+        db.session.commit()
+        return True
 
 
 class Move(db.Model):
@@ -124,7 +237,9 @@ class Move(db.Model):
     def confirmed(self):
         return self.block and self.block.hash is not None
 
-    def serialize(self, use_bencode=True, include_signature=False):
+    def serialize(self, use_bencode=True,
+                        include_signature=False,
+                        include_id=False):
         serialized = dict(
             user=self.user,
             name=self.name,
@@ -134,9 +249,16 @@ class Move(db.Model):
         )
         if include_signature:
             serialized['signature'] = self.signature
+        if include_id:
+            serialized['id'] = self.id
         if use_bencode:
             serialized = bencode(serialized)
         return serialized
+
+    def broadcast(self, sent_node=None, my_node=None):
+        Node.broadcast(Node.post_move_endpoint,
+                       self.serialize(False, True, True),
+                       sent_node, my_node)
 
     @property
     def hash(self):
@@ -163,6 +285,18 @@ class Move(db.Model):
             return result
 
 
+class MoveDetail(db.Model):
+    move_id = db.Column(db.String,  db.ForeignKey('move.id'),
+                        nullable=True, primary_key=True)
+    move = db.relationship(Move, backref=db.backref(
+        'move_details',
+        collection_class=attribute_mapped_collection("key"),
+        cascade="all, delete-orphan"
+    ))
+    key = db.Column(db.String, nullable=False, primary_key=True)
+    value = db.Column(db.String, nullable=False, index=True)
+
+
 class HackAndSlash(Move):
     __mapper_args__ = {
         'polymorphic_identity':'hack_and_slash',
@@ -181,9 +315,12 @@ class HackAndSlash(Move):
 
         while True:
             try:
-                rolled = self.roll(randoms, '2d6')
-                if rolled in (7, 8, 9, 10, 11, 12):
-                    damage = self.roll(randoms, avatar.damage)
+                rolled = (self.roll(randoms, '2d6')
+                          + avatar.modifier('strength'))
+                if rolled >= 7:
+                    damage = max(
+                        self.roll(randoms, avatar.damage)- monster['armor'], 0
+                    )
                     battle_status.append({
                         'type': 'attack_monster',
                         'damage': damage,
@@ -210,6 +347,12 @@ class HackAndSlash(Move):
                         'type': 'kill_monster',
                         'monster': monster.copy(),
                     })
+                    if self.roll(randoms, '2d6') >= 10:
+                        avatar.get_item('Bandages')
+                        battle_status.append({
+                            'type': 'get_item',
+                            'item': 'Bandages',
+                        })
                     return (avatar, dict(
                         type='hack_and_slash',
                         result='win',
@@ -228,6 +371,10 @@ class HackAndSlash(Move):
                     ))
 
             except OutOfRandomError:
+                battle_status.append({
+                    'type': 'run',
+                    'monster': monster.copy(),
+                })
                 return (avatar, dict(
                     type='hack_and_slash',
                     result='finish',
@@ -256,6 +403,11 @@ class CreateNovice(Move):
     }
 
     def execute(self, avatar=None):
+        if avatar:
+            #: Keep the information that should not be removed.
+            coin = avatar.items['Coin']
+        else:
+            coin = 0
         avatar = Novice()
 
         avatar.strength = int(self.details['strength'])
@@ -269,6 +421,9 @@ class CreateNovice(Move):
         avatar.hp = avatar.max_hp
         avatar.xp = 0
         avatar.lv = 1
+        avatar.items = dict(
+            Coin=coin
+        )
 
         return (avatar, dict(
             type='create_novice',
@@ -318,6 +473,43 @@ class Say(Move):
         )
 
 
+class Send(Move):
+    __mapper_args__ = {
+        'polymorphic_identity':'send',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
+
+        if (self.details['item_name'] not in avatar.items or
+           avatar.items[self.details['item_name']]
+           - int(self.details['amount']) < 0):
+            return avatar, dict(
+                type='send',
+                result='fail',
+                message="You don't have enough items to send."
+            )
+
+        avatar.items[self.details['item_name']] -= int(self.details['amount'])
+        return avatar, dict(
+            type='send',
+            result='success',
+        )
+
+    def receive(self, receiver=None):
+        if not receiver:
+            receiver = Avatar.get(self.details['receiver'], self.block_id - 1)
+
+        for i in range(int(self.details['amount'])):
+            receiver.get_item(self.details['item_name'])
+
+        return receiver, dict(
+            type='receive',
+            result='success',
+        )
+
+
 class Sell(Move):
     __mapper_args__ = {
         'polymorphic_identity':'sell',
@@ -328,18 +520,6 @@ class Buy(Move):
     __mapper_args__ = {
         'polymorphic_identity':'buy',
     }
-
-
-class MoveDetail(db.Model):
-    move_id = db.Column(db.String,  db.ForeignKey('move.id'),
-                        nullable=True, primary_key=True)
-    move = db.relationship(Move, backref=db.backref(
-        'move_details',
-        collection_class=attribute_mapped_collection("key"),
-        cascade="all, delete-orphan"
-    ))
-    key = db.Column(db.String, nullable=False, primary_key=True)
-    value = db.Column(db.String, nullable=False, index=True)
 
 
 class User():
@@ -377,8 +557,15 @@ class User():
     def sleep(self, spot=''):
         return self.move(Sleep())
 
-    def sell(self, item_code, price):
-        return self.move(Sell(details={'item_code': item_code,
+    def send(self, item_name, amount, receiver):
+        return self.move(Send(details={
+            'item_name': item_name,
+            'amount': amount,
+            'receiver': receiver,
+        }))
+
+    def sell(self, item_name, price):
+        return self.move(Sell(details={'item_name': item_name,
                                        'price': price}))
 
     def buy(self, move_id):
@@ -441,7 +628,11 @@ class User():
 
     def avatar(self, block_id=None):
         if not block_id:
-            block_id = Block.query.order_by(Block.id.desc()).first().id
+            block = Block.query.order_by(Block.id.desc()).first()
+            if block:
+                block_id = block.id
+            else:
+                block_id = 0
         return Avatar.get(self.address, block_id)
 
 
@@ -455,16 +646,51 @@ class Avatar():
         ).first()
         if not create_move or block_id < create_move.block_id:
             return None
-        moves = Move.query.filter_by(
-            user=user_addr
+        moves = Move.query.filter(
+            or_(Move.user == user_addr, Move.id.in_(
+                    db.session.query(MoveDetail.move_id).filter_by(
+                        key='receiver', value=user_addr)))
         ).filter(
             Move.block_id >= create_move.block_id,
             Move.block_id <= block_id
         )
-        avatar = create_move.execute(None)
+        avatar, result = create_move.execute(None)
+        avatar.items['Coin'] += Block.query.filter_by(
+            creator=user_addr
+        ).filter(Block.id <= block_id).count() * 8
+
         for move in moves:
-            avatar, result = move.execute(avatar)
+            if move.user == user_addr:
+                avatar, result = move.execute(avatar)
+            if (type(move) == Send and
+               move.details['receiver'] == user_addr):
+                avatar, result = move.receive(avatar)
+
         return avatar
+
+    def modifier(self, status):
+        status = getattr(self, status)
+        if status in (1, 2, 3):
+            return -3
+        elif status in (4, 5):
+            return -2
+        elif status in (6, 7, 8):
+            return -1
+        elif status in (9, 10, 11, 12):
+            return 0
+        elif status in (13, 14, 15):
+            return 1
+        elif status in (16, 17):
+            return 2
+        elif status == 18:
+            return 3
+        return 0
+
+    def get_item(self, item):
+        if item not in self.items:
+            self.items[item] = 1
+        else:
+            self.items[item] += 1
 
     @property
     def damage(self):

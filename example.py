@@ -1,6 +1,7 @@
 from app import *
-# db.drop_all(); db.create_all();
 app.app_context().push()
+
+# db.drop_all(); db.create_all();
 
 u = User('test')
 

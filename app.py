@@ -1,9 +1,28 @@
 from functools import wraps
+import os
 
 from flask import (Flask, g, request, redirect, render_template, session,
                    url_for)
 
 from models import *
+from scan import scan
+from tasks import celery
+
+
+def make_celery(app):
+    celery.name = app.import_name
+    celery.conf.update(
+        result_backend=app.config['CELERY_RESULT_BACKEND'],
+        broker_url=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
 
 
 def login_required(f):
@@ -19,14 +38,22 @@ def login_required(f):
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL', 'sqlite:///yume.db')
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.secret_key = b'\xc2o\x81?u+\x14j%\x99\xc5\xa6\x83\x06`\xfch$\n"a0\x96\x8c' # noqa
+    app.register_blueprint(scan)
     db.init_app(app)
+    app.config.update(
+        CELERY_BROKER_URL=os.environ.get(
+            'REDIS_URL', 'redis://localhost:6379'),
+        CELERY_RESULT_BACKEND=os.environ.get(
+            'REDIS_URL', 'redis://localhost:6379'))
     return app
 
 
 app = create_app()
+cel = make_celery(app)
 
 
 @app.route('/login', methods=['GET'])
@@ -68,13 +95,19 @@ def get_new_novice():
     return move.id
 
 
-@app.route('/moves', methods=['POST'])
+@app.route('/session_moves', methods=['POST'])
 @login_required
 def post_move():
     if request.values.get('name') in ('hack_and_slash', 'sleep'):
-        getattr(g.user, request.values.get('name'))()
+        move = getattr(g.user, request.values.get('name'))()
     if request.values.get('name') == 'level_up':
-        g.user.level_up(request.values.get('new_status'))
+        move = g.user.level_up(request.values.get('new_status'))
     if request.values.get('name') == 'say':
-        g.user.say(request.values.get('content'))
+        move = g.user.say(request.values.get('content'))
+    if request.values.get('name') == 'send':
+        move = g.user.send(request.values.get('item'),
+                           request.values.get('amount'),
+                           request.values.get('receiver'))
+
+    move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))
     return redirect(url_for('get_dashboard'))

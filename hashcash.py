@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.6
-"""Implement Hashcash version 1 protocol in Python
+"""Implement Hashcash version 1 protocol in Python 3.6
 +---------------------------------------------------------------------------+
 | Written by David Mertz; Modified by Jc Kim; released to the Public Domain |
 +---------------------------------------------------------------------------+

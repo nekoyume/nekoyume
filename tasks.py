@@ -1,6 +1,6 @@
 from celery import Celery
 
-from models import *
+from models import Block, Move, Node
 
 
 celery = Celery()

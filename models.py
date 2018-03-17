@@ -9,8 +9,10 @@ from sqlalchemy import or_
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 import tablib
-
-from exc import *
+from exc import (InvalidBlockError,
+                 InvalidMoveError,
+                 InvalidNameError,
+                 OutOfRandomError)
 import hashcash
 
 db = SQLAlchemy()
@@ -32,8 +34,8 @@ class Node(db.Model):
             try:
                 if my_node:
                     serialized_obj['sent_node'] = my_node.url
-                r = requests.post(node.url + endpoint,
-                                  json=serialized_obj)
+                requests.post(node.url + endpoint,
+                              json=serialized_obj)
                 node.last_connected_at = datetime.datetime.now()
                 db.session.add(node)
             except requests.exceptions.ConnectionError:
@@ -90,7 +92,7 @@ class Block(db.Model):
 
         if use_bencode:
             if self.prev_hash is None:
-               del serialized['prev_hash']
+                del serialized['prev_hash']
             serialized = bencode(serialized)
         return serialized
 
@@ -136,7 +138,7 @@ class Block(db.Model):
             db.session.delete(block)
 
         response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
-                                params={ 'from': branch_point + 1 })
+                                params={'from': branch_point + 1})
 
         for new_block in response.json()['blocks']:
             block = Block()
@@ -160,7 +162,7 @@ class Block(db.Model):
                         signature=new_move['signature'],
                         tax=new_move['tax'],
                         details=new_move['details'],
-                        created_at= datetime.datetime.strptime(
+                        created_at=datetime.datetime.strptime(
                             new_move['created_at'],
                             '%Y-%m-%d %H:%M:%S.%f'),
                         block_id=block.id,
@@ -188,7 +190,8 @@ class Move(db.Model):
     user = db.Column(db.String, nullable=False, index=True)
     signature = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False, index=True)
-    details = association_proxy('move_details', 'value',
+    details = association_proxy(
+        'move_details', 'value',
         creator=lambda k, v: MoveDetail(key=k, value=v)
     )
     tax = db.Column(db.BigInteger, default=0, nullable=False)
@@ -196,8 +199,8 @@ class Move(db.Model):
                            default=datetime.datetime.now())
 
     __mapper_args__ = {
-        'polymorphic_identity':'move',
-        'polymorphic_on':name,
+        'polymorphic_identity': 'move',
+        'polymorphic_on': name,
     }
 
     def sign(self, private_key):
@@ -237,9 +240,10 @@ class Move(db.Model):
     def confirmed(self):
         return self.block and self.block.hash is not None
 
-    def serialize(self, use_bencode=True,
-                        include_signature=False,
-                        include_id=False):
+    def serialize(self,
+                  use_bencode=True,
+                  include_signature=False,
+                  include_id=False):
         serialized = dict(
             user=self.user,
             name=self.name,
@@ -267,7 +271,7 @@ class Move(db.Model):
     def get_randoms(self):
         if not (self.block and self.block.hash and self.id):
             return []
-        result = [ord(a) ^ ord(b) for a,b in zip(self.block.hash, self.id)]
+        result = [ord(a) ^ ord(b) for a, b in zip(self.block.hash, self.id)]
         result = result[int(self.block.difficulty / 4):]
         return result
 
@@ -299,13 +303,15 @@ class MoveDetail(db.Model):
 
 class HackAndSlash(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'hack_and_slash',
+        'polymorphic_identity': 'hack_and_slash',
     }
 
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
-        monsters = tablib.Dataset().load(open('monsters.csv').read()).dict
+        monsters = tablib.Dataset().load(
+            open('data/monsters.csv').read()
+        ).dict
         randoms = self.get_randoms()
         monster = monsters[randoms.pop() % len(monsters)]
         battle_status = []
@@ -319,7 +325,7 @@ class HackAndSlash(Move):
                           + avatar.modifier('strength'))
                 if rolled >= 7:
                     damage = max(
-                        self.roll(randoms, avatar.damage)- monster['armor'], 0
+                        self.roll(randoms, avatar.damage) - monster['armor'], 0
                     )
                     battle_status.append({
                         'type': 'attack_monster',
@@ -384,7 +390,7 @@ class HackAndSlash(Move):
 
 class Sleep(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'sleep',
+        'polymorphic_identity': 'sleep',
     }
 
     def execute(self, avatar=None):
@@ -399,7 +405,7 @@ class Sleep(Move):
 
 class CreateNovice(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'create_novice',
+        'polymorphic_identity': 'create_novice',
     }
 
     def execute(self, avatar=None):
@@ -433,7 +439,7 @@ class CreateNovice(Move):
 
 class LevelUp(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'level_up',
+        'polymorphic_identity': 'level_up',
     }
 
     def execute(self, avatar=None):
@@ -460,7 +466,7 @@ class LevelUp(Move):
 
 class Say(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'say',
+        'polymorphic_identity': 'say',
     }
 
     def execute(self, avatar=None):
@@ -475,7 +481,7 @@ class Say(Move):
 
 class Send(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'send',
+        'polymorphic_identity': 'send',
     }
 
     def execute(self, avatar=None):
@@ -512,13 +518,13 @@ class Send(Move):
 
 class Sell(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'sell',
+        'polymorphic_identity': 'sell',
     }
 
 
 class Buy(Move):
     __mapper_args__ = {
-        'polymorphic_identity':'buy',
+        'polymorphic_identity': 'buy',
     }
 
 
@@ -533,13 +539,13 @@ class User():
     @property
     def moves(self):
         return Move.query.filter_by(user=self.address).filter(
-            Move.block != None
+            Move.block != None # noqa
         ).order_by(Move.created_at.desc())
 
     def move(self, new_move, tax=0, commit=True):
-        new_move.user=self.address
-        new_move.tax=tax
-        new_move.created_at=datetime.datetime.now()
+        new_move.user = self.address
+        new_move.tax = tax
+        new_move.created_at = datetime.datetime.now()
         new_move.sign(self.private_key)
 
         if new_move.valid:
@@ -603,9 +609,10 @@ class User():
                datetime.timedelta(0, 5)):
                 block.difficulty = block.difficulty + 1
             elif (block.created_at - prev_block.created_at >=
-               datetime.timedelta(0, 15)):
+                  datetime.timedelta(0, 15)):
                 block.difficulty = block.difficulty - 1
-        else: # genesis block
+        else:
+            #: Genesis block
             block.id = 1
             block.prev_hash = None
             block.difficulty = 0
@@ -640,7 +647,9 @@ class Avatar():
     @classmethod
     def get(cls, user_addr, block_id):
         create_move = Move.query.filter_by(user=user_addr).filter(
-            Move.block_id <= block_id).order_by(Move.block_id.desc()
+            Move.block_id <= block_id
+        ).order_by(
+            Move.block_id.desc()
         ).filter(
             Move.name.like('create_%')
         ).first()
@@ -703,7 +712,7 @@ class Avatar():
 
 class Novice(Avatar):
     __mapper_args__ = {
-        'polymorphic_identity':'novice',
+        'polymorphic_identity': 'novice',
     }
 
     @property

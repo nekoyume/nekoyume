@@ -4,13 +4,13 @@ from flask import Blueprint, jsonify, request
 import requests
 
 from tasks import block_broadcast, move_broadcast
-from models import *
+from models import db, Block, Node, Move
 
 
-scan = Blueprint('scan', __name__, template_folder='templates')
+api = Blueprint('api', __name__, template_folder='templates')
 
 
-@scan.route('/nodes', methods=['POST'])
+@api.route('/nodes', methods=['POST'])
 def post_node():
     url = request.values.get('url')
     node = Node.query.get(url)
@@ -35,7 +35,7 @@ def post_node():
         ), 403
 
 
-@scan.route(Node.get_blocks_endpoint, methods=['GET'])
+@api.route(Node.get_blocks_endpoint, methods=['GET'])
 def get_blocks():
     last_block = Block.query.order_by(Block.id.desc()).first()
     from_ = request.values.get('from', 1, type=int)
@@ -54,7 +54,7 @@ def get_blocks():
                            for b in blocks])
 
 
-@scan.route('/blocks/<string:block_hash>')
+@api.route('/blocks/<string:block_hash>')
 def get_block_by_hash(block_hash):
     block = Block.query.filter_by(hash=block_hash).first()
     if block:
@@ -65,7 +65,7 @@ def get_block_by_hash(block_hash):
     return jsonify(block=block)
 
 
-@scan.route('/blocks/<int:block_id>')
+@api.route('/blocks/<int:block_id>')
 def get_block_by_id(block_id):
     block = Block.query.get(block_id)
     if block:
@@ -76,7 +76,7 @@ def get_block_by_id(block_id):
     return jsonify(block=block)
 
 
-@scan.route('/blocks/last')
+@api.route('/blocks/last')
 def get_last_block():
     block = Block.query.order_by(Block.id.desc()).first()
     if block:
@@ -87,7 +87,7 @@ def get_last_block():
     return jsonify(block=block)
 
 
-@scan.route(Node.post_block_endpoint, methods=['POST'])
+@api.route(Node.post_block_endpoint, methods=['POST'])
 def post_block():
     new_block = request.get_json()
     last_block = Block.query.order_by(Block.id.desc()).first()
@@ -129,8 +129,9 @@ def post_block():
                 signature=new_move['signature'],
                 tax=new_move['tax'],
                 details=new_move['details'],
-                created_at= datetime.datetime.strptime(
-                    new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'),
+                created_at=datetime.datetime.strptime(
+                    new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'
+                ),
                 block_id=block.id,
             )
         if not move.valid:
@@ -141,7 +142,6 @@ def post_block():
     if not block.valid:
         return jsonify(result='failed',
                        message="new block isn't valid."), 400
-
 
     db.session.add(block)
     db.session.commit()
@@ -156,7 +156,7 @@ def post_block():
     return jsonify(result='success')
 
 
-@scan.route(Node.post_move_endpoint, methods=['POST'])
+@api.route(Node.post_move_endpoint, methods=['POST'])
 def post_move():
     new_move = request.get_json()
     move = Move.query.get(new_move['id'])
@@ -172,8 +172,9 @@ def post_move():
             signature=new_move['signature'],
             tax=new_move['tax'],
             details=new_move['details'],
-            created_at= datetime.datetime.strptime(
-                new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'),
+            created_at=datetime.datetime.strptime(
+                new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'
+            ),
         )
 
     if not move.valid:
@@ -185,7 +186,7 @@ def post_move():
 
     sent_node = Node()
     if 'sent_node' in new_move:
-        sent_node.url=new_move['sent_node']
+        sent_node.url = new_move['sent_node']
 
     move_broadcast.delay(
         move.id,

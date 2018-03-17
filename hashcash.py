@@ -40,11 +40,14 @@ from hashlib import sha256
 from random import choice
 from time import strftime, localtime, time
 
+
 ERR = sys.stderr            # Destination for error messages
 DAYS = 60 * 60 * 24         # Seconds in a day
 tries = [0]                 # Count hashes performed for benchmark
 
-def mint(resource, bits=20, now=None, ext='', saltchars=8, stamp_seconds=False):
+
+def mint(resource, bits=20, now=None, ext='', saltchars=8,
+         stamp_seconds=False):
     """Mint a new hashcash stamp for 'resource' with 'bits' of collision
 
     20 bits of collision is the default.
@@ -65,15 +68,19 @@ def mint(resource, bits=20, now=None, ext='', saltchars=8, stamp_seconds=False):
     """
     ver = "1"
     now = now or time()
-    if stamp_seconds: ts = strftime("%y%m%d%H%M%S", localtime(now))
-    else:             ts = strftime("%y%m%d", localtime(now))
+    if stamp_seconds:
+        ts = strftime("%y%m%d%H%M%S", localtime(now))
+    else:
+        ts = strftime("%y%m%d", localtime(now))
     challenge = "%s:"*6 % (ver, bits, ts, resource, ext, _salt(saltchars))
     return challenge + _mint(challenge, bits)
+
 
 def _salt(l):
     "Return a random string of length 'l'"
     alphabet = ascii_letters + "+/="
     return ''.join([choice(alphabet) for _ in [None]*l])
+
 
 def _mint(challenge, bits):
     """Answer a 'generalized hashcash' challenge'
@@ -94,8 +101,9 @@ def _mint(challenge, bits):
             return hex(counter)[2:]
         counter += 1
 
+
 def check(stamp, resource=None, bits=None,
-                 check_expiration=None, ds_callback=None):
+          check_expiration=None, ds_callback=None):
     """Check whether a stamp is valid
 
     Optionally, the stamp may be checked for a specific resource, and/or
@@ -121,7 +129,8 @@ def check(stamp, resource=None, bits=None,
         if resource is not None and resource != res:
             return False
         elif check_expiration is not None:
-            good_until = strftime("%y%m%d%H%M%S", localtime(time()-check_expiration))
+            good_until = strftime("%y%m%d%H%M%S",
+                                  localtime(time()-check_expiration))
             if date < good_until:
                 return False
         elif callable(ds_callback) and ds_callback(stamp):
@@ -130,7 +139,8 @@ def check(stamp, resource=None, bits=None,
             return True
         else:
             hex_digits = int(floor(bits/4))
-            return sha256(str.encode(stamp)).hexdigest().startswith('0'*hex_digits)
+            return sha256(str.encode(stamp)).hexdigest().startswith(
+                '0'*hex_digits)
     elif stamp.startswith('1:'):        # Version 1
         try:
             claim, date, res, ext, rand, counter = stamp[2:].split(':')
@@ -142,14 +152,16 @@ def check(stamp, resource=None, bits=None,
         elif type(bits) is int and bits > int(claim):
             return False
         elif check_expiration is not None:
-            good_until = strftime("%y%m%d%H%M%S", localtime(time()-check_expiration))
+            good_until = strftime("%y%m%d%H%M%S",
+                                  localtime(time()-check_expiration))
             if date < good_until:
                 return False
         elif callable(ds_callback) and ds_callback(stamp):
             return False
         else:
             hex_digits = int(floor(int(claim)/4))
-            return sha256(str.encode(stamp)).hexdigest().startswith('0'*hex_digits)
+            return sha256(str.encode(stamp)).hexdigest().startswith(
+                '0'*hex_digits)
     else:                               # Unknown ver or generalized hashcash
         ERR.write("Unknown hashcash version: Minimal authentication!\n")
         if type(bits) is not int:
@@ -158,7 +170,9 @@ def check(stamp, resource=None, bits=None,
             return False
         else:
             hex_digits = int(floor(bits/4))
-            return sha256(str.encode(stamp)).hexdigest().startswith('0'*hex_digits)
+            return sha256(str.encode(stamp)).hexdigest().startswith(
+                '0'*hex_digits)
+
 
 def is_doublespent(stamp):
     """Placeholder for double spending callback function
@@ -170,7 +184,8 @@ def is_doublespent(stamp):
     """
     return False
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     # Import Psyco if available
     try:
         import psyco
@@ -179,10 +194,11 @@ if __name__=='__main__':
         pass
     import optparse
     out, err = sys.stdout.write, sys.stderr.write
-    parser = optparse.OptionParser(version="%prog 0.1",
-                      usage="%prog -c|-m [-b bits] [string|STDIN]")
+    parser = optparse.OptionParser(
+        version="%prog 0.1",
+        usage="%prog -c|-m [-b bits] [string|STDIN]")
     parser.add_option('-b', '--bits', type='int', dest='bits', default=20,
-                      help="Specify required collision bits" )
+                      help="Specify required collision bits")
     parser.add_option('-m', '--mint', help="Mint a new stamp",
                       action='store_true', dest='mint')
     parser.add_option('-c', '--check', help="Check a stamp for validity",
@@ -193,16 +209,20 @@ if __name__=='__main__':
                       action='store_true', dest='raw')
     (options, args) = parser.parse_args()
     start = time()
-    if options.mint:    action = mint
-    elif options.check: action = check
+    if options.mint:
+        action = mint
+    elif options.check:
+        action = check
     else:
         out("Try: %s --help\n" % sys.argv[0])
         sys.exit()
-    if args: out(str(action(args[0], bits=options.bits)))
-    else:    out(str(action(sys.stdin.read(), bits=options.bits)))
-    if not options.raw: sys.stdout.write('\n')
+    if args:
+        out(str(action(args[0], bits=options.bits)))
+    else:
+        out(str(action(sys.stdin.read(), bits=options.bits)))
+    if not options.raw:
+        sys.stdout.write('\n')
     if options.timer:
         timer = time()-start
         err("Completed in %0.4f seconds (%d hashes per second)\n" %
             (timer, tries[0]/timer))
-

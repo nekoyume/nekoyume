@@ -1,4 +1,7 @@
-from app import *
+from models import Move, User
+from app import app
+
+
 app.app_context().push()
 
 

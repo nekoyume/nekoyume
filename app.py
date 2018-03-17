@@ -4,8 +4,8 @@ import os
 from flask import (Flask, g, request, redirect, render_template, session,
                    url_for)
 
-from models import *
-from scan import scan
+from models import db, Node, Move, User
+from api import api
 from tasks import celery
 
 
@@ -16,11 +16,14 @@ def make_celery(app):
         broker_url=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
     TaskBase = celery.Task
+
     class ContextTask(TaskBase):
         abstract = True
+
         def __call__(self, *args, **kwargs):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
+
     celery.Task = ContextTask
     return celery
 
@@ -42,7 +45,7 @@ def create_app():
         'DATABASE_URL', 'sqlite:///yume.db')
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.secret_key = b'\xc2o\x81?u+\x14j%\x99\xc5\xa6\x83\x06`\xfch$\n"a0\x96\x8c' # noqa
-    app.register_blueprint(scan)
+    app.register_blueprint(api)
     db.init_app(app)
     app.config.update(
         CELERY_BROKER_URL=os.environ.get(

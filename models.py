@@ -2,6 +2,7 @@ import datetime
 from hashlib import sha256 as h
 
 from bencode import bencode
+from flask_cache import Cache
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import seccure
@@ -9,13 +10,16 @@ from sqlalchemy import or_
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 import tablib
+
 from exc import (InvalidBlockError,
                  InvalidMoveError,
                  InvalidNameError,
                  OutOfRandomError)
 import hashcash
 
+
 db = SQLAlchemy()
+cache = Cache()
 
 
 class Node(db.Model):
@@ -645,6 +649,7 @@ class User():
 
 class Avatar():
     @classmethod
+    @cache.memoize()
     def get(cls, user_addr, block_id):
         create_move = Move.query.filter_by(user=user_addr).filter(
             Move.block_id <= block_id

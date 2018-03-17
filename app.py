@@ -4,7 +4,7 @@ import os
 from flask import (Flask, g, request, redirect, render_template, session,
                    url_for)
 
-from models import db, Node, Move, User
+from models import cache, db, Node, Move, User
 from api import api
 from tasks import celery
 
@@ -57,6 +57,7 @@ def create_app():
 
 app = create_app()
 cel = make_celery(app)
+cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
 
 @app.route('/login', methods=['GET'])
@@ -79,7 +80,8 @@ def get_dashboard():
     unconfirmed_move = Move.query.filter_by(
         user=g.user.address, block=None
     ).first()
-    return render_template('dashboard.html', unconfirmed_move=unconfirmed_move)
+    return render_template('dashboard.html',
+                           unconfirmed_move=unconfirmed_move)
 
 
 @app.route('/new')

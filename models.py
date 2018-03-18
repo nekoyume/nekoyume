@@ -207,21 +207,6 @@ class Move(db.Model):
         'polymorphic_on': name,
     }
 
-    def sign(self, private_key):
-        if self.name is None:
-            raise InvalidNameError
-        user = User(private_key)
-        self.user = user.address
-        serialized = self.serialize(include_signature=False)
-        self.signature = '{signature} {public_key}'.format(
-            signature=seccure.sign(
-                serialized,
-                user.private_key.encode('utf-8')
-            ).decode('utf-8'),
-            public_key=user.public_key,
-        )
-        self.id = self.hash
-
     @property
     def valid(self):
         public_key = self.signature.split(' ')[1]
@@ -540,6 +525,20 @@ class User():
         ))
         self.address = h(self.public_key.encode('utf-8')).hexdigest()[:30]
 
+    def sign(self, move):
+        if move.name is None:
+            raise InvalidNameError
+        move.user = self.address
+        serialized = move.serialize(include_signature=False)
+        move.signature = '{signature} {public_key}'.format(
+            signature=seccure.sign(
+                serialized,
+                self.private_key.encode('utf-8')
+            ).decode('utf-8'),
+            public_key=self.public_key,
+        )
+        move.id = move.hash
+
     @property
     def moves(self):
         return Move.query.filter_by(user=self.address).filter(
@@ -550,7 +549,7 @@ class User():
         new_move.user = self.address
         new_move.tax = tax
         new_move.created_at = datetime.datetime.now()
-        new_move.sign(self.private_key)
+        self.sign(new_move)
 
         if new_move.valid:
             if commit:

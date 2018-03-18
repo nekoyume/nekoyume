@@ -266,6 +266,11 @@ class Move(db.Model):
 
     def roll(self, randoms, dice, sum_=True):
         result = []
+        if dice.find('+') > 0:
+            dice, plus = dice.split('+')
+            plus = int(plus)
+        else:
+            plus = 0
         cnt, dice_type = (int(i) for i in dice.split('d'))
         for i in range(cnt):
             try:
@@ -273,7 +278,7 @@ class Move(db.Model):
             except IndexError:
                 raise OutOfRandomError
         if sum_:
-            return sum(result)
+            return sum(result) + plus
         else:
             return result
 

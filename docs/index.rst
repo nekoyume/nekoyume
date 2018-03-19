@@ -1,8 +1,10 @@
 .. nekoyume documentation master file, created by
    sphinx-quickstart on Sun Mar 18 14:52:11 2018.
 
-Nekoyume
-========
+.. include:: ../README.rst
+
+Documentation
+=============
 
 .. toctree::
    :maxdepth: 2

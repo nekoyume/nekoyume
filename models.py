@@ -50,11 +50,9 @@ class Node(db.Model):
 class Block(db.Model):
     __tablename__ = 'block'
     id = db.Column(db.Integer, primary_key=True)
-    hash = db.Column(db.String, nullable=False, index=True)
+    hash = db.Column(db.String, nullable=False, index=True, unique=True)
     prev_hash = db.Column(db.String,
-                          db.ForeignKey('block.hash'),
                           index=True)
-    prev = db.relationship('Block', remote_side=[hash], uselist=False)
     creator = db.Column(db.String, nullable=False, index=True)
     root_hash = db.Column(db.String, nullable=False)
     suffix = db.Column(db.String, nullable=False)
@@ -209,6 +207,9 @@ class Move(db.Model):
 
     @property
     def valid(self):
+        if not self.signature or self.signature.find(' ') < 0:
+            return False
+
         public_key = self.signature.split(' ')[1]
         valid = True
 

@@ -1,4 +1,4 @@
-from models import Block, Move
+from nekoyume.models import Block, Move
 
 
 def test_move_confirmed():

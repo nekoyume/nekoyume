@@ -4,9 +4,9 @@ import os
 from flask import (Flask, g, request, redirect, render_template, session,
                    url_for)
 
-from models import cache, db, Node, Move, User
-from api import api
-from tasks import celery
+from nekoyume.models import cache, db, Node, Move, User
+from nekoyume.api import api
+from nekoyume.tasks import celery
 
 
 def make_celery(app):
@@ -116,3 +116,8 @@ def post_move():
 
     move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))
     return redirect(url_for('get_dashboard'))
+
+
+def run():
+    from gunicorn.app import wsgiapp
+    wsgiapp.run()

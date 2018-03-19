@@ -24,9 +24,18 @@ Installation
 
 .. code-block:: console
 
-   $ mkvirtualenv -p $(which python3.6) -a $(pwd) nekoyume
-   $ pip install -r requirements.txt
+   $ pip install nekoyume
 
+
+Installation for Development
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+   $ git clone git@github.com:nekoyume/nekoyume.git
+   $ cd nekoyume
+   $ mkvirtualenv -p $(which python3.6) -a $(pwd) nekoyume
+   $ pip install -e .[dev]
 
 
 Launching Node
@@ -34,7 +43,7 @@ Launching Node
 
 .. code-block:: console
 
-   $ PORT=5000 honcho start
+   $ gunicorn nekoyume.app:app
 
 
 
@@ -43,6 +52,6 @@ Mining
 
 .. code-block:: console
 
-   $ python neko.py
+   $ neko
 
 

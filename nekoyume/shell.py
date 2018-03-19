@@ -5,7 +5,7 @@ from ptpython.repl import embed
 
 
 def run():
-    from app import app
+    from nekoyume.app import app
 
     parser = argparse.ArgumentParser(description='Nekoyume shell')
     args = parser.parse_args()

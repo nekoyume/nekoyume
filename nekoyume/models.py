@@ -250,7 +250,7 @@ class Move(db.Model):
         serialized = dict(
             user=self.user,
             name=self.name,
-            details=dict(self.details),
+            details={k: str(v) for k, v in dict(self.details).items()},
             tax=self.tax,
             created_at=str(self.created_at),
         )
@@ -539,13 +539,13 @@ class Buy(Move):
 
 
 class User():
-    def __init__(self, private_key):
+    def __init__(self, private_key, session=db.session):
         self.private_key = private_key
         self.public_key = str(seccure.passphrase_to_pubkey(
             self.private_key.encode('utf-8')
         ))
         self.address = h(self.public_key.encode('utf-8')).hexdigest()[:30]
-        self.session = db.session
+        self.session = session
 
     def sign(self, move):
         if move.name is None:
@@ -563,7 +563,7 @@ class User():
 
     @property
     def moves(self):
-        return Move.query.filter_by(user=self.address).filter(
+        return self.session.query(Move).filter_by(user=self.address).filter(
             Move.block != None # noqa
         ).order_by(Move.created_at.desc())
 
@@ -663,7 +663,8 @@ class User():
 
     def avatar(self, block_id=None):
         if not block_id:
-            block = Block.query.order_by(Block.id.desc()).first()
+            block = self.session.query(Block).order_by(
+                Block.id.desc()).first()
             if block:
                 block_id = block.id
             else:
@@ -674,8 +675,8 @@ class User():
 class Avatar():
     @classmethod
     @cache.memoize()
-    def get(cls, user_addr, block_id):
-        create_move = Move.query.filter_by(user=user_addr).filter(
+    def get(cls, user_addr, block_id, session=db.session):
+        create_move = session.query(Move).filter_by(user=user_addr).filter(
             Move.block_id <= block_id
         ).order_by(
             Move.block_id.desc()
@@ -684,7 +685,7 @@ class Avatar():
         ).first()
         if not create_move or block_id < create_move.block_id:
             return None
-        moves = Move.query.filter(
+        moves = session.query(Move).filter(
             or_(Move.user == user_addr, Move.id.in_(
                     db.session.query(MoveDetail.move_id).filter_by(
                         key='receiver', value=user_addr)))
@@ -693,7 +694,7 @@ class Avatar():
             Move.block_id <= block_id
         )
         avatar, result = create_move.execute(None)
-        avatar.items['Coin'] += Block.query.filter_by(
+        avatar.items['Coin'] += session.query(Block).filter_by(
             creator=user_addr
         ).filter(Block.id <= block_id).count() * 8
 

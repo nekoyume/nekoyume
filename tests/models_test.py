@@ -30,6 +30,7 @@ def fx_app():
     app.config['SQLALCHEMY_BINDS'] = {
         'other_test': 'sqlite:///other_test.db?check_same_thread=false'
     }
+    app.config['CELERY_ALWAYS_EAGER'] = True
     app.app_context().push()
     return app
 
@@ -74,6 +75,12 @@ def fx_user(fx_session):
     user.session = fx_session
     return user
 
+
+@pytest.fixture
+def fx_user2(fx_session):
+    user = User('test2')
+    user.session = fx_session
+    return user
 
 @pytest.fixture
 def fx_other_user(fx_other_session):
@@ -122,6 +129,48 @@ def test_move_confirmed_and_validation(fx_user, fx_novice_status):
     assert not block.valid
 
 
+def test_level_up(fx_user, fx_novice_status):
+    move = fx_user.create_novice(fx_novice_status)
+    fx_user.create_block([move])
+
+    while True:
+        if fx_user.avatar().xp >= 8:
+            break
+        move = fx_user.hack_and_slash()
+        fx_user.create_block([move])
+
+        if fx_user.avatar().hp <= 0:
+            move = fx_user.sleep()
+            fx_user.create_block([move])
+
+    prev_strength = fx_user.avatar().strength
+    prev_xp = fx_user.avatar().xp
+    move = fx_user.level_up('strength')
+    fx_user.create_block([move])
+
+    assert fx_user.avatar().lv == 2
+    assert fx_user.avatar().xp == prev_xp - 8
+    assert fx_user.avatar().strength == prev_strength + 1
+
+
+def test_send(fx_user, fx_user2, fx_novice_status):
+    move = fx_user.create_novice(fx_novice_status)
+    move2 = fx_user2.create_novice(fx_novice_status)
+    block = fx_user.create_block([move, move2])
+
+    assert fx_user.avatar(block.id).items['Coin'] == 8
+
+    move = fx_user.move(Send(details={
+        'item_name': 'Coin',
+        'amount': 1,
+        'receiver': fx_user2.address}))
+    block = fx_user.create_block([move])
+
+    assert fx_user.avatar(block.id).items['Coin'] == 15
+    assert fx_user2.avatar(block.id).items['Coin'] == 1
+
+
+
 def test_block_validation(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
     block = fx_user.create_block([move])
@@ -154,19 +203,6 @@ def test_avatar_basic_moves(fx_user, fx_novice_status):
         assert move.confirmed
         assert block.valid
         assert fx_user.avatar(block.id)
-
-
-def test_avatar_invalid_moves(fx_user, fx_novice_status):
-    moves = [
-        Send(details={'item_name': 'Coin',
-                      'amount': 1,
-                      'receiver': '31c91c2aba24ccb33535c034a31c80'}) #: test2
-    ]
-    for move in moves:
-        with pytest.raises(InvalidMoveError):
-            move = fx_user.move(move)
-            block = fx_user.create_block([move])
-
 
 
 def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,

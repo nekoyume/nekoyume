@@ -44,6 +44,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'DATABASE_URL', 'sqlite:///yume.db')
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.secret_key = b'\xc2o\x81?u+\x14j%\x99\xc5\xa6\x83\x06`\xfch$\n"a0\x96\x8c' # noqa
     app.register_blueprint(api)
     db.init_app(app)

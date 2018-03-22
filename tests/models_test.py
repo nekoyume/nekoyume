@@ -3,8 +3,6 @@ import datetime
 import os
 
 import pytest
-from pytest_localserver.http import WSGIServer
-from sqlalchemy.orm import sessionmaker
 
 from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
@@ -22,29 +20,6 @@ from nekoyume.app import create_app
 
 
 @pytest.fixture
-def fx_other_app():
-    app = create_app()
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'TEST_DATABASE_URL', 'sqlite:///other_test.db'
-    )
-    app.app_context().push()
-    return app
-
-
-@pytest.fixture
-def fx_other_session(fx_app, fx_other_app):
-    fx_db = db
-    fx_db.init_app(fx_other_app)
-    session = sessionmaker(fx_db.get_engine(fx_app, 'other_test'))()
-    session.rollback()
-    fx_db.drop_all()
-    session.commit()
-    fx_db.create_all()
-    fx_db.init_app(fx_app)
-    return session
-
-
-@pytest.fixture
 def fx_user2(fx_session):
     user = User('test2')
     user.session = fx_session
@@ -55,14 +30,6 @@ def fx_other_user(fx_other_session):
     user = User('other_test')
     user.session = fx_other_session
     return user
-
-
-@pytest.fixture
-def fx_server(request, fx_app):
-    server = WSGIServer(application=fx_app.wsgi_app)
-    server.start()
-    request.addfinalizer(server.stop)
-    return server
 
 
 @pytest.fixture

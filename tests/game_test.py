@@ -2,11 +2,6 @@ import pytest
 
 from nekoyume.models import Move, User
 
-@pytest.fixture
-def fx_test_client(fx_app):
-    fx_app.testing = True
-    return fx_app.test_client()
-
 
 def test_login(fx_test_client):
     rv = fx_test_client.post('/login', data={

@@ -52,7 +52,7 @@ setup(
         'test': [
             'pytest >= 3.4.2, < 3.5.0',
             'pytest-localserver >= 0.4.1, < 0.5',
-            'coveralls >= 1.3.0, < 1.4.0',
+            'codecov >= 2.0.15, < 2.1.0',
         ],
     },
     package_data={

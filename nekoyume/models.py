@@ -1,5 +1,6 @@
 import datetime
 from hashlib import sha256 as h
+import os
 
 from bencode import bencode
 from flask_cache import Cache
@@ -31,20 +32,21 @@ class Node(db.Model):
     post_move_endpoint = '/moves'
 
     @classmethod
-    def broadcast(cls, endpoint, serialized_obj, sent_node=None, my_node=None):
-        for node in cls.query:
+    def broadcast(cls, endpoint, serialized_obj, sent_node=None, my_node=None,
+                  session=db.session):
+        for node in session.query(cls):
             if sent_node and sent_node.url == node.url:
                 continue
             try:
                 if my_node:
                     serialized_obj['sent_node'] = my_node.url
-                requests.post(node.url + endpoint,
-                              json=serialized_obj)
+                requests.post(node.url + endpoint, json=serialized_obj)
                 node.last_connected_at = datetime.datetime.now()
-                db.session.add(node)
+                session.add(node)
             except requests.exceptions.ConnectionError:
                 continue
-        db.session.commit()
+
+        session.commit()
 
 
 class Block(db.Model):
@@ -62,10 +64,12 @@ class Block(db.Model):
 
     @property
     def valid(self):
-        return (self.hash ==
-                h(
-                    (self.serialize() + self.suffix.encode('utf-8'))
-                ).hexdigest())
+        stamp = self.serialize().decode('utf-8') + self.suffix
+        valid = (self.hash == h(str.encode(stamp)).hexdigest())
+        valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
+        for move in self.moves:
+            valid = valid and move.valid
+        return valid
 
     def serialize(self, use_bencode=True,
                   include_suffix=False,
@@ -98,32 +102,41 @@ class Block(db.Model):
             serialized = bencode(serialized)
         return serialized
 
-    def broadcast(self, sent_node=None, my_node=None):
+    def broadcast(self, sent_node=None, my_node=None, session=db.session):
         Node.broadcast(Node.post_block_endpoint,
                        self.serialize(False, True, True, True),
-                       sent_node, my_node)
+                       sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node):
+    def sync(cls, node, session=db.session):
+        if not node:
+            return True
         response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
-        last_block = Block.query.order_by(Block.id.desc()).first()
+        last_block = session.query(Block).order_by(Block.id.desc()).first()
+        node_last_block = response.json()['block']
+
+        if not node_last_block:
+            return True
 
         #: If my chain is the longest one, we don't need to do anything.
-        if last_block and last_block.id >= response.json()['block']['id']:
+        if last_block and last_block.id >= node_last_block['id']:
             return True
 
         def find_branch_point(value, high):
             mid = int((value + high) / 2)
             response = requests.get((f"{node.url}{Node.get_blocks_endpoint}/"
                                      f"{mid}"))
+            block = session.query(Block).get(mid)
             if value > high:
                 return 0
-            if response.json()['block']:
+            if (response.json()['block'] and
+               block.hash == response.json()['block']['hash']):
                 if value == mid:
                         return value
                 return find_branch_point(mid, high)
             else:
                 return find_branch_point(value, mid - 1)
+
         if last_block:
             # TODO: Very hard to understand. fix this easily.
             if find_branch_point(last_block.id,
@@ -134,10 +147,10 @@ class Block(db.Model):
         else:
             branch_point = 0
 
-        for block in Block.query.filter(Block.id > branch_point):
+        for block in session.query(Block).filter(Block.id > branch_point):
             for move in block.moves:
                 move.block_id = None
-            db.session.delete(block)
+            session.delete(block)
 
         response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
                                 params={'from': branch_point + 1})
@@ -155,7 +168,7 @@ class Block(db.Model):
             block.root_hash = new_block['root_hash']
 
             for new_move in new_block['moves']:
-                move = Move.query.get(new_move['id'])
+                move = session.query(Move).get(new_move['id'])
                 if not move:
                     move = Move(
                         id=new_move['id'],
@@ -170,16 +183,16 @@ class Block(db.Model):
                         block_id=block.id,
                     )
                 if not move.valid:
-                    db.session.rollback()
+                    session.rollback()
                     raise InvalidMoveError
-                block.moves.append(move)
+                session.add(move)
 
             if not block.valid:
-                db.session.rollback()
+                session.rollback()
                 raise InvalidBlockError
-            db.session.add(block)
+            session.add(block)
 
-        db.session.commit()
+        session.commit()
         return True
 
 
@@ -237,7 +250,7 @@ class Move(db.Model):
         serialized = dict(
             user=self.user,
             name=self.name,
-            details=dict(self.details),
+            details={k: str(v) for k, v in dict(self.details).items()},
             tax=self.tax,
             created_at=str(self.created_at),
         )
@@ -249,10 +262,10 @@ class Move(db.Model):
             serialized = bencode(serialized)
         return serialized
 
-    def broadcast(self, sent_node=None, my_node=None):
+    def broadcast(self, sent_node=None, my_node=None, session=db.session):
         Node.broadcast(Node.post_move_endpoint,
                        self.serialize(False, True, True),
-                       sent_node, my_node)
+                       sent_node, my_node, session)
 
     @property
     def hash(self):
@@ -304,8 +317,10 @@ class HackAndSlash(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, 'data/monsters.csv')
         monsters = tablib.Dataset().load(
-            open('data/monsters.csv').read()
+            open(filename).read()
         ).dict
         randoms = self.get_randoms()
         monster = monsters[randoms.pop() % len(monsters)]
@@ -524,12 +539,13 @@ class Buy(Move):
 
 
 class User():
-    def __init__(self, private_key):
+    def __init__(self, private_key, session=db.session):
         self.private_key = private_key
         self.public_key = str(seccure.passphrase_to_pubkey(
             self.private_key.encode('utf-8')
         ))
         self.address = h(self.public_key.encode('utf-8')).hexdigest()[:30]
+        self.session = session
 
     def sign(self, move):
         if move.name is None:
@@ -547,7 +563,7 @@ class User():
 
     @property
     def moves(self):
-        return Move.query.filter_by(user=self.address).filter(
+        return self.session.query(Move).filter_by(user=self.address).filter(
             Move.block != None # noqa
         ).order_by(Move.created_at.desc())
 
@@ -559,8 +575,8 @@ class User():
 
         if new_move.valid:
             if commit:
-                db.session.add(new_move)
-                db.session.commit()
+                self.session.add(new_move)
+                self.session.commit()
         else:
             raise InvalidMoveError
 
@@ -609,7 +625,9 @@ class User():
         block.creator = self.address
         block.created_at = datetime.datetime.now()
 
-        prev_block = Block.query.order_by(Block.id.desc()).first()
+        prev_block = self.session.query(Block).order_by(
+            Block.id.desc()
+        ).first()
         if prev_block:
             block.id = prev_block.id + 1
             block.prev_hash = prev_block.hash
@@ -625,6 +643,7 @@ class User():
             block.id = 1
             block.prev_hash = None
             block.difficulty = 0
+
         block.suffix = hashcash._mint(
             block.serialize().decode('utf-8'),
             bits=block.difficulty
@@ -637,14 +656,15 @@ class User():
             move.block = block
 
         if commit:
-            db.session.add(block)
-            db.session.commit()
+            self.session.add(block)
+            self.session.commit()
 
         return block
 
     def avatar(self, block_id=None):
         if not block_id:
-            block = Block.query.order_by(Block.id.desc()).first()
+            block = self.session.query(Block).order_by(
+                Block.id.desc()).first()
             if block:
                 block_id = block.id
             else:
@@ -655,8 +675,8 @@ class User():
 class Avatar():
     @classmethod
     @cache.memoize()
-    def get(cls, user_addr, block_id):
-        create_move = Move.query.filter_by(user=user_addr).filter(
+    def get(cls, user_addr, block_id, session=db.session):
+        create_move = session.query(Move).filter_by(user=user_addr).filter(
             Move.block_id <= block_id
         ).order_by(
             Move.block_id.desc()
@@ -665,7 +685,7 @@ class Avatar():
         ).first()
         if not create_move or block_id < create_move.block_id:
             return None
-        moves = Move.query.filter(
+        moves = session.query(Move).filter(
             or_(Move.user == user_addr, Move.id.in_(
                     db.session.query(MoveDetail.move_id).filter_by(
                         key='receiver', value=user_addr)))
@@ -674,7 +694,7 @@ class Avatar():
             Move.block_id <= block_id
         )
         avatar, result = create_move.execute(None)
-        avatar.items['Coin'] += Block.query.filter_by(
+        avatar.items['Coin'] += session.query(Block).filter_by(
             creator=user_addr
         ).filter(Block.id <= block_id).count() * 8
 

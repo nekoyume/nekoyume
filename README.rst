@@ -2,6 +2,9 @@
 Nekoyume
 ========
 
+.. image:: https://circleci.com/gh/nekoyume/nekoyume.svg?style=svg&circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3
+    :target: https://circleci.com/gh/nekoyume/nekoyume
+
 Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `Blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
 
 

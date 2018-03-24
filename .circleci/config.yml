@@ -50,7 +50,8 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            pytest
+            coverage run -m pytest
+            codecov --token=382fccb2-35b2-4861-ba06-56db19f2c36d
 
       - store_artifacts:
           path: test-reports

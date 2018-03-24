@@ -94,6 +94,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-dev.py
-
+other_test.db
+test.db
 yume.db

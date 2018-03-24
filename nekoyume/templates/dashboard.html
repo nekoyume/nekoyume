@@ -55,7 +55,7 @@
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <!-- Title -->
-          <span class="mdl-layout-title">nekoyume</span>
+          <span class="mdl-layout-title">Nekøyume</span>
           <!-- Add spacer, to align navigation to the right -->
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation. We hide it in small screens. -->
@@ -168,7 +168,7 @@
           {% endfor %}
         </nav>
         <form method="POST" class="level-up-form"
-                            action="{{ url_for('post_move') }}"
+                            action="{{ url_for('game.post_move') }}"
                             style="display: none">
           <input type="hidden" name="name" value="level_up">
           <input type="hidden" name="new_status">
@@ -194,7 +194,7 @@
                             <center>인근의 괴물과 조우하여 전투를 벌입니다.</center>
                         </div>
                         <div class="mdl-card__actions">
-                            <form method="POST" action="{{ url_for('post_move') }}">
+                            <form method="POST" action="{{ url_for('game.post_move') }}">
                                 <input type="hidden" name="name" value="hack_and_slash">
                                 <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="괴물을 찾아 나섭니다."></center>
                             </form>
@@ -205,7 +205,7 @@
                             <center>수면을 취하여 체력을 회복합니다.</center>
                         </div>
                         <div class="mdl-card__actions">
-                            <form method="POST" action="{{ url_for('post_move') }}">
+                            <form method="POST" action="{{ url_for('game.post_move') }}">
                                 <input type="hidden" name="name" value="sleep">
                                 <center><input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="침대에 눕습니다."></center>
                             </form>
@@ -213,7 +213,7 @@
                     </div>
                     <div class="mdl-tabs__panel" id="say-panel">
                         <div class="mdl-card__actions">
-                            <form method="POST" action="{{ url_for('post_move') }}" style="text-align: center">
+                            <form method="POST" action="{{ url_for('game.post_move') }}" style="text-align: center">
                                 <input type="hidden" name="name" value="say">
                                 <div class="mdl-textfield mdl-js-textfield">
                                   <input class="mdl-textfield__input" type="text" id="content" name="content">
@@ -225,7 +225,7 @@
                     </div>
                     <div class="mdl-tabs__panel" id="send-panel">
                         <div class="mdl-card__actions">
-                            <form method="POST" action="{{ url_for('post_move') }}" style="text-align: center">
+                            <form method="POST" action="{{ url_for('game.post_move') }}" style="text-align: center">
                                 <input type="hidden" name="name" value="send">
                                 <select name="item">
                                   {% for k, v in avatar.items.items() %}

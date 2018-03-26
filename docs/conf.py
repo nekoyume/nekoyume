@@ -15,6 +15,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+from recommonmark.transform import AutoStructify
 
 
 # -- Project information -----------------------------------------------------
@@ -160,3 +161,14 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+        'auto_toc_tree_section': 'Content',
+        'enable_auto_doc_ref': True,
+        'enable_auto_toc_tree': True,
+        'enable_eval_rst': True,
+        'enable_inline_math': True,
+        'enable_math': True
+    }, True)
+    app.add_transform(AutoStructify)

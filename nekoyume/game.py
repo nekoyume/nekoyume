@@ -36,6 +36,13 @@ def post_login():
         return redirect(url_for('.get_dashboard'))
 
 
+@game.route('/logout', methods=['GET'])
+@login_required
+def get_logout():
+    del session['private_key']
+    return redirect(url_for('game.get_login'))
+
+
 @game.route('/')
 @login_required
 def get_dashboard():
@@ -66,7 +73,7 @@ def get_new_novice():
                 'charisma': '13'})
             db.session.add(move)
             db.session.commit()
-        return move.id
+        return render_template('new.html', move=move)
     return redirect(url_for('.get_dashboard'))
 
 

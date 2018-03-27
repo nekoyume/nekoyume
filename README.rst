@@ -40,7 +40,7 @@ Installation for Development
    $ git clone git@github.com:nekoyume/nekoyume.git
    $ cd nekoyume
    $ mkvirtualenv -p $(which python3.6) -a $(pwd) nekoyume
-   $ pip install -e .[dev]
+   $ pip install -e .[dev,test]
 
 
 Launching Node

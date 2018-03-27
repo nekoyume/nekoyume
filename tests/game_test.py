@@ -52,3 +52,13 @@ def test_move(fx_test_client, fx_session, fx_user):
     }, follow_redirects=True)
     assert rv.status == '200 OK'
     fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+
+
+def test_logout(fx_test_client, fx_session, fx_user):
+    rv = fx_test_client.post('/login', data={
+        'private_key': 'test'
+    }, follow_redirects=True)
+
+    rv = fx_test_client.get('/logout')
+    rv = fx_test_client.get('/')
+    assert rv.status == '302 FOUND'

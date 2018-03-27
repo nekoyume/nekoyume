@@ -93,16 +93,16 @@ def test_send(fx_user, fx_user2, fx_novice_status):
     move2 = fx_user2.create_novice(fx_novice_status)
     block = fx_user.create_block([move, move2])
 
-    assert fx_user.avatar(block.id).items['Coin'] == 8
+    assert fx_user.avatar(block.id).items['Gold'] == 8
 
     move = fx_user.move(Send(details={
-        'item_name': 'Coin',
+        'item_name': 'Gold',
         'amount': 1,
         'receiver': fx_user2.address}))
     block = fx_user.create_block([move])
 
-    assert fx_user.avatar(block.id).items['Coin'] == 15
-    assert fx_user2.avatar(block.id).items['Coin'] == 1
+    assert fx_user.avatar(block.id).items['Gold'] == 15
+    assert fx_user2.avatar(block.id).items['Gold'] == 1
 
 
 

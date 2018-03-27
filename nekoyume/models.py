@@ -246,7 +246,8 @@ class Move(db.Model):
     def serialize(self,
                   use_bencode=True,
                   include_signature=False,
-                  include_id=False):
+                  include_id=False,
+                  include_block=False):
         serialized = dict(
             user=self.user,
             name=self.name,
@@ -258,6 +259,11 @@ class Move(db.Model):
             serialized['signature'] = self.signature
         if include_id:
             serialized['id'] = self.id
+        if include_block:
+            if self.block:
+                serialized['block'] = self.block.serialize(False)
+            else:
+                serialized['block'] = None
         if use_bencode:
             serialized = bencode(serialized)
         return serialized
@@ -421,9 +427,9 @@ class CreateNovice(Move):
     def execute(self, avatar=None):
         if avatar:
             #: Keep the information that should not be removed.
-            coin = avatar.items['Coin']
+            gold = avatar.items['Gold']
         else:
-            coin = 0
+            gold = 0
         avatar = Novice()
 
         avatar.strength = int(self.details['strength'])
@@ -438,7 +444,7 @@ class CreateNovice(Move):
         avatar.xp = 0
         avatar.lv = 1
         avatar.items = dict(
-            Coin=coin
+            Gold=gold
         )
 
         return (avatar, dict(
@@ -694,7 +700,7 @@ class Avatar():
             Move.block_id <= block_id
         )
         avatar, result = create_move.execute(None)
-        avatar.items['Coin'] += session.query(Block).filter_by(
+        avatar.items['Gold'] += session.query(Block).filter_by(
             creator=user_addr
         ).filter(Block.id <= block_id).count() * 8
 

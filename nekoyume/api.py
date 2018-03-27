@@ -87,6 +87,14 @@ def get_last_block():
     return jsonify(block=block)
 
 
+@api.route('/moves/<string:move_id>')
+def get_moves(move_id):
+    move = Move.query.get(move_id)
+    if move:
+        move = move.serialize(False, True, True, True)
+    return jsonify(move=move)
+
+
 @api.route(Node.post_block_endpoint, methods=['POST'])
 def post_block():
     new_block = request.get_json()

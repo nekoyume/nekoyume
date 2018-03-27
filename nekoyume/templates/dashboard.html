@@ -7,8 +7,21 @@
 
 {% block style %}
 <style>
-    .move, .move-bar, .in-progress {
+    .move, .move-bar, .in-progress, .avatar-status {
+        margin-bottom: 20px;
         width:100%;
+    }
+
+    .avatar-status  {
+        width: 100%;
+    }
+
+    .avatar-status ul {
+        padding-left: 20px;
+    }
+
+    .avatar-status li {
+        list-style: none;
     }
 
     .move-bar .mdl-tabs__panel {
@@ -65,120 +78,168 @@
         </div>
       </header>
       <div id="avatar-status" class="mdl-layout__drawer">
-        <span class="mdl-layout-title">Status <a class="status-button" href="{{ url_for('.get_dashboard') }}">🔄</a></span>
-        <nav class="mdl-navigation">
-          <a class="mdl-navigation__link">
-            <strong>LV</strong>
-            {{ avatar.lv }}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>HP</strong>
-            {{ avatar.hp }} / {{ avatar.max_hp }}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>XP</strong>
-            {{ avatar.xp }} / {{ avatar.lv + 7 }}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>STR</strong>
-            {{ avatar.strength }}
-            {% if avatar.modifier('strength') != 0 %}
-              (<strong id="strength-modifier">{{ avatar.modifier('strength')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="strength-modifier">
-                +STR 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('strength')">🔼</span>
-            {% endif %}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>DEX</strong>
-            {{ avatar.dexterity }}
-            {% if avatar.modifier('dexterity') != 0 %}
-              (<strong id="dexterity-modifier">{{ avatar.modifier('dexterity')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="dexterity-modifier">
-                +DEX 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('dexterity')">🔼</span>
-            {% endif %}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>CON</strong>
-            {{ avatar.constitution }}
-            {% if avatar.modifier('constitution') != 0 %}
-              (<strong id="constitution-modifier">{{ avatar.modifier('constitution')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="constitution-modifier">
-                +CON 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('constitution')">🔼</span>
-            {% endif %}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>INT</strong>
-            {{ avatar.intelligence }}
-            {% if avatar.modifier('intelligence') != 0 %}
-              (<strong id="intelligence-modifier">{{ avatar.modifier('intelligence')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="intelligence-modifier">
-                +INT 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('intelligence')">🔼</span>
-            {% endif %}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>WIS</strong>
-            {{ avatar.wisdom }}
-            {% if avatar.modifier('wisdom') != 0 %}
-              (<strong id="wisdom-modifier">{{ avatar.modifier('wisdom')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="wisdom-modifier">
-                +WIS 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('wisdom')">🔼</span>
-            {% endif %}
-          </a>
-          <a class="mdl-navigation__link">
-            <strong>CHA</strong>
-            {{ avatar.charisma }}
-            {% if avatar.modifier('charisma') != 0 %}
-              (<strong id="charisma-modifier">{{ avatar.modifier('charisma')}}</strong>)
-              <div class="mdl-tooltip" data-mdl-for="charisma-modifier">
-                +CHA 판정시의 보정치입니다.
-              </div>
-            {% endif %}
-            {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
-                <span class="level-up-button" onclick="levelUp('charisma')">🔼</span>
-            {% endif %}
-          </a>
+        <!-- Title -->
+        <span class="mdl-layout-title">Nekøyume</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+        <!-- Navigation. We hide it in small screens. -->
+        <nav class="mdl-navigation mdl-layout--large-screen-only">
+          <a class="mdl-navigation__link" href="{{ url_for('game.get_logout') }}">로그아웃</a>
+          <a class="mdl-navigation__link" href="https://nekoyu.me/">홈페이지</a>
+          <a class="mdl-navigation__link" href="https://sites.google.com/site/dungeonworldkr/home">던전 월드 알아보기</a>
+          <a class="mdl-navigation__link" href="https://nekoyu.me/token">토큰 구매하기</a>
+          <a class="mdl-navigation__link" href="https://github.com/nekoyume">Github</a>
         </nav>
-        <span class="mdl-layout-title">Items</span>
-        <nav class="mdl-navigation">
-          {% for name, amount in avatar.items.items() %}
-          <a class="mdl-navigation__link">
-            <strong>{{ name }}</strong>
-            {{ amount }}
-          </a>
-          {% endfor %}
-        </nav>
-        <form method="POST" class="level-up-form"
-                            action="{{ url_for('game.post_move') }}"
-                            style="display: none">
-          <input type="hidden" name="name" value="level_up">
-          <input type="hidden" name="new_status">
-        </form>
       </div>
       <main class="mdl-layout__content">
           <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--2-col">
+            <div class="mdl-cell mdl-cell--1-col"></div>
+            <div class="mdl-cell mdl-cell--3-col">
+              <div class="avatar-status-section">
+                <table class="mdl-data-table mdl-js-data-table avatar-status mdl-shadow--2dp">
+                  <thead>
+                    <tr>
+                      <th class="mdl-data-table__cell--non-numeric">Status</th>
+                      <th>Number</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">LV</td>
+                      <td>
+                      {{ avatar.lv }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">HP</td>
+                      <td>
+                      {{ avatar.hp }} / {{ avatar.max_hp }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">XP</td>
+                      <td>
+                      {{ avatar.xp }} / {{ avatar.lv + 7 }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">STR</td>
+                      <td>
+                      {{ avatar.strength }}
+                      {% if avatar.modifier('strength') != 0 %}
+                        (<strong id="strength-modifier">{{ avatar.modifier('strength')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="strength-modifier">
+                          +STR 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('strength')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">DEX</td>
+                      <td>
+                      {{ avatar.dexterity }}
+                      {% if avatar.modifier('dexterity') != 0 %}
+                        (<strong id="dexterity-modifier">{{ avatar.modifier('dexterity')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="dexterity-modifier">
+                          +DEX 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('dexterity')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">CON</td>
+                      <td>
+                      {{ avatar.constitution }}
+                      {% if avatar.modifier('constitution') != 0 %}
+                        (<strong id="constitution-modifier">{{ avatar.modifier('constitution')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="constitution-modifier">
+                          +CON 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('constitution')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">INT</td>
+                      <td>
+                      {{ avatar.intelligence }}
+                      {% if avatar.modifier('intelligence') != 0 %}
+                        (<strong id="intelligence-modifier">{{ avatar.modifier('intelligence')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="intelligence-modifier">
+                          +INT 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('intelligence')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">WIS</td>
+                      <td>
+                      {{ avatar.wisdom }}
+                      {% if avatar.modifier('wisdom') != 0 %}
+                        (<strong id="wisdom-modifier">{{ avatar.modifier('wisdom')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="wisdom-modifier">
+                          +WIS 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('wisdom')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">CHA</td>
+                      <td>
+                      {{ avatar.charisma }}
+                      {% if avatar.modifier('charisma') != 0 %}
+                        (<strong id="charisma-modifier">{{ avatar.modifier('charisma')}}</strong>)
+                        <div class="mdl-tooltip" data-mdl-for="charisma-modifier">
+                          +CHA 판정시의 보정치입니다.
+                        </div>
+                      {% endif %}
+                      {% if not unconfirmed_move and avatar.xp >= avatar.lv + 7 %}
+                          <span class="level-up-button" onclick="levelUp('charisma')">🔼</span>
+                      {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="mdl-data-table mdl-js-data-table avatar-status mdl-shadow--2dp">
+                  <thead>
+                    <tr>
+                      <th class="mdl-data-table__cell--non-numeric">Item</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for name, amount in avatar.items.items() %}
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">{{ name }}</td>
+                      <td>{{ amount }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="mdl-cell mdl-cell--8-col">
+            <form method="POST" class="level-up-form"
+                                action="{{ url_for('game.post_move') }}"
+                                style="display: none">
+              <input type="hidden" name="name" value="level_up">
+              <input type="hidden" name="new_status">
+            </form>
+            <div class="mdl-cell mdl-cell--7-col">
               <section class="move-bar mdl-card mdl-shadow--2dp"">
                   <div class="move-bar-normal mdl-tabs mdl-js-tabs mdl-js-ripple-effect
                               {% if unconfirmed_move %} hidden {% endif %}">
@@ -229,7 +290,7 @@
                                 <input type="hidden" name="name" value="send">
                                 <select name="item">
                                   {% for k, v in avatar.items.items() %}
-                                  <option value="{{ k }}">{{ k }}({{ v }})</option>
+                                  <option value="{{ k }}">{{ k }}</option>
                                   {% endfor %}
                                 </select>
                                 <div class="mdl-textfield mdl-js-textfield" style="width: 40px">
@@ -256,146 +317,144 @@
                     </div>
                   </div>
               </section>
-            </div>
-          </div>
-          <div class="moves">
-            {% for move in g.user.moves.limit(10) %}
-            <div class="mdl-grid move-{{ move.id }}">
-              <div class="mdl-cell mdl-cell--2-col">
-              </div>
-              <div class="mdl-cell mdl-cell--8-col">
-                {% set result = move.execute()[1] %}
-                {% if result.type == 'create_novice' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">👶 초심자 탄생!</h2>
+              <div class="moves">
+                {% for move in g.user.moves.limit(10) %}
+                <div class="move-{{ move.id }}">
+                    {% set result = move.execute()[1] %}
+                    {% if result.type == 'create_novice' %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">👶 초심자 탄생!</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <h5>환영합니다!</h5>
+                            {% include 'basic_info.html' %}
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
                     </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'hack_and_slash' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    {% if result.result == 'win' %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">👍 전투 승리!</h2>
-                    </div>
-                    {% elif result.result == 'finish' %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">😐 전투 종료!</h2>
-                    </div>
-                    {% else %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">😭 전투 패배!</h2>
-                    </div>
-                    {% endif %}
-                    <div class="mdl-card__supporting-text">
-                        <ol>
-                            {% for status in result.battle_status %}
-                            {% if status['type'] == 'attack_monster' %}
-                            <li>
-                              💥
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게
-                              <strong>{{ status['damage'] }}</strong> 데미지를 입혔다.
-                              (HP {{status['monster']['hp'] }} → {{status['monster']['hp'] - status['damage'] }})
-                            </li>
-                            {% elif status['type'] == 'attacked_by_monster' %}
-                            <li>
-                              😫
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 공격받아
-                              <strong>{{ status['damage'] }}</strong> 데미지를 입었다.
-                            </li>
-                            {% elif status['type'] == 'get_xp' %}
-                            <li>
-                              🤔
-                              나는 아까의 과오에서 배움을 얻었다.
-                            </li>
-                            {% elif status['type'] == 'kill_monster' %}
-                            <li>
-                              ☠️
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>를(을) 해치웠다!
-                            </li>
-                            {% elif status['type'] == 'killed_by_monster' %}
-                            <li>
-                              ☠️
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 패배했다...
-                            </li>
-                            {% elif status['type'] == 'run' %}
-                            <li>
-                              🏃
-                              <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>는(은) 도망가버렸다...
-                            </li>
-                            {% elif status['type'] == 'get_item' %}
-                            <li>
-                              🎁
-                              {{ status['item'] }}을(를) 얻었다!
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-                        </ol>
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'level_up' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    {% if result.result == 'success' %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">🆙 레벨 업!</h2>
-                    </div>
-                    {% else %}
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">😐 레벨 업 실패</h2>
-                    </div>
-                    {% endif %}
-                    <div class="mdl-card__supporting-text">
-                        {% if result.message %}
-                        <p>{{ result.message }}</p>
+                    {% elif result.type == 'hack_and_slash' %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        {% if result.result == 'win' %}
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">👍 전투 승리!</h2>
+                        </div>
+                        {% elif result.result == 'finish' %}
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">😐 전투 종료!</h2>
+                        </div>
+                        {% else %}
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">😭 전투 패배!</h2>
+                        </div>
                         {% endif %}
-                        <sub>{{ move.created_at }}</sub>
+                        <div class="mdl-card__supporting-text">
+                            <ol>
+                                {% for status in result.battle_status %}
+                                {% if status['type'] == 'attack_monster' %}
+                                <li>
+                                  💥
+                                  <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게
+                                  <strong>{{ status['damage'] }}</strong> 데미지를 입혔다.
+                                  (HP {{status['monster']['hp'] }} → {{status['monster']['hp'] - status['damage'] }})
+                                </li>
+                                {% elif status['type'] == 'attacked_by_monster' %}
+                                <li>
+                                  😫
+                                  <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 공격받아
+                                  <strong>{{ status['damage'] }}</strong> 데미지를 입었다.
+                                </li>
+                                {% elif status['type'] == 'get_xp' %}
+                                <li>
+                                  🤔
+                                  나는 아까의 과오에서 배움을 얻었다.
+                                </li>
+                                {% elif status['type'] == 'kill_monster' %}
+                                <li>
+                                  ☠️
+                                  <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>를(을) 해치웠다!
+                                </li>
+                                {% elif status['type'] == 'killed_by_monster' %}
+                                <li>
+                                  ☠️
+                                  <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>에게 패배했다...
+                                </li>
+                                {% elif status['type'] == 'run' %}
+                                <li>
+                                  🏃
+                                  <a href="{{ status['monster']['url'] }}">{{ status['monster']['id'] }}</a>는(은) 도망가버렸다...
+                                </li>
+                                {% elif status['type'] == 'get_item' %}
+                                <li>
+                                  🎁
+                                  {{ status['item'] }}을(를) 얻었다!
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ol>
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
                     </div>
+                    {% elif result.type == 'level_up' %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        {% if result.result == 'success' %}
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">🆙 레벨 업!</h2>
+                        </div>
+                        {% else %}
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">😐 레벨 업 실패</h2>
+                        </div>
+                        {% endif %}
+                        <div class="mdl-card__supporting-text">
+                            {% if result.message %}
+                            <p>{{ result.message }}</p>
+                            {% endif %}
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
+                    </div>
+                    {% elif result.type == 'sleep' %}
+                    <div class="move sleep mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">💤 수면을 통해 체력 회복</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
+                    </div>
+                    {% elif result.type == 'say' %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">🗣 {{ result['message'] }}</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
+                    </div>
+                    {% elif result.type == 'send' %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">🎁 {{ move.details['item_name'] }} {{ move.details['amount'] }}개를 전달했습니다.</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <p>받은 사람: {{ move.details['receiver'] }} </p>
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__title mdl-card--expand">
+                            <h2 class="mdl-card__title-text">행동</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <p>{{ result }}</p>
+                            <sub>{{ move.created_at }}</sub>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-                {% elif result.type == 'sleep' %}
-                <div class="move sleep mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">💤 수면을 통해 체력 회복</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'say' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">🗣 {{ result['message'] }}</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% elif result.type == 'send' %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">🎁 {{ move.details['item_name'] }} {{ move.details['amount'] }}개를 전달했습니다.</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <p>받은 사람: {{ move.details['receiver'] }} </p>
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% else %}
-                <div class="move mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title mdl-card--expand">
-                        <h2 class="mdl-card__title-text">행동</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <p>{{ result }}</p>
-                        <sub>{{ move.created_at }}</sub>
-                    </div>
-                </div>
-                {% endif %}
+                {% endfor %}
               </div>
             </div>
-            {% endfor %}
           </div>
 
           <script>
@@ -408,14 +467,15 @@
     </div>
 </div>
 <div id="tlkio" data-channel="nekoyume" data-theme="theme--minimal" data-nickname="{{ g.user.address }}"></div><script async src="http://tlk.io/embed.js" type="text/javascript"></script>
-<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 {% if unconfirmed_move %}
 <script>
-setInterval(function() {
+var interval = setInterval(function() {
   $('.moves').load('/ .moves', function() {
     if($('.move-' + $('[name=unconfirmed-move-id]').val()).length > 0) {
       $('.move-bar-normal').removeClass('hidden');
       $('.move-bar-waiting').addClass('hidden');
+      $('.avatar-status-section').load('/ .avatar-status-section');
+      clearInterval(interval);
     }
   });
 }, 3000);

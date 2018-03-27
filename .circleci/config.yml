@@ -50,7 +50,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            flake8
+            flake8 nekoyume/
             coverage run -m pytest
             codecov --token=382fccb2-35b2-4861-ba06-56db19f2c36d
 

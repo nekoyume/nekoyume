@@ -31,12 +31,8 @@ Notice that '_mint()' behaves deterministically, finding the same suffix
 every time it is passed the same arguments.  'mint()' incorporates a random
 salt in stamps (as per the hashcash v.1 protocol).
 """
-import sys
-from string import ascii_letters
 from math import ceil, floor
 from hashlib import sha256
-from random import choice
-from time import strftime, localtime, time
 
 
 tries = [0]                 # Count hashes performed for benchmark

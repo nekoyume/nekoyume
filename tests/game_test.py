@@ -1,5 +1,3 @@
-import pytest
-
 from nekoyume.models import Move, User
 
 
@@ -12,10 +10,9 @@ def test_login(fx_test_client):
 
 
 def test_new_character_creation(fx_test_client, fx_session):
-    rv = fx_test_client.post('/login', data={
+    fx_test_client.post('/login', data={
         'private_key': 'test'
     }, follow_redirects=True)
-
 
     assert fx_session.query(Move).filter_by(
         user=User('test').address,

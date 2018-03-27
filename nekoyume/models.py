@@ -32,8 +32,12 @@ class Node(db.Model):
     post_move_endpoint = '/moves'
 
     @classmethod
-    def broadcast(cls, endpoint, serialized_obj, sent_node=None, my_node=None,
-                  session=db.session):
+    def broadcast(cls,
+                  endpoint: str,
+                  serialized_obj: dict,
+                  sent_node: bool=None,
+                  my_node: bool=None,
+                  session=db.session) -> bool:
         for node in session.query(cls):
             if sent_node and sent_node.url == node.url:
                 continue
@@ -47,6 +51,7 @@ class Node(db.Model):
                 continue
 
         session.commit()
+        return True
 
 
 class Block(db.Model):
@@ -63,7 +68,7 @@ class Block(db.Model):
                            default=datetime.datetime.now())
 
     @property
-    def valid(self):
+    def valid(self) -> bool:
         stamp = self.serialize().decode('utf-8') + self.suffix
         valid = (self.hash == h(str.encode(stamp)).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
@@ -71,10 +76,11 @@ class Block(db.Model):
             valid = valid and move.valid
         return valid
 
-    def serialize(self, use_bencode=True,
-                  include_suffix=False,
-                  include_moves=False,
-                  include_hash=False):
+    def serialize(self,
+                  use_bencode: bool=True,
+                  include_suffix: bool=False,
+                  include_moves: bool=False,
+                  include_hash: bool=False) -> dict:
         serialized = dict(
             id=self.id,
             creator=self.creator,
@@ -102,13 +108,16 @@ class Block(db.Model):
             serialized = bencode(serialized)
         return serialized
 
-    def broadcast(self, sent_node=None, my_node=None, session=db.session):
-        Node.broadcast(Node.post_block_endpoint,
-                       self.serialize(False, True, True, True),
-                       sent_node, my_node, session)
+    def broadcast(self,
+                  sent_node: bool=None,
+                  my_node: bool=None,
+                  session=db.session) -> bool:
+        return Node.broadcast(Node.post_block_endpoint,
+                              self.serialize(False, True, True, True),
+                              sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node, session=db.session):
+    def sync(cls, node: Node, session=db.session) -> bool:
         if not node:
             return True
         response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
@@ -122,7 +131,7 @@ class Block(db.Model):
         if last_block and last_block.id >= node_last_block['id']:
             return True
 
-        def find_branch_point(value, high):
+        def find_branch_point(value: int, high: int):
             mid = int((value + high) / 2)
             response = requests.get((f"{node.url}{Node.get_blocks_endpoint}/"
                                      f"{mid}"))

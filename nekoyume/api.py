@@ -101,8 +101,8 @@ def post_block():
     last_block = Block.query.order_by(Block.id.desc()).first()
 
     if not new_block:
-        return  jsonify(result='failed',
-                        message="empty block."), 400
+        return jsonify(result='failed',
+                       message="empty block."), 400
 
     if not last_block and new_block['id'] != 1:
         Block.sync(
@@ -112,8 +112,8 @@ def post_block():
                        message="new block isn't our next block."), 403
 
     if (new_block['id'] > 1 and
-           (new_block['id'] != last_block.id + 1 or
-               new_block['prev_hash'] != last_block.hash)):
+       (new_block['id'] != last_block.id + 1 or
+       new_block['prev_hash'] != last_block.hash)):
         if new_block['id'] > last_block.id + 1:
             Block.sync(
                 Node.query.order_by(

@@ -1,8 +1,3 @@
-import pytest
-
-from nekoyume.models import Node
-
-
 def test_get_blocks(fx_test_client, fx_user):
     move = fx_user.sleep()
 

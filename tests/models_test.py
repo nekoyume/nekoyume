@@ -1,12 +1,8 @@
-from copy import deepcopy
 import datetime
-import os
 
 import pytest
 
-from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
-                             db,
                              CreateNovice,
                              HackAndSlash,
                              LevelUp,
@@ -16,7 +12,6 @@ from nekoyume.models import (Block,
                              Send,
                              Sleep,
                              User)
-from nekoyume.app import create_app
 
 
 @pytest.fixture
@@ -24,6 +19,7 @@ def fx_user2(fx_session):
     user = User('test2')
     user.session = fx_session
     return user
+
 
 @pytest.fixture
 def fx_other_user(fx_other_session):
@@ -105,7 +101,6 @@ def test_send(fx_user, fx_user2, fx_novice_status):
     assert fx_user2.avatar(block.id).items['Gold'] == 1
 
 
-
 def test_block_validation(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
     block = fx_user.create_block([move])
@@ -114,9 +109,10 @@ def test_block_validation(fx_user, fx_novice_status):
                '00000000000000000000000000000000')
     assert not block.valid
 
+
 def test_avatar_modifier(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
-    block = fx_user.create_block([move])
+    fx_user.create_block([move])
     assert fx_user.avatar().modifier('constitution') == 2
     assert fx_user.avatar().modifier('strength') == 1
     assert fx_user.avatar().modifier('dexterity') == 0
@@ -187,7 +183,7 @@ def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
 
 
 def test_move_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
-                         fx_server, fx_novice_status):
+                        fx_server, fx_novice_status):
     assert fx_other_session.query(Move).count() == 0
     assert fx_session.query(Move).count() == 0
 

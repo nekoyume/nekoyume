@@ -35,6 +35,7 @@ setup(
         'Flask-SQLAlchemy >= 2.3.2, < 2.4.0',
         'gunicorn >= 19.7.1, < 19.8.0',
         'ptpython==0.41',
+        'python-bitcoinlib >= 0.9.0, < 0.10.0',
         'pytz >= 2018.3',
         'redis >= 2.10.6, < 2.11.0',
         'requests >= 2.18.4, < 2.19.0',

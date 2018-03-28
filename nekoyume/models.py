@@ -3,6 +3,7 @@ from hashlib import sha256 as h
 import os
 
 from bencode import bencode
+from bitcoin import base58
 from flask_cache import Cache
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -205,6 +206,10 @@ class Block(db.Model):
         return True
 
 
+def get_address(public_key):
+    return base58.encode(public_key)
+
+
 class Move(db.Model):
     __tablename__ = 'move'
     id = db.Column(db.String, primary_key=True)
@@ -241,7 +246,7 @@ class Move(db.Model):
             public_key,
         )
         valid = valid and (
-            self.user == h(public_key.encode('utf-8')).hexdigest()[:30]
+            self.user == get_address(public_key.encode('utf-8'))
         )
 
         valid = valid and (self.id == self.hash)
@@ -570,8 +575,11 @@ class User():
         self.public_key = str(seccure.passphrase_to_pubkey(
             self.private_key.encode('utf-8')
         ))
-        self.address = h(self.public_key.encode('utf-8')).hexdigest()[:30]
         self.session = session
+
+    @property
+    def address(self):
+        return get_address(self.public_key.encode('utf-8'))
 
     def sign(self, move):
         if move.name is None:

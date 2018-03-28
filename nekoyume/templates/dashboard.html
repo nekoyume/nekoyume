@@ -12,6 +12,14 @@
         width:100%;
     }
 
+    .avatar-profile-image {
+        width: 16px;
+        height: 16px;
+        border-radius: 100%;
+        margin-right: 6px;
+        margin-top: -2px;
+    }
+
     .avatar-status  {
         width: 100%;
     }
@@ -58,6 +66,9 @@
       right:0; bottom: 0px;
       height: 100%;
     }
+
+    .mdl-card__supporting-text {
+      width: auto;
     }
 </style>
 {% endblock %}
@@ -100,10 +111,16 @@
                   <thead>
                     <tr>
                       <th class="mdl-data-table__cell--non-numeric">Status</th>
-                      <th>Number</th>
+                      <th>Data</th>
                     </tr>
                   </thead>
                   <tbody>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">Name</td>
+                      <td>
+                      <img src="{{ avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> {{ avatar.name }}
+                      </td>
+                    </tr>
                     <tr>
                       <td class="mdl-data-table__cell--non-numeric">LV</td>
                       <td>
@@ -320,20 +337,28 @@
               <div class="moves">
                 {% for move in g.user.moves.limit(10) %}
                 <div class="move-{{ move.id }}">
-                    {% set result = move.execute()[1] %}
+                    {% set move_avatar, result = move.execute() %}
                     {% if result.type == 'create_novice' %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         <div class="mdl-card__title mdl-card--expand">
-                            <h2 class="mdl-card__title-text">👶 초심자 탄생!</h2>
+                            <h2 class="mdl-card__title-text">
+                          👶 초심자 탄생!</h2>
                         </div>
                         <div class="mdl-card__supporting-text">
                             <h5>환영합니다!</h5>
                             {% include 'basic_info.html' %}
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% elif result.type == 'hack_and_slash' %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         {% if result.result == 'win' %}
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">👍 전투 승리!</h2>
@@ -391,11 +416,14 @@
                                 {% endif %}
                                 {% endfor %}
                             </ol>
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% elif result.type == 'level_up' %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         {% if result.result == 'success' %}
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">🆙 레벨 업!</h2>
@@ -409,45 +437,51 @@
                             {% if result.message %}
                             <p>{{ result.message }}</p>
                             {% endif %}
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% elif result.type == 'sleep' %}
                     <div class="move sleep mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                        </div>
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">💤 수면을 통해 체력 회복</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% elif result.type == 'say' %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">🗣 {{ result['message'] }}</h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% elif result.type == 'send' %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">🎁 {{ move.details['item_name'] }} {{ move.details['amount'] }}개를 전달했습니다.</h2>
                         </div>
                         <div class="mdl-card__supporting-text">
                             <p>받은 사람: {{ move.details['receiver'] }} </p>
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% else %}
                     <div class="move mdl-card mdl-shadow--2dp">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
                         <div class="mdl-card__title mdl-card--expand">
                             <h2 class="mdl-card__title-text">행동</h2>
                         </div>
                         <div class="mdl-card__supporting-text">
                             <p>{{ result }}</p>
-                            <sub>{{ move.created_at }}</sub>
                         </div>
                     </div>
                     {% endif %}
@@ -466,7 +500,7 @@
       </main>
     </div>
 </div>
-<div id="tlkio" data-channel="nekoyume" data-theme="theme--minimal" data-nickname="{{ g.user.address }}"></div><script async src="http://tlk.io/embed.js" type="text/javascript"></script>
+<div id="tlkio" data-channel="nekoyume" data-theme="theme--minimal" data-nickname="{{ avatar.name }}"></div><script async src="http://tlk.io/embed.js" type="text/javascript"></script>
 {% if unconfirmed_move %}
 <script>
 var interval = setInterval(function() {

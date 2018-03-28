@@ -447,6 +447,17 @@ class CreateNovice(Move):
         avatar.intelligence = int(self.details['intelligence'])
         avatar.wisdom = int(self.details['wisdom'])
         avatar.charisma = int(self.details['charisma'])
+
+        if 'name' in self.details:
+            avatar.name = self.details['name']
+        else:
+            avatar.name = self.user[:6]
+
+        if 'gravatar_hash' in self.details:
+            avatar.gravatar_hash = self.details['gravatar_hash']
+        else:
+            avatar.gravatar_hash = 'HASH'
+
         avatar.user = self.user
         avatar.current_block = self.block
         avatar.hp = avatar.max_hp
@@ -753,6 +764,10 @@ class Avatar():
     @property
     def max_hp(self):
         raise NotImplementedError
+
+    @property
+    def profile_image_url(self):
+        return f'https://www.gravatar.com/avatar/{self.gravatar_hash}?d=mm'
 
 
 class Novice(Avatar):

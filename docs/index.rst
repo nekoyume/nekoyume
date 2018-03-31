@@ -8,11 +8,17 @@ Documentation
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: English:
 
-   White Paper (ko) <white_paper_ko>
+   White Paper <white_paper>
    Roadmap <roadmap>
 
+.. toctree::
+   :maxdepth: 2
+   :caption: 한국어:
+
+   백서 <white_paper_ko>
+   로드맵 <roadmap>
 
 
 Indices and tables

@@ -2,7 +2,7 @@
 Nekoyume
 ========
 
-|build| |coverage|
+|build| |coverage| |docs|
 
 Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `Blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
 
@@ -61,3 +61,7 @@ Mining
 
 .. |coverage| image:: https://codecov.io/gh/nekoyume/nekoyume/branch/master/graph/badge.svg?token=VaVMWbOpm7
   :target: https://codecov.io/gh/nekoyume/nekoyume
+
+.. |docs| image:: https://readthedocs.com/projects/nekoyume-core-team-nekoyume/badge/?version=latest
+  :target: https://nekoyume-core-team-nekoyume.readthedocs-hosted.com/en/latest/?badge=latest
+  :alt: Documentation Status

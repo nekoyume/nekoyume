@@ -4,7 +4,7 @@ from flask import Flask
 
 from nekoyume.models import cache, db
 from nekoyume.api import api
-from nekoyume.game import game
+from nekoyume.game import babel, game
 from nekoyume.tasks import celery
 
 
@@ -36,7 +36,13 @@ def create_app():
     app.secret_key = b'\xc2o\x81?u+\x14j%\x99\xc5\xa6\x83\x06`\xfch$\n"a0\x96\x8c' # noqa
     app.register_blueprint(api)
     app.register_blueprint(game)
+
+    db.app = app
     db.init_app(app)
+
+    babel.app = app
+    babel.init_app(app)
+
     app.config.update(
         CELERY_BROKER_URL=os.environ.get(
             'REDIS_URL', 'redis://localhost:6379'),

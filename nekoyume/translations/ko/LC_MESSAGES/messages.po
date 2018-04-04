@@ -1,0 +1,234 @@
+# Korean translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-04-04 13:14+0900\n"
+"PO-Revision-Date: 2018-04-04 09:14+0900\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: templates/basic_info.html:1
+msgid ""
+"\n"
+"<ul>\n"
+"    <li>Nekoyume uses Dungeon World rules. <br> Familiarize yourself with"
+" the basic rules of Dungeon World so that you can play the game better "
+"fun.<br>\n"
+"        <a href=\"https://www.dungeonworldsrd.com/\" target=\"_blank\">→ "
+"Learn Dungeon World</a></li>\n"
+"\n"
+"    <li> Currently, only novice job is fixed without choosing a job in "
+"the preview network. <br> In future, the mainnet will be able to select "
+"all jobs offered by Dungeon World. </li>\n"
+"    <li> It takes about 15 seconds for the player activation. <br> But "
+"sometimes it takes longer, so please be patient. 🙏 </li>\n"
+"    <li> If you have Gold, you can become more powerful player. <br>\n"
+"        <a href=\"https://nekoyu.me/token.html\" target=\"_blank\">→ Buy "
+"Gold</a></li>\n"
+"</ul>\n"
+msgstr ""
+"<ul>"
+"    <li>네코유메는 던전월드 규칙을 사용하고 있습니다.<br>던전월드의 기본 규칙을 숙지해주시면 게임을 더"
+"빠르게 익숙해지실 수 있습니다.<br>"
+"        <a href=\"https://sites.google.com/site/dungeonworldkr/home\"" "target=\"_blank\">→ 던전월드 한국어 공개판 보러가기</a></li>"
+"    <li>현재 프리뷰넷에서는 직업 선택이 없이 초심자로만 직업이 고정됩니다.<br>추후 메인넷에서는" "던전월드에서 제공하는 모든 직업과 종족 선택이 가능할 예정입니다.</li>"
+"    <li>플레이어의 행동이 실제 수행되는데는 약 15초의 시간이 걸립니다.<br>하지만 가끔은 더" "오래걸리기도 하니 인내심을 가지고 기다려주세요. 🙏</li>"
+"    <li>골드를 보유하고 있으면 더 쉽고 강력한 플레이어를 육성할 수 있습니다.<br>"
+"        <a href=\"https://nekoyu.me/token.html\" target=\"_blank\">→ 골드 입수 방법"
+"보러가기</a></li>"
+"</ul>"
+
+#: templates/dashboard.html:106
+msgid "Address"
+msgstr "주소"
+
+#: templates/dashboard.html:117
+msgid "Homepage"
+msgstr "홈페이지"
+
+#: templates/dashboard.html:118
+msgid "https://www.dungeonworldsrd.com/"
+msgstr "https://sites.google.com/site/dungeonworldkr/home"
+
+#: templates/dashboard.html:118
+msgid "Learn Dungeon World"
+msgstr "던전월드 알아보기"
+
+#: templates/dashboard.html:119
+msgid "Buy Gold"
+msgstr "골드 구매하기"
+
+#: templates/dashboard.html:121
+msgid "Logout"
+msgstr "로그아웃"
+
+#: templates/dashboard.html:168 templates/dashboard.html:183
+#: templates/dashboard.html:198 templates/dashboard.html:213
+#: templates/dashboard.html:228 templates/dashboard.html:243
+#, python-format
+msgid "Modifier when roll %(stat)s."
+msgstr "%(stat)s 판정시 보정치"
+
+#: templates/dashboard.html:283
+msgid "Hack &amp; Slash"
+msgstr "접근전"
+
+#: templates/dashboard.html:284
+msgid "Sleep"
+msgstr "수면"
+
+#: templates/dashboard.html:285
+msgid "Say"
+msgstr "말하기"
+
+#: templates/dashboard.html:286
+msgid "Send"
+msgstr "보내기"
+
+#: templates/dashboard.html:291
+msgid "Encounter a nearby monster and battle it."
+msgstr "인근의 괴물과 조우하여 전투를 벌입니다."
+
+#: templates/dashboard.html:296
+msgid "Find monster"
+msgstr "괴물을 찾아 나섭니다."
+
+#: templates/dashboard.html:302
+msgid "Take your sleep and regain your HP."
+msgstr "수면을 취하여 체력을 회복합니다."
+
+#: templates/dashboard.html:307
+msgid "Lay down on the bed"
+msgstr "침대에 눕습니다."
+
+#: templates/dashboard.html:317
+msgid "Say something."
+msgstr "할 말을 남깁니다."
+
+#: templates/dashboard.html:319 templates/dashboard.html:340
+#: templates/login.html:34
+msgid "OK"
+msgstr "확인"
+
+#: templates/dashboard.html:334
+msgid "Amount"
+msgstr "수량"
+
+#: templates/dashboard.html:338
+msgid "Address to send"
+msgstr "보낼 주소"
+
+#: templates/dashboard.html:349
+msgid "Currently in progress ..."
+msgstr "현재 진행중..."
+
+#: templates/dashboard.html:370
+msgid "Novice was born!"
+msgstr "초심자 탄생!"
+
+#: templates/dashboard.html:373
+msgid "Welcome!"
+msgstr "환영합니다!"
+
+#: templates/dashboard.html:386
+msgid "You won in battle!"
+msgstr "전투 승리!"
+
+#: templates/dashboard.html:390
+msgid "Battle was finished."
+msgstr "전투 종료!"
+
+#: templates/dashboard.html:394
+msgid "You lost in battle."
+msgstr "전투 패배!"
+
+#: templates/dashboard.html:403
+#, python-format
+msgid ""
+"You attacked %(monster)s and wounded <strong>%(damage)s</strong> damage. "
+"<small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
+msgstr "%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다. "
+"<small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
+
+#: templates/dashboard.html:413
+#, python-format
+msgid ""
+"You are attacked by %(monster)s and got <strong>%(damage)s</strong> "
+"damage."
+msgstr "%(monster)s에게 공격받아 <strong>%(damage)s</strong> 데미지를 입었다."
+
+#: templates/dashboard.html:421
+msgid "You learned from the mistake of the previous. <small>(XP +1)</small>"
+msgstr "나는 아까의 과오에서 배움을 얻었다. <small>(XP +1)</small>"
+
+#: templates/dashboard.html:428
+#, python-format
+msgid "You defeated %(monster)s!"
+msgstr "%(monster)s를(을) 해치웠다!"
+
+#: templates/dashboard.html:435
+#, python-format
+msgid "You are defeated by %(monster)s..."
+msgstr "%(monster)s에게 패배했다..."
+
+#: templates/dashboard.html:442
+#, python-format
+msgid "%(monster)s has run away..."
+msgstr "%(monster)s는(은) 도망가버렸다..."
+
+#: templates/dashboard.html:449
+#, python-format
+msgid "You optained %(item)s!"
+msgstr "%(item)s을(를) 얻었다!"
+
+#: templates/dashboard.html:467
+#, python-format
+msgid "Level Up! Now, your level is %(lv)s."
+msgstr "레벨 업! 이제 레벨 %(lv)s입니다."
+
+#: templates/dashboard.html:471
+msgid "Levelup was failed"
+msgstr "레벨 업 실패"
+
+#: templates/dashboard.html:489
+msgid "Sleep recovered HP."
+msgstr "수면을 통해 체력 회복"
+
+#: templates/dashboard.html:515
+#, python-format
+msgid "I delievered %(amount)s of %(item)s."
+msgstr "%(item)s %(amount)s개를 전달했습니다."
+
+#: templates/dashboard.html:521
+msgid "Receiver:"
+msgstr "받은 사람:"
+
+#: templates/login.html:32
+msgid "Enter you private key"
+msgstr "프라이빗 키를 입력해주세요."
+
+#: templates/new.html:33
+msgid "Currently creating a new character..."
+msgstr "새 캐릭터를 생성중입니다..."
+
+#: templates/new.html:38
+msgid ""
+"Hello! Welcome to the world of Nekoyume. We are currently creating a "
+"novice character. <br>This process will take about 15 seconds."
+msgstr "안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 현재 초심자 캐릭터를 생성중입니다."
+"<br> 이 과정은 약 15초 정도 소요됩니다."
+
+#: templates/new.html:39
+msgid "Know in advance!"
+msgstr "미리 알아두세요!"

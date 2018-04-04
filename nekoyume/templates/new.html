@@ -28,11 +28,15 @@
                 <div class="mdl-cell mdl-cell--8-col">
                     <div class="mdl-card new-character-creation mdl-shadow--2dp">
                         <div class="mdl-card__title mdl-card--expand">
-                            <h2 class="mdl-card__title-text">👶 캐릭터를 생성중입니다.</h2>
+                            <h2 class="mdl-card__title-text">
+                            👶
+                            {% trans %}Currently creating a new character...{% endtrans %}
+                            </h2>
                         </div>
                         <div class="mdl-card__supporting-text">
-                            <p>안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 현재 초심자 캐릭터를 생성중입니다. <br> 이 과정은 약 15초 정도 소요됩니다.</p>
-                            <h5>미리 알아두세요!</h5>
+                            <p>
+                            {% trans %}Hello! Welcome to the world of Nekoyume. We are currently creating a novice character. <br>This process will take about 15 seconds.{% endtrans %}</p>
+                            <h5>{% trans %}Know in advance!{% endtrans %}</h5>
                             {% include 'basic_info.html' %}
                             <input type="hidden" name="new_move_id" value="{{ move.id }}">
                         </div>

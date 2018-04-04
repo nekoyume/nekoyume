@@ -20,3 +20,7 @@ def test_get_blocks(fx_test_client, fx_user):
     rv = fx_test_client.get(f'/blocks/{block.hash}')
     assert rv.status == '200 OK'
     assert block.hash.encode() in rv.data
+
+    rv = fx_test_client.get(f'/blocks/last')
+    assert rv.status == '200 OK'
+    assert block.hash.encode() in rv.data

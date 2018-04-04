@@ -202,7 +202,7 @@ msgid "Levelup was failed"
 msgstr "레벨 업 실패"
 
 #: templates/dashboard.html:489
-msgid "Sleep recovered HP."
+msgid "HP was recovered by sleep."
 msgstr "수면을 통해 체력 회복"
 
 #: templates/dashboard.html:515

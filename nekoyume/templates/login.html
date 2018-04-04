@@ -29,9 +29,9 @@
                             <form action="{{ url_for('.post_login') }}" method="POST" style="text-align: center">
                               <div class="mdl-textfield mdl-js-textfield">
                                 <input class="mdl-textfield__input" type="text" id="private_key" name="private_key">
-                                <label class="mdl-textfield__label" for="private_key">Enter you private key</label>
+                                <label class="mdl-textfield__label" for="private_key">{% trans %}Enter you private key{% endtrans %}</label>
                               </div>
-                              <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="확인">
+                              <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans %}OK{% endtrans %}">
                             </form>
                         </div>
                     </div>

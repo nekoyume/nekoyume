@@ -2,11 +2,18 @@ from functools import wraps
 
 from flask import (Blueprint, g, request, redirect, render_template,
                    session, url_for)
+from flask.ext.babel import Babel
 
 from nekoyume.models import db, Node, Move, User
 
 
 game = Blueprint('game', __name__, template_folder='templates')
+babel = Babel()
+
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(['ko', 'en'])
 
 
 def login_required(f):
@@ -49,8 +56,10 @@ def get_dashboard():
     unconfirmed_move = Move.query.filter_by(
         user=g.user.address, block=None
     ).first()
+    feed = g.user.moves
     return render_template('dashboard.html',
-                           unconfirmed_move=unconfirmed_move)
+                           unconfirmed_move=unconfirmed_move,
+                           feed=feed)
 
 
 @game.route('/new')

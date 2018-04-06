@@ -13,7 +13,7 @@ In the efforts to create a wide variety of applications for blockchain, several 
 
 ## 2. Pseudo-random number generation (PRNG)
 
-One of the major limitations of Blockchain is that the data on the chain. Moreover, its execution result must be deterministic because of the nature of everyone sharing the ledger and same effect. In other words, it is not possible to use a typical random value in an application on the blockchain, because all the users will be able to view different values ​​based on the same data. However, several famous games, including Tetris, have random elements; therefore, implementing games on a blockchain without any restrictions is a significant limitation. To that end, there have been studies on pseudo-random number generation (PRNG) on blockchains to make blockchains more universal.
+One of the major limitations of Blockchain is that the data on the chain and its execution result must be deterministic because of the nature of everyone sharing the ledger and same effect. In other words, it is not possible to use a typical random value in an application on the blockchain, because all the users will be able to view different values ​​based on the same data. However, several famous games, including Tetris, have random elements; therefore, implementing games on a blockchain without any restrictions is a significant limitation. To that end, there have been studies on pseudo-random number generation (PRNG) on blockchains to make blockchains more universal.
 
 
 ### 2.1. Random generation using block values
@@ -99,7 +99,7 @@ After the creation of a new block, the behavior contained in that block is evalu
 
 Players can acquire various in-game items through the adventure. However, since gold is only available through transactions, the players are required undertake adventures and obtain items through battles against stronger monsters, enabling the players to receive a lot of gold in the market.
 
-The life cycle of the adventurer has been adopted from the [Dungeon World] rule. Dungeon World is a fantasy tactical role-playing game (TRPG)based on Apocalypse World Engine and Dungeons & Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the application of blockchain involving multiple users. Moreover, since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, it is suitable to use random element.
+The life cycle of the adventurer has been adopted from the [Dungeon World] rule. Dungeon World is a fantasy tabletop role-playing game (TRPG) based on Apocalypse World Engine and Dungeons & Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the application of blockchain involving multiple users. Moreover, since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, it is suitable to use random element.
 
 ### 5.2. Cat
 
@@ -140,12 +140,12 @@ Hash random eliminates room for user intervention and has added constraints over
 
 ### 6.2. Proof of Work
 
-Hash random is designed on the assumption that it should be used with proof of work. The use of Hash random is not suited to ecosystems using that use proof of stake or other consensus methods because certain stakeholders can easily intervene at random.
+Hash random is designed on the assumption that it should be used with proof-of-work. The use of Hash random is not suited to ecosystems using that use proof-of-stake or other consensus methods because certain stakeholders can easily intervene at random.
 
 
 ## 7. Conclusion
 
-Nekoyume proposed and implemented a new random consensus, called Hash random, by combining the existing Bitcoin and Ethereum consensus systems to develop a decentralized MMORPG. In this article, we have summarized the difference between the random generation method and Hash random in the existing blockchain. In addition,  we also discussed the scope for Nekoyume’s further development. Hash random should be used with the proof of work consensus, and it will work as intended. Therefore, even if Hash random is used, the system must avoid providing heavy compensation to random values.
+Nekoyume proposed and implemented a new random consensus, called Hash random, by combining the existing Bitcoin and Ethereum consensus systems to develop a decentralized MMORPG. In this article, we have summarized the difference between the random generation method and Hash random in the existing blockchain. In addition,  we also discussed the scope for Nekoyume’s further development. Hash random should be used with the proof-of-work consensus, and it will work as intended. Therefore, even if Hash random is used, the system must avoid providing heavy compensation to random values.
 
 
 [<sup>1</sup>]: https://bitcoin.org/bitcoin.pdf

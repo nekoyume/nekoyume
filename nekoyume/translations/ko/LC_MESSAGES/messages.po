@@ -142,7 +142,7 @@ msgid "Welcome!"
 msgstr "환영합니다!"
 
 #: templates/dashboard.html:386
-msgid "You won in battle!"
+msgid "You won the battle!"
 msgstr "전투 승리!"
 
 #: templates/dashboard.html:390
@@ -150,7 +150,7 @@ msgid "Battle was finished."
 msgstr "전투 종료!"
 
 #: templates/dashboard.html:394
-msgid "You lost in battle."
+msgid "You lost the battle."
 msgstr "전투 패배!"
 
 #: templates/dashboard.html:403

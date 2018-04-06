@@ -1,65 +1,64 @@
-# Nekoyume: Decentralized MMORPG
+# Nekoyume: A truly decentralized massively multiplayer online role-playing game
 
-**Abstract:** Nekoyume is a decentralized MMORPG based on the blockchain. A large number of users can hunt monsters in the virtual world to gain experience, collect essential items from the adventure, and become stronger. The action information of the game is recorded in a blockchain so that a large number of users can participate without a centralized server. We have designed a separate random consensus called Hash random so that the game can be implemented on the blockchain. Hash random is a random consensus that is difficult to be predicted by combining the block hash which is created by the proof of work and the hash value of the individual action, minimizes the intentions of specific stakeholders, and is deterministic by each behavior.
+**Abstract:** Nekoyume is a decentralized blockchain technology-based massively multiplayer online role-playing game (MMORPG). In Nekoyume, a large number of users can hunt virtual monsters to gain experience, collect essential in-game items from adventures, and become stronger. The action information of the game is recorded in a blockchain ledger, thereby enabling several users to participate without the requirement for a centralized server. In this work, we design a separate random consensus, called Hash random, to implement the game on the blockchain. Hash random is a random consensus obtained by combining the block hash, which is created by the proof of work, and the hash value of the individual action. Hash random minimizes the intentions of specific stakeholders, and is deterministic by each behavior.
 
 
 ## 1. Background
 
-The bitcoin proposed by Satoshi Nakamoto introduced the concept of blockchain using techniques such as digital signature, hashing, and proof of work. The blockchain has shown that the decentralized main net is stable for nine years and that anyone can participate in creating a trustworthy virtual currency. [<sup>1</sup>] The vision of this trusted technology has inspired many software projects.
+Bitcoin, proposed by Satoshi Nakamoto, introduced the concept of blockchain, which applied techniques such as digital signature, hashing, and proof of work, to create a public ledger. Blockchain has demonstrated that the decentralized main net is stable for nine years and that anyone can participate in the creation of a trustworthy virtual currency. [<sup>1</sup>] The vision of this trusted technology has also inspired several software projects.
+At present, blockchain technology is being implemented in applications that go beyond cryptocurrency. Vitalik Buterin further developed the bitcoin script to propose Ethereum, which is a decentralized application platform based on Turing complete Smart Contract. [<sup>2</sup>]
 
-Now, the blockchain is being used in various places beyond cryptocurrency.  Vitalik Buterin further developed bitcoin script to suggest Ethereum, a decentralized application platform based on Turing complete Smart Contract. [<sup>2</sup>]
-
-When we were able to create a variety of applications in the blockchain, attempts were made to make games. In particular, CryptoKitties, which can send and receive randomly generated cats, has shown an enthusiastic response so that Ethereum network showed temporary paralysis. [<sup>3</sup>] However, since the use of random on the blockchain is very limited, there are restrictions on the games that can be implemented at present. If a more general-purpose random number generation approach is proposed, we will be able to develop more kinds of game applications.
+In the efforts to create a wide variety of applications for blockchain, several researches attempted to  develop games. For example, CryptoKitties, is an online game where users can send and receive randomly generated cats. The enthusiastic response received almost paralyzed the Ethereum network temporarily [<sup>3</sup>]. However, since the use of random consensus on the blockchain is limited, there are several  limitations to the games that can be implemented at present. If a more general-purpose random number generation approach is developed, users will be able to create and develop several different types of gaming applications using blockchain technology.
 
 
 ## 2. Pseudo-random number generation (PRNG)
 
-Blockchain has the limitation that the data on the chain and its execution result must be deterministic because of the nature of everyone sharing the ledger and same effect. In other words, if you use a typical random value in an application on a blockchain, you will not be able to do it at all, because everyone can see different values ​​based on the same data. However, many favorite games, including Tetris, have random elements, so implementing games on a blockchain without any restrictions is a significant limitation. Therefore, there have been studies on pseudo-random number generation (PRNG) on blockchains to make blockchains more universal.
+One of the major limitations of Blockchain is that the data on the chain. Moreover, its execution result must be deterministic because of the nature of everyone sharing the ledger and same effect. In other words, it is not possible to use a typical random value in an application on the blockchain, because all the users will be able to view different values ​​based on the same data. However, several famous games, including Tetris, have random elements; therefore, implementing games on a blockchain without any restrictions is a significant limitation. To that end, there have been studies on pseudo-random number generation (PRNG) on blockchains to make blockchains more universal.
 
 
 ### 2.1. Random generation using block values
 
-This strategy is simple to implement randomly, but since the miner can edit all the block variables, Therefore, it is not suitable for a blockchain where a miner and a user can be the same person. [<sup>4</sup>]
+As regards the implementation, the use of block values for random generation is relatively simple. However, the miner can edit all the block variables, and therefore, it is not suitable for blockchains where the miner and the user are the same entity. [<sup>4</sup>]
 
 ### 2.2. Random generation using external services
 
-Random generation using external services allows you to hide the way the random is created completely, but because it is not a decentralized way, There is a trust issue. [<sup>5</sup>]
+Random generation using external services enables the complete concealment of  random generation. However, because it is not a decentralized approach, it may lead to trust issues. [<sup>5</sup>]
 
-Thus, the currently proposed random generation method has the disadvantage that it can intentionally intervene in a particular group. Just as dealers should not manipulate odds at a casino, randomness must be fairly created by minimizing the likelihood of intentional involvement of specific interest. To solve this problem, Nekoyume suggests a random generation method called Hash random.
+Thus, the random generation method proposed in this work has the disadvantage that it can intentionally intervene in a particular group. Just as dealers should not manipulate odds at a casino, randomness must be created fairly by minimizing the likelihood of intentional involvement of specific user interests. To address this problem, Nekoyume proposes a random generation method called Hash random.
 
 
 ## 3. Hash Random
 
-Hash random is a random consensus presented by Nekoyume. Hash Random has designed to prevent stakeholders from attempting to make an intentional number, or even to try to do so, in a way that would be detrimental to interests. To this end, we present two fundamental concepts.
+Hash random is designed to prevent stakeholders from attempting to generate an intentional number, in a way that would be detrimental to the interests of other users. To this end, we present two fundamental concepts.
 
-### 3.1. Combination of behavior information hash and block hash
+### 3.1. Combination of behavior information from hash value and block hash
 
-The hash value derived from the user's behavior information contains the signature of the user, so the miner can not intentionally transform it. The block hash is a value that the miner creates, so the user can not deliberately intervene. Using the values ​​of the two hash values ​​XORed as a random seed, (1) the user cannot intervene on random values, and (2) all user actions in one block can be based on individual random seeds.
+The hash value derived from a user's behavior information contains the signature of the user; therefore, it prevents the miner from intentionally transforming the hash value. The block hash is a value created by the miner. Therefore, the user cannot deliberately intervene in the generation of the block hash. Using the values ​​of the two hash values ​​XORed as a random seed, (1) the user cannot intervene on random values, and (2) all user actions in one block can be based on individual random seeds.
 
 ### 3.2. Behavior information that can be included in a block Time limit
 
-Even if a combination of behavior information hash and block hash is used as a random seed, a miner can intentionally try to generate a favorable hash based on the behavior information of a user. To check this, the behavior information creation time that can be included in the block is limited to 10 times the maximum block creation time. A miner can spend more time than other miners to find a hash that has a good combination of specific behavioral information, but you must take the following damage.
+Even in the case that a combination of behavior information from hash and block hash value is used as a random seed, a miner can intentionally attempt to generate a favorable hash based on the behavior information of a user. To safeguard against this loophole, the timestamp corresponding to the creation of behavior information that can be included in the block is limited to 10 times the maximum block creation time. A miner may spend more time than other miners to find a hash that has a good combination of specific behavioral information at the expense of the following:
 
-- The miners will have a disadvantageous position in the competition of hash compensation.
-- The process of intentionally looking for profitable blocks is longer because you need to receive new behavior information periodically.
+- The miners will be at a disadvantage when competing for hash compensation.
+- The process of intentionally looking for profitable blocks is longer because of the requirement for periodically obtaining new behavior information.
 
 
 ## 4. Decentralized MMORPG
 
-Nekoyume is a massively multiplayer online role-playing game (MMORPG) based on blockchain which is the first to apply the concept of Hash random. Participants become adventurers who can venture and trade in the world of games, or become cats who can navigate blocks that are key to the game's progress.
+Nekoyume is a massively multiplayer online role-playing game (MMORPG) based on blockchain, which is regarded as the first game to incorporate the concept of Hash random. Users take on the role of adventure seekers, who venture and trade in the world of games, or become cats who can navigate blocks that are key to the game's progress.
 
-Because Nekoyume is an MMORPG based on a blockchain, there is no centralized server for a particular subject. This has the following advantages.
+Because Nekoyume is an MMORPG based on a blockchain, there is no centralized server for a particular subject, which has the following advantages.
 
-1. The centralized service operated by a specific entity has the possibility that the service cannot be run continuously depending on the profitability of the game. A blockchain-based game can continue the game if there are at least one participant left.
+1. In a centralized service operated by a specific entity, the service may be discontinued if the profitability of the game is not sustained. On the other hand, a blockchain-based game can continue as long as there is one participant left.
 
-2. Because of the business intention of the operating entity, the fun factor of the game does not change greatly according to the profitability of the operating entity. The change in gaming is determined by the careful discussion of the participant-oriented community so that many of the participants can properly develop the fun elements of the desired game.
+2. The fun factor of the game is not subject to the business intention (profitability) of the operating entity. The change in game design is determined by the consensus of the participant-oriented community; several participants can develop the fun elements of the game through consensus.
 
-3. While centralized services have an economic advantage to the service operator, blockchain-based games are distributed according to the agreed token economic model.
+3. While centralized services give the service operator an economic advantage, blockchain-based games are distributed according to the agreed token economic model.
 
 
 ## 5. Economic Structure
 
-Here is a simple diagram of the elements that Nekoyume's cats and adventurers share.
+The following figure illustrates the various elements shared by Nekoyume's cats and adventurers.
 
     +-----------+                 +--------------+
     |           | → Block, Gold → |              |
@@ -69,20 +68,20 @@ Here is a simple diagram of the elements that Nekoyume's cats and adventurers sh
 
 ### 5.1. Adventurer
 
-Adventurers can set their own jobs, take an adventure, grow items and experience, and grow stronger.
+Adventurers can set their own jobs, take an adventure, grow in-game items and experience, and grow stronger.
 
 #### 5.1.1. Moves
 
-You can perform the following actions.
+The player can perform the following actions in Nekoyume.
 
-  * ⚔️ Hack and Slash: Combats monsters from the current area.
-  * 💤 Sleep: Takes asleep and regains physical strength.
-  * 🆙 Level Up: Raises the level to improve your ability.
-  * 🗣 Conversation: I want to say something.
+  * ⚔️ Hack & Slash: Combats monsters from the current area.
+  * 💤 Sleep: Player sleeps to regain physical strength.
+  * 🆙 Level Up: Raises the player level, thus improving player skill and ability.
+  * 🗣 Conversation: Allows the player to communicate with other players.
 
-When you move, the behavior information is passed to the network, and the move is actually performed when the next block is created. Since the block creation cycle is about 15 seconds, and one block cannot contain two actions per user, the minimum action cycle is also about 15 seconds.
+When the player moves, the behavior information is passed to the network, and the move is actually performed after the creation of the next block. The block creation cycle is takes approximately 15 seconds; moreover, one block cannot contain more than two actions per user, therefore the minimum action cycle is also approximately 15 seconds.
 
-When the block creation is complete, the behavior contained in that block is evaluated. In the evaluation, the random value determined by the Hash random is reflected in the behavior result, and the process of creating the random value by the Hash random is as follows.
+After the creation of a new block, the behavior contained in that block is evaluated. In the evaluation, the random value determined by the Hash random is reflected in the behavior result. The process of creating the random value by using the Hash random is as follows.
 
 ```python
 >>> move.hash
@@ -98,21 +97,22 @@ When the block creation is complete, the behavior contained in that block is eva
 [1, 82, 91, 93, ... 3, 10]
 ```
 
-Adventurers can acquire various items through the adventure. However, since gold is only available through transactions, you have to grow through adventure and obtain good things through a battle with stronger monsters, so you receive a lot of gold in the market.
+Players can acquire various in-game items through the adventure. However, since gold is only available through transactions, the players are required undertake adventures and obtain items through battles against stronger monsters, enabling the players to receive a lot of gold in the market.
 
-The life cycle of the adventurer adopted the [Dungeon World] rule. Dungeon World is a fantasy TRPG rule based on Apocalypse World Engine and Dungeons & Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the characteristics of a blockchain involving multiple users, and since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, we determined that it is suitable to use random element.
+The life cycle of the adventurer has been adopted from the [Dungeon World] rule. Dungeon World is a fantasy tactical role-playing game (TRPG)based on Apocalypse World Engine and Dungeons & Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the application of blockchain involving multiple users. Moreover, since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, it is suitable to use random element.
 
 ### 5.2. Cat
 
-Cat is the same as the miner in the bitcoin. When the adventurer's move information comes in, the cat shares the move information with the other cats and explores blocks that package the move information.
+The function of a Cat in Nekoyume is identical to that of a miner in Bitcoin. After receiving the adventurer's move information, the cat shares the move information with the other cats and explores blocks that package the move information.
 
 #### 5.2.1. Block generation consensus
 
-Nekoyume has adopted the hashcash as a key consensus because it uses the Hash random require proof the work. Since the block generation cycle is aimed at 15 seconds, if the average of the recent block generation time is lower than 15 seconds, the demanding difficulty increases. Conversely, if it is higher than 15 seconds, the hard difficulty becomes lower.
+Nekoyume adopted the hashcash as a key consensus because it uses the Hash random with proof-of-work requirement. Since the block generation cycle is limited to 15 seconds, if the average of the recent block generation time is lower than 15 seconds, the demanding difficulty increases. Conversely, the average of the recent block generation time is higher than 15 seconds, the hard difficulty becomes lower.
 
 #### 5.2.2. Compensation system
 
-Once you have completed the block search, you can receive gold for the miner's compensation. Gold rewards are initially awarded 16 gold per block, decrease to half every four years,  and will be fixed at one gold per block after 16 years.
+After the completion of block search, the miner can receive gold as compensation. Initially, 16 gold per block are awarded; the reward reduces by half every four years, and will be affixed at one gold per block after 16 years.
+
 ```eval_rst
 +-----------------------------------+-----------------------+
 | Total miner & client incentive/4y | Reward gold per block |
@@ -132,20 +132,20 @@ Once you have completed the block search, you can receive gold for the miner's c
 
 ## 6. Limitations
 
-Hash random is a random consensus that minimizes stakeholder intervention on the blockchain but has the following limitations.
+Hash random is a random consensus that minimizes stakeholder intervention on the blockchain; however, it suffers from the following limitations.
 
 ### 6.1. Limitation of Hash Random
 
-Hash random has removed random room for user intervention and added constraints on random intervention so that the proof of work, which does not intentionally involve random results in relation to the miner, can be the biggest benefit. However, if the benefit offered by the random in the game is a reward large enough to ignore this structural damage, the miner can attempt to create a deliberate hash considering the constraints. Therefore, even if you use Hash random, it is necessary to design the system so that excessive compensation is not made at random.
+Hash random eliminates room for user intervention and has added constraints over random intervention. This enables the miner to benefit significantly from proof-of-work, which does not intentionally involve random results. However, if the miner stands to gain a sufficiently large reward that offsets the structural damage, the miner may attempt to create a deliberate hash despite the constraints. Therefore, even if Hash random is used, it is necessary to design the system such that excessive compensation is not provided at random.
 
 ### 6.2. Proof of Work
 
-Hash random is designed on the assumption that it should be used with proof of work. The use of Hash random is not appropriate if the ecosystems using proof of stake or other consensus methods because some stakeholders can easily intervene at random.
+Hash random is designed on the assumption that it should be used with proof of work. The use of Hash random is not suited to ecosystems using that use proof of stake or other consensus methods because certain stakeholders can easily intervene at random.
 
 
 ## 7. Conclusion
 
-Nekoyume proposed a new random consensus called Hash random and implemented it by bringing the existing bitcoin and ethereum consensus system to make decentralized MMORPG. In this article, we have summarized the difference between the random generation method and the Hash random in the existing blockchain, and we looked at how Nekoyume is being developed. The Hash random should be worked with the proof of work consensus, and it will work as intended, so even if you use Hash random, you don't have to make too much compensation in the ecosystem by random values.
+Nekoyume proposed and implemented a new random consensus, called Hash random, by combining the existing Bitcoin and Ethereum consensus systems to develop a decentralized MMORPG. In this article, we have summarized the difference between the random generation method and Hash random in the existing blockchain. In addition,  we also discussed the scope for Nekoyume’s further development. Hash random should be used with the proof of work consensus, and it will work as intended. Therefore, even if Hash random is used, the system must avoid providing heavy compensation to random values.
 
 
 [<sup>1</sup>]: https://bitcoin.org/bitcoin.pdf

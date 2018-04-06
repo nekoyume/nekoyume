@@ -1,3 +1,11 @@
+"""
+Models
+======
+
+`models.py` contains every relations regarding nekoyume blockchain and
+game moves.
+"""
+
 import datetime
 from hashlib import sha256 as h
 import os
@@ -25,7 +33,11 @@ cache = Cache()
 
 
 class Node(db.Model):
+    """This object contains node information you know."""
+
+    #: URL of node
     url = db.Column(db.String, primary_key=True)
+    #: last connected datetime of the node
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
     get_blocks_endpoint = '/blocks'
@@ -36,9 +48,20 @@ class Node(db.Model):
     def broadcast(cls,
                   endpoint: str,
                   serialized_obj: dict,
-                  sent_node: bool=None,
-                  my_node: bool=None,
+                  sent_node=None,
+                  my_node=None,
                   session=db.session) -> bool:
+        """It broadcast `serialized_obj` to every nodes you know.
+
+           :param        endpoint: endpoint of node to broadcast
+           :param  serialized_obj: object that will be broadcasted.
+           :param       sent_node: sent :class:`nekoyume.models.Node`.
+                                   this node ignore sent node.
+           :param         my_node: my :class:`nekoyume.models.Node`.
+                                   received node ignore my node when they
+                                   broadcast received object.
+        """
+
         for node in session.query(cls):
             if sent_node and sent_node.url == node.url:
                 continue
@@ -56,15 +79,25 @@ class Node(db.Model):
 
 
 class Block(db.Model):
+    """This object contains block information."""
+
     __tablename__ = 'block'
+    #: block id
     id = db.Column(db.Integer, primary_key=True)
+    #: current block's hash
     hash = db.Column(db.String, nullable=False, index=True, unique=True)
+    #: previous block's hash
     prev_hash = db.Column(db.String,
                           index=True)
+    #: block creator's address
     creator = db.Column(db.String, nullable=False, index=True)
+    #: hash of every linked move's ordered hash list
     root_hash = db.Column(db.String, nullable=False)
+    #: suffix for hashcash
     suffix = db.Column(db.String, nullable=False)
+    #: difficulty of hashcash
     difficulty = db.Column(db.Integer, nullable=False)
+    #: block creation datetime
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.now())
 
@@ -73,6 +106,7 @@ class Block(db.Model):
         stamp = self.serialize().decode('utf-8') + self.suffix
         valid = (self.hash == h(str.encode(stamp)).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
+        """ This function checks if the block this valid. """
         for move in self.moves:
             valid = valid and move.valid
         return valid
@@ -81,7 +115,14 @@ class Block(db.Model):
                   use_bencode: bool=True,
                   include_suffix: bool=False,
                   include_moves: bool=False,
-                  include_hash: bool=False) -> dict:
+                  include_hash: bool=False):
+        """ This function serialize block.
+
+        :param use_bencode: check if you want to encode using bencode.
+        :param include_suffix: check if you want to include suffix.
+        :param include_suffix: check if you want to include linked moves.
+        :param include_suffix: check if you want to include block hash.
+        """
         serialized = dict(
             id=self.id,
             creator=self.creator,
@@ -113,6 +154,15 @@ class Block(db.Model):
                   sent_node: bool=None,
                   my_node: bool=None,
                   session=db.session) -> bool:
+        """
+        It broadcast this block to every nodes you know.
+
+       :param       sent_node: sent :class:`nekoyume.models.Node`.
+                               this node ignore sent node.
+       :param         my_node: my :class:`nekoyume.models.Node`.
+                               received node ignore my node when they
+                               broadcast received object.
+        """
         return Node.broadcast(Node.post_block_endpoint,
                               self.serialize(False, True, True, True),
                               sent_node, my_node, session)
@@ -283,6 +333,15 @@ class Move(db.Model):
         return serialized
 
     def broadcast(self, sent_node=None, my_node=None, session=db.session):
+        """
+        It broadcast this move to every nodes you know.
+
+       :param       sent_node: sent :class:`nekoyume.models.Node`.
+                               this node ignore sent node.
+       :param         my_node: my :class:`nekoyume.models.Node`.
+                               received node ignore my node when they
+                               broadcast received object.
+        """
         Node.broadcast(Node.post_move_endpoint,
                        self.serialize(False, True, True),
                        sent_node, my_node, session)

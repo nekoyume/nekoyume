@@ -12,6 +12,7 @@ Documentation
 
    White Paper <white_paper>
    Roadmap <roadmap>
+   references
 
 .. toctree::
    :maxdepth: 2

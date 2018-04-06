@@ -2,24 +2,24 @@
 
 ## v0: Preview Network - Q2, 2018
 
-저희는 ICO 시작 전 프리뷰 네트워크를 공개할 예정입니다. 프리뷰 네트워크는 토큰을 구매하기 전 미래에 출시할 게임의 비전을 사전에 검토할 수 있도록 핵심 재미 요소를 체험할 수 있는 수준의 게임 경험을 제공할 예정입니다. 직업은 초심자(Novice)만 선택이 가능하며, 던전월드의 기초적인 접근전 콘텐츠를 일부 괴물 정보와 함께 제공합니다.
+We will release the preview network before ICO starts. The preview wetwork will provide a level of gaming experience that will allow you to experience key fun elements before you buy your tokens so that you can preview the vision of the game to be released in the future. Novice is the only job available, and provides some basic information about Dungeon World's MVP combat with some monster information.
 
-프리뷰 네트워크는 ICO가 진행되기 이전 기간동안 GPL 라이선스로 코드를 공개할 예정입니다. 코드 내에 주요 컨센서스에 대한 구현이 포함되지만 일부 컨센서스는 백서에 공개된 수준보다 미달할 수 있으며, 이는 테스트 네트워크 시점에서 보완될 예정입니다.
+The preview network will release the code under the MIT license prior to ICO. Implementations of key consensus are included in the code, but some consensus may be below the level published in the white paper, which will be complemented at the test network season.
 
-ICO에서 구매한 ERC20 토큰은 이 스테이지에서 사용하실 수 없습니다. 하지만, 토큰 구매자에 한해 프리뷰 네트워크에서 체험할 수 있는 게임 내의 코인을 별도 제공할 예정입니다.
+The ERC20 tokens purchased from ICO are not available on this stage. However, for token buyers, we will provide coins in games that can be experienced on the preview network separately.
 
 
 ## v1: Test Network - Q3, 2018
 
-테스트 네트워크는 게임의 기본적인 재미요소를 모두 포함하여 현재 게임에 존재할 기획적 결함, 구현 결함, 네트워크의 기술적 결함을 미리 검토합니다.
+The test network includes all of the basic fun elements of the game, reviewing logic defects present in the game, imperfections in implementation, and technical defects in the network.
 
-던전 월드 SRD에 제시되어있는 모든 직업을 선택할 수 있으며, 각 직업의 특성 역시 모두 선택 가능하게 됩니다. 레벨 10을 달성하면 다른 직업으로의 전직이 가능하여 장기적 관점의 성장이 가능하게 됩니다. 던전 월드 SRD에 명시된 모든 괴물이 포함될 예정이며, 괴물의 특성에 따른 더욱 다이나믹한 접근전 전개를 보여줍니다.
+You can choose all the jobs that are listed in the Dungeon World SRD, and you can choose all the characteristics of each job as well. If you achieve level 10, you will be able to transfer to another job, which will enable you to grow in the long term. It will include all the monsters listed in the Dungeon World SRD, and shows a more dynamic approach to the evolution of monsters.
 
-ICO에서 구매한 ERC20 토큰을 보유한 사용자만 해당 테스트 네트워크에 접속할 수 있을 예정이며, 이 스테이지의 테스트 네트워크 참여자에 한해 메인 네트워크에서 특별한 보상을 지급할 예정입니다.
+Only users with ERC20 token purchased from ICO will be able to access the test network, and will only be paid special rewards on the main network for test network participants on this stage.
 
 
 ## v2: Main Network - Q4, 2018
 
-메인 네트워크는 테스트 네트워크에서 발견된 주요 결함을 모두 수정하여 안정화되고 지속 가능한 게임 경험을 제공합니다. 본 게임은 이 시점부터 시작되며, 이후부터는 데이터의 리셋이 없습니다.
+The main network fixes all major defects found on the test network to provide a stable and sustainable gaming experience. The main game starts from this point, and there is no data reset after that.
 
-ICO에서 구매한 ERC20 토큰을 본 게임에 옮겨올 수 있습니다.
+You can get the ERC20 tokens purchased from ICO to this game.

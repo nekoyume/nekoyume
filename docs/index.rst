@@ -18,7 +18,7 @@ Documentation
    :caption: 한국어:
 
    백서 <white_paper_ko>
-   로드맵 <roadmap>
+   로드맵 <roadmap_ko>
 
 
 Indices and tables

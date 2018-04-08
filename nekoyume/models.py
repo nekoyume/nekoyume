@@ -118,10 +118,10 @@ class Block(db.Model):
                   include_hash: bool=False):
         """ This function serialize block.
 
-        :param use_bencode: check if you want to encode using bencode.
+        :param    use_bencode: check if you want to encode using bencode.
         :param include_suffix: check if you want to include suffix.
-        :param include_suffix: check if you want to include linked moves.
-        :param include_suffix: check if you want to include block hash.
+        :param  include_moves: check if you want to include linked moves.
+        :param   include_hash: check if you want to include block hash.
         """
         serialized = dict(
             id=self.id,

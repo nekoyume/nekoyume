@@ -51,15 +51,16 @@ class Node(db.Model):
                   sent_node=None,
                   my_node=None,
                   session=db.session) -> bool:
-        """It broadcast `serialized_obj` to every nodes you know.
+        """
+        It broadcast `serialized_obj` to every nodes you know.
 
-           :param        endpoint: endpoint of node to broadcast
-           :param  serialized_obj: object that will be broadcasted.
-           :param       sent_node: sent :class:`nekoyume.models.Node`.
-                                   this node ignore sent node.
-           :param         my_node: my :class:`nekoyume.models.Node`.
-                                   received node ignore my node when they
-                                   broadcast received object.
+        :param        endpoint: endpoint of node to broadcast
+        :param  serialized_obj: object that will be broadcasted.
+        :param       sent_node: sent :class:`nekoyume.models.Node`.
+                                this node ignore sent node.
+        :param         my_node: my :class:`nekoyume.models.Node`.
+                                received node ignore my node when they
+                                broadcast received object.
         """
 
         for node in session.query(cls):
@@ -116,7 +117,8 @@ class Block(db.Model):
                   include_suffix: bool=False,
                   include_moves: bool=False,
                   include_hash: bool=False):
-        """ This function serialize block.
+        """
+        This function serialize block.
 
         :param    use_bencode: check if you want to encode using bencode.
         :param include_suffix: check if you want to include suffix.
@@ -169,6 +171,11 @@ class Block(db.Model):
 
     @classmethod
     def sync(cls, node: Node, session=db.session) -> bool:
+        """
+        Sync blockchain with other node.
+
+        :param node: sync target :class:`nekoyume.models.Node`.
+        """
         if not node:
             return True
         response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
@@ -261,19 +268,29 @@ def get_address(public_key):
 
 
 class Move(db.Model):
+    """This object contain general move information."""
     __tablename__ = 'move'
+    #: move's hash
     id = db.Column(db.String, primary_key=True)
+    #: move's block id. if the move isn't confirmed yet, this will be null
     block_id = db.Column(db.Integer, db.ForeignKey('block.id'),
                          nullable=True, index=True)
+    #: move's block
     block = db.relationship('Block', uselist=False, backref='moves')
+    #: move's owner
     user = db.Column(db.String, nullable=False, index=True)
+    #: move's signature
     signature = db.Column(db.String, nullable=False)
+    #: move name
     name = db.Column(db.String, nullable=False, index=True)
+    #: move details. it contains parameters of move
     details = association_proxy(
         'move_details', 'value',
         creator=lambda k, v: MoveDetail(key=k, value=v)
     )
+    #: move tax (not implemented yet)
     tax = db.Column(db.BigInteger, default=0, nullable=False)
+    #: move creation datetime.
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.now())
 
@@ -284,6 +301,7 @@ class Move(db.Model):
 
     @property
     def valid(self):
+        """Check if this object is valid or not"""
         if not self.signature or self.signature.find(' ') < 0:
             return False
 
@@ -305,6 +323,7 @@ class Move(db.Model):
 
     @property
     def confirmed(self):
+        """Check if this object is confirmed or not"""
         return self.block and self.block.hash is not None
 
     def serialize(self,
@@ -312,6 +331,14 @@ class Move(db.Model):
                   include_signature=False,
                   include_id=False,
                   include_block=False):
+        """
+        This function serialize block.
+
+        :param       use_bencode: check if you want to encode using bencode.
+        :param include_signature: check if you want to include signature.
+        :param        include_id: check if you want to include linked moves.
+        :param     include_block: check if you want to include block.
+        """
         serialized = dict(
             user=self.user,
             name=self.name,
@@ -347,17 +374,32 @@ class Move(db.Model):
                        sent_node, my_node, session)
 
     @property
-    def hash(self):
+    def hash(self) -> str:
+        """ Get move hash """
         return h(self.serialize(include_signature=True)).hexdigest()
 
-    def get_randoms(self):
+    def get_randoms(self) -> list:
+        """ get random numbers by :doc:`Hash random <white_paper>` """
         if not (self.block and self.block.hash and self.id):
             return []
         result = [ord(a) ^ ord(b) for a, b in zip(self.block.hash, self.id)]
         result = result[int(self.block.difficulty / 4):]
         return result
 
-    def roll(self, randoms, dice, sum_=True):
+    def roll(self, randoms: list, dice: str, combine=True):
+        """
+        Roll dices based on given randoms
+
+            >>> from nekoyume.models import Move
+            >>> move = Move()
+            >>> move.roll([1, 7, 3], '2d6')
+            6
+
+        :params randoms: random numbers from
+                         :func:`nekoyume.models.Move.get_randoms`
+        :params    dice: dice to roll (e.g. 2d6)
+        :params combine: return combined result or not if rolling it multiple.
+        """
         result = []
         if dice.find('+') > 0:
             dice, plus = dice.split('+')
@@ -370,7 +412,7 @@ class Move(db.Model):
                 result.append(randoms.pop() % dice_type + 1)
             except IndexError:
                 raise OutOfRandomError
-        if sum_:
+        if combine:
             return sum(result) + plus
         else:
             return result
@@ -838,10 +880,6 @@ class Avatar():
 
 
 class Novice(Avatar):
-    __mapper_args__ = {
-        'polymorphic_identity': 'novice',
-    }
-
     @property
     def damage(self):
         return '1d6'

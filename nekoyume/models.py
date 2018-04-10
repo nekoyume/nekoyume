@@ -484,11 +484,12 @@ class HackAndSlash(Move):
                         'type': 'kill_monster',
                         'monster': monster.copy(),
                     })
-                    if self.roll(randoms, '2d6') >= 10:
-                        avatar.get_item('Bandages')
+                    reward_code = self.roll(randoms, '1d10')
+                    if len(monster[f'reward{reward_code}']):
+                        avatar.get_item(monster[f'reward{reward_code}'])
                         battle_status.append({
                             'type': 'get_item',
-                            'item': 'Bandages',
+                            'item': monster[f'reward{reward_code}'],
                         })
                     return (avatar, dict(
                         type='hack_and_slash',
@@ -542,7 +543,7 @@ class CreateNovice(Move):
     def execute(self, avatar=None):
         if avatar:
             #: Keep the information that should not be removed.
-            gold = avatar.items['Gold']
+            gold = avatar.items['GOLD']
         else:
             gold = 0
         avatar = Novice()
@@ -570,7 +571,7 @@ class CreateNovice(Move):
         avatar.xp = 0
         avatar.lv = 1
         avatar.items = dict(
-            Gold=gold
+            GOLD=gold
         )
 
         return (avatar, dict(
@@ -767,11 +768,17 @@ class User():
             block.id = prev_block.id + 1
             block.prev_hash = prev_block.hash
             block.difficulty = prev_block.difficulty
-            if (block.created_at - prev_block.created_at <=
-               datetime.timedelta(0, 5)):
+            difficulty_check_block = self.session.query(Block).get(
+                max(1, block.id - 10)
+            )
+            avg_timedelta = (
+                (block.created_at - difficulty_check_block.created_at) /
+                (block.id - difficulty_check_block.id)
+            )
+            print(avg_timedelta, block.difficulty)
+            if avg_timedelta <= datetime.timedelta(0, 5):
                 block.difficulty = block.difficulty + 1
-            elif (block.created_at - prev_block.created_at >=
-                  datetime.timedelta(0, 15)):
+            elif avg_timedelta > datetime.timedelta(0, 15):
                 block.difficulty = block.difficulty - 1
         else:
             #: Genesis block
@@ -783,6 +790,8 @@ class User():
             block.serialize().decode('utf-8'),
             bits=block.difficulty
         )
+        if self.session.query(Block).get(block.id):
+            return None
         block.hash = h(
             (block.serialize().decode('utf-8') + block.suffix).encode('utf-8')
         ).hexdigest()
@@ -829,7 +838,7 @@ class Avatar():
             Move.block_id <= block_id
         )
         avatar, result = create_move.execute(None)
-        avatar.items['Gold'] += session.query(Block).filter_by(
+        avatar.items['GOLD'] += session.query(Block).filter_by(
             creator=user_addr
         ).filter(Block.id <= block_id).count() * 8
 

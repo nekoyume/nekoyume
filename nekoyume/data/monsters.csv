@@ -1,6 +1,6 @@
-id,tag,damage,piercing,damage_option,hp,armor,special,url,reward2,reward3,reward4,reward5,reward6,reward7,reward8,reward9,reward10,reward11,reward12
-Assassin Vine,#Solitary #Stealthy #Amorphous,1d10,1,,15,1,Plant,http://codex.dungeon-world.com/monster/40018,,,,,,,,,,,
-Blink Dog,#Group #Small #Magical #Organized,1d8,0,,6,4,Illusion,http://codex.dungeon-world.com/monster/45025,,,,,,,,,,,
-Centaur,#Horde #Large #Organized #Intelligent,1d6+2,1,,11,1,"Half-horse, Half-man",http://codex.dungeon-world.com/monster/39019,,,,,,,,,,,
-Chaos Ooze,"Solitary, Planar, Terrifying, Amorphous",1d10,0,,23,1,"Ooze, Fragments of other planes embedded in it",http://codex.dungeon-world.com/monster/43015,,,,,,,,,,,
-Cockatrice,"Group, Small, Hoarder",1d8,0,,6,1,Stone touch,http://codex.dungeon-world.com/monster/32028,,,,,,,,,,,
+id,tag,damage,piercing,damage_option,hp,armor,special,url,reward1,reward2,reward3,reward4,reward5,reward6,reward7,reward8,reward9,reward10
+Assassin Vine,#Solitary #Stealthy #Amorphous,1d10,1,,15,1,Plant,http://codex.dungeon-world.com/monster/40018,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,PTAH,PTAH
+Blink Dog,#Group #Small #Magical #Organized,1d8,0,,6,4,Illusion,http://codex.dungeon-world.com/monster/45025,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,PTAH,PTAH
+Centaur,#Horde #Large #Organized #Intelligent,1d6+2,1,,11,1,"Half-horse, Half-man",http://codex.dungeon-world.com/monster/39019,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,LMIL,SHLD,CRBW,LSWD
+Chaos Ooze,"Solitary, Planar, Terrifying, Amorphous",1d10,0,,23,1,"Ooze, Fragments of other planes embedded in it",http://codex.dungeon-world.com/monster/43015,BNDG,BNDG,PTAH,PTAH,PTAH,PTAH,PTAH,PTAH,HLPT,HLPT
+Cockatrice,"Group, Small, Hoarder",1d8,0,,6,1,Stone touch,http://codex.dungeon-world.com/monster/32028,,,,,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG

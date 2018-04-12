@@ -452,6 +452,25 @@ class HackAndSlash(Move):
 
         while True:
             try:
+                if (avatar.hp <= avatar.max_hp * 0.2
+                   and 'BNDG' in avatar.items and avatar.items['BNDG'] > 0):
+                    rolled = self.roll(randoms, '2d6')
+                    if rolled >= 7:
+                        avatar.hp += 4
+                        avatar.items['BNDG'] -= 1
+                        battle_status.append({
+                            'type': 'item_use',
+                            'item': 'BNDG',
+                            'status_change': 'HP +4'
+                        })
+                    else:
+                        avatar.items['BNDG'] -= 1
+                        battle_status.append({
+                            'type': 'item_use_fail',
+                            'item': 'BNDG',
+                            'status_change': ''
+                        })
+
                 rolled = (self.roll(randoms, '2d6')
                           + avatar.modifier('strength'))
                 if rolled >= 7:

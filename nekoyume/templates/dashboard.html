@@ -450,6 +450,24 @@
                                   You optained {{ item }}!
                                   {%- endtrans %}
                                 </li>
+                                {% elif status['type'] == 'item_use' %}
+                                <li>
+                                  🎁
+                                  {% trans item=status['item'], status_change=status['status_change'] -%}
+                                  You used {{ item }}. <small>({{ status_change }})</small>
+                                  {%- endtrans %}
+                                </li>
+                                {% elif status['type'] == 'item_use_fail' %}
+                                <li>
+                                  🎁
+                                  {% trans item=status['item'], status_change=status['status_change'] -%}
+                                  You tried to use {{ item }} but it doesn't works.
+                                  {%- endtrans %}
+                                </li>
+                                {% else %}
+                                <li>
+                                  {{ status }}
+                                </li>
                                 {% endif %}
                                 {% endfor %}
                             </ol>

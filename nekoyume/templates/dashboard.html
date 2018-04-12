@@ -343,10 +343,14 @@
                         </div>
                     </div>
                     <div class="mdl-tabs__panel" id="combine-panel">
+                        <div class="mdl-card__supporting-text" style="width: auto;">
+                            <center>{% trans -%}Combine three items to get a new item. (needs 1 GOLD){%- endtrans %}</center>
+                        </div>
                         <div class="mdl-card__actions">
                             <form method="POST" action="{{ url_for('game.post_move') }}" style="text-align: center">
                                 <input type="hidden" name="name" value="combine">
                                 <select name="item1">
+                                  <option value="----">----</option>
                                   {% for k, v in avatar.items.items() %}
                                     {% if v > 0 %}
                                       <option value="{{ k }}">{{ k }}</option>
@@ -354,12 +358,14 @@
                                   {% endfor %}
                                 </select>
                                 <select name="item2">
+                                  <option value="----">----</option>
                                   {% for k, v in avatar.items.items() %}
                                     {% if v > 0 %}
                                       <option value="{{ k }}">{{ k }}</option>
                                     {% endif %}                                  {% endfor %}
                                 </select>
                                 <select name="item3">
+                                  <option value="----">----</option>
                                   {% for k, v in avatar.items.items() %}
                                     {% if v > 0 %}
                                       <option value="{{ k }}">{{ k }}</option>

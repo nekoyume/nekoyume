@@ -283,7 +283,8 @@
                         <a href="#hack-and-slash-panel" class="mdl-tabs__tab is-active">⚔️ {% trans -%} Hack &amp; Slash {%- endtrans %}</a>
                         <a href="#sleep-panel" class="mdl-tabs__tab">💤 {% trans -%} Sleep {%- endtrans %}</a>
                         <a href="#say-panel" class="mdl-tabs__tab">🗣 {% trans -%} Say {%- endtrans %}</a>
-                        <a href="#send-panel" class="mdl-tabs__tab">➡️{% trans -%} Send {%- endtrans %}</a>
+                        <a href="#send-panel" class="mdl-tabs__tab">➡️ {% trans -%} Send {%- endtrans %}</a>
+                        <a href="#combine-panel" class="mdl-tabs__tab">🙌 {% trans -%} combine {%- endtrans %}</a>
                     </div>
 
                     <div class="mdl-tabs__panel is-active" id="hack-and-slash-panel">
@@ -337,6 +338,34 @@
                                   <input class="mdl-textfield__input" type="text" id="receiver" name="receiver">
                                   <label class="mdl-textfield__label" for="receiver">{% trans -%}Address to send{%- endtrans %}</label>
                                 </div>
+                                <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans -%}OK{%- endtrans %}">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="combine-panel">
+                        <div class="mdl-card__actions">
+                            <form method="POST" action="{{ url_for('game.post_move') }}" style="text-align: center">
+                                <input type="hidden" name="name" value="combine">
+                                <select name="item1">
+                                  {% for k, v in avatar.items.items() %}
+                                    {% if v > 0 %}
+                                      <option value="{{ k }}">{{ k }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
+                                <select name="item2">
+                                  {% for k, v in avatar.items.items() %}
+                                    {% if v > 0 %}
+                                      <option value="{{ k }}">{{ k }}</option>
+                                    {% endif %}                                  {% endfor %}
+                                </select>
+                                <select name="item3">
+                                  {% for k, v in avatar.items.items() %}
+                                    {% if v > 0 %}
+                                      <option value="{{ k }}">{{ k }}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                </select>
                                 <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans -%}OK{%- endtrans %}">
                             </form>
                         </div>
@@ -537,6 +566,36 @@
                         </div>
                         <div class="mdl-card__supporting-text">
                             <p>{% trans -%}Receiver: {%- endtrans %}{{ move.details['receiver'] }} </p>
+                        </div>
+                    </div>
+                    {% elif result.type == 'combine' %}
+                    <div class="move mdl-card mdl-shadow--2dp
+                                {% if 'last_block' in request.values and move.block_id > request.values.get('last_block')|int %}highlight{% endif %}">
+                        <div class="mdl-card__supporting-text">
+                          <sub><img src="{{ move_avatar.profile_image_url }}" alt="{{ avatar.name }} profile image" class="avatar-profile-image"> <b>{{ move_avatar.name }}</b> ∙ {{ move.created_at }}</sub>
+                          <hr>
+                        </div>
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">
+                            {% if result.result == 'success' %}
+                            🙌
+                            {% trans result=result.result_item%}
+                            You created {{ result }}.
+                            {%- endtrans %}
+                            {% else %}
+                            😩
+                            {% trans -%}
+                            Your combination was failed.
+                            {%- endtrans %}
+                            {% endif %}
+                            </h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <p>{% trans item1=move.details['item1'],
+                                        item2=move.details['item2'],
+                                        item3=move.details['item3'] -%}
+                               Ingredients: {{ item1 }}, {{ item2 }}, and {{ item3 }}
+                               {%- endtrans %} </p>
                         </div>
                     </div>
                     {% else %}

@@ -97,6 +97,10 @@ def post_move():
         move = g.user.send(request.values.get('item'),
                            request.values.get('amount'),
                            request.values.get('receiver'))
+    if request.values.get('name') == 'combine':
+        move = g.user.combine(request.values.get('item1'),
+                              request.values.get('item2'),
+                              request.values.get('item3'))
 
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))

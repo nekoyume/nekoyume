@@ -136,6 +136,26 @@ def test_avatar_basic_moves(fx_user, fx_novice_status):
         assert fx_user.avatar(block.id)
 
 
+def test_combine_move(fx_user, fx_novice_status):
+    move = fx_user.create_novice(fx_novice_status)
+    fx_user.create_block([move])
+
+    avatar = fx_user.avatar()
+    avatar.items['EGGS'] = 1
+    avatar.items['CHKN'] = 1
+    avatar.items['RICE'] = 1
+
+    combine = fx_user.combine('EGGS', 'CHKN', 'RICE')
+    fx_user.create_block([combine])
+
+    avatar, result = combine.execute(avatar)
+    assert result['result'] == 'success'
+    assert result['result_item'] == 'OYKD'
+
+    avatar, result = combine.execute(avatar)
+    assert result['result'] == 'failure'
+
+
 def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
               fx_novice_status):
     assert fx_other_session.query(Block).count() == 0

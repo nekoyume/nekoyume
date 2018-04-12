@@ -741,7 +741,6 @@ class Combine(Move):
         )
 
 
-
 class Sell(Move):
     __mapper_args__ = {
         'polymorphic_identity': 'sell',

@@ -72,10 +72,10 @@ def get_new_novice():
         ).first()
         if not move:
             move = g.user.create_novice({
-                'strength': '15',
+                'strength': '12',
                 'dexterity': '12',
-                'constitution': '16',
-                'intelligence': '9',
+                'constitution': '9',
+                'intelligence': '10',
                 'wisdom': '8',
                 'charisma': '13'})
             db.session.add(move)
@@ -97,6 +97,10 @@ def post_move():
         move = g.user.send(request.values.get('item'),
                            request.values.get('amount'),
                            request.values.get('receiver'))
+    if request.values.get('name') == 'combine':
+        move = g.user.combine(request.values.get('item1'),
+                              request.values.get('item2'),
+                              request.values.get('item3'))
 
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))

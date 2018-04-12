@@ -1,6 +1,6 @@
 import pytest
 
-from nekoyume.tasks import block_broadcast, move_broadcast
+from nekoyume.tasks import block_broadcast
 
 
 def test_muted_attribute_error(fx_session):

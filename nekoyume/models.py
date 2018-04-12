@@ -714,6 +714,14 @@ class Combine(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
+        for i in ('item1', 'item2', 'item3'):
+            if (self.details[i] not in avatar.items or
+               avatar.items[self.details[i]] <= 0):
+                return avatar, dict(
+                    type='combine',
+                    result='failure',
+                    reason='insufficient_item'
+                )
         randoms = self.get_randoms()
         for result, recipe in self.recipes.items():
             if recipe == {self.details['item1'],
@@ -733,11 +741,13 @@ class Combine(Move):
                     return avatar, dict(
                         type='combine',
                         result='failure',
+                        reason='bad_luck'
                     )
 
         return avatar, dict(
             type='combine',
             result='failure',
+            reason='no_combination'
         )
 
 

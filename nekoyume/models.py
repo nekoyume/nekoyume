@@ -452,6 +452,25 @@ class HackAndSlash(Move):
 
         while True:
             try:
+                if (avatar.hp <= avatar.max_hp * 0.2
+                   and 'BNDG' in avatar.items and avatar.items['BNDG'] > 0):
+                    rolled = self.roll(randoms, '2d6')
+                    if rolled >= 7:
+                        avatar.hp += 4
+                        avatar.items['BNDG'] -= 1
+                        battle_status.append({
+                            'type': 'item_use',
+                            'item': 'BNDG',
+                            'status_change': 'HP +4'
+                        })
+                    else:
+                        avatar.items['BNDG'] -= 1
+                        battle_status.append({
+                            'type': 'item_use_fail',
+                            'item': 'BNDG',
+                            'status_change': ''
+                        })
+
                 rolled = (self.roll(randoms, '2d6')
                           + avatar.modifier('strength'))
                 if rolled >= 7:
@@ -659,6 +678,86 @@ class Send(Move):
         )
 
 
+class Combine(Move):
+    __mapper_args__ = {
+        'polymorphic_identity': 'combine',
+    }
+
+    recipes = {
+        'OYKD': {'RICE', 'EGGS', 'CHKN'},
+        'CBNR': {'WHET', 'EGGS', 'MEAT'},
+        'STKD': {'RICE', 'RKST', 'MEAT'},
+        'CHKR': {'RICE', 'RKST', 'CHKN'},
+        'STEK': {'MEAT', 'RKST', 'OLIV'},
+        'STCB': {'STEK', 'WHET', 'EGGS'},
+        'FRCH': {'CHKN', 'RKST', 'OLIV'},
+        'FSWD': {'LSWD', 'FLNT', 'OLIV'},
+        'FSW1': {'FSWD', 'FSWD', 'FSWD'},
+        'FSW2': {'FSW1', 'FSW1', 'FSW1'},
+        'FSW3': {'FSW2', 'FSW2', 'FSW2'},
+    }
+
+    success_roll = {
+        'OYKD': '1d1',
+        'CBNR': '1d1',
+        'STKD': '1d1',
+        'CHKR': '1d1',
+        'STEK': '1d1',
+        'STCB': '1d1',
+        'FRCH': '1d1',
+        'FSWD': '1d2',
+        'FSW1': '1d2',
+        'FSW2': '1d4',
+        'FSW3': '1d6',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user, self.block_id - 1)
+        if avatar.items['GOLD'] <= 0:
+            return avatar, dict(
+                type='combine',
+                result='failure',
+                reason='insufficient_gold'
+            )
+        for i in ('item1', 'item2', 'item3'):
+            if (self.details[i] not in avatar.items or
+               avatar.items[self.details[i]] <= 0):
+                return avatar, dict(
+                    type='combine',
+                    result='failure',
+                    reason='insufficient_item'
+                )
+        randoms = self.get_randoms()
+        for result, recipe in self.recipes.items():
+            if recipe == {self.details['item1'],
+                          self.details['item2'],
+                          self.details['item3']}:
+                avatar.items[self.details['item1']] -= 1
+                avatar.items[self.details['item2']] -= 1
+                avatar.items[self.details['item3']] -= 1
+                avatar.items['GOLD'] -= 1
+                if self.roll(randoms, self.success_roll[result]) == 1:
+                    avatar.get_item(result)
+                    return avatar, dict(
+                        type='combine',
+                        result='success',
+                        result_item=result,
+                    )
+                else:
+                    return avatar, dict(
+                        type='combine',
+                        result='failure',
+                        reason='bad_luck'
+                    )
+
+        return avatar, dict(
+            type='combine',
+            result='failure',
+            reason='no_combination'
+        )
+
+
 class Sell(Move):
     __mapper_args__ = {
         'polymorphic_identity': 'sell',
@@ -748,6 +847,11 @@ class User():
 
     def say(self, content):
         return self.move(Say(details={'content': content}))
+
+    def combine(self, item1, item2, item3):
+        return self.move(Combine(details={'item1': item1,
+                                          'item2': item2,
+                                          'item3': item3}))
 
     def create_block(self, moves, commit=True):
         for move in moves:

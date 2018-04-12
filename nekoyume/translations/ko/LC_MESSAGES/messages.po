@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-04-13 00:41+0900\n"
+"POT-Creation-Date: 2018-04-13 08:05+0900\n"
 "PO-Revision-Date: 2018-04-04 09:14+0900\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -120,7 +120,7 @@ msgid "Say something."
 msgstr "할 말을 남깁니다."
 
 #: templates/dashboard.html:320 templates/dashboard.html:341
-#: templates/dashboard.html:369 templates/login.html:34
+#: templates/dashboard.html:375 templates/login.html:34
 msgid "OK"
 msgstr "확인"
 
@@ -132,31 +132,35 @@ msgstr "수량"
 msgid "Address to send"
 msgstr "보낼 주소"
 
-#: templates/dashboard.html:378
+#: templates/dashboard.html:347
+msgid "Combine three items to get a new item. (needs 1 GOLD)"
+msgstr "세개의 아이템을 조합하여 새로운 아이템을 얻습니다. (1 GOLD 필요)"
+
+#: templates/dashboard.html:384
 msgid "Currently in progress ..."
 msgstr "현재 진행중..."
 
-#: templates/dashboard.html:399
+#: templates/dashboard.html:405
 msgid "Novice was born!"
 msgstr "초심자 탄생!"
 
-#: templates/dashboard.html:402
+#: templates/dashboard.html:408
 msgid "Welcome!"
 msgstr "환영합니다!"
 
-#: templates/dashboard.html:415
+#: templates/dashboard.html:421
 msgid "You won the battle!"
 msgstr "전투 승리!"
 
-#: templates/dashboard.html:419
+#: templates/dashboard.html:425
 msgid "Battle was finished."
 msgstr "전투 종료!"
 
-#: templates/dashboard.html:423
+#: templates/dashboard.html:429
 msgid "You lost the battle."
 msgstr "전투 패배!"
 
-#: templates/dashboard.html:432
+#: templates/dashboard.html:438
 #, python-format
 msgid ""
 "You attacked %(monster)s and wounded <strong>%(damage)s</strong> damage. "
@@ -165,70 +169,70 @@ msgstr ""
 "%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다. <small>(HP "
 "%(monster_hp)s → %(monster_hp_after_damage)s)</small>"
 
-#: templates/dashboard.html:442
+#: templates/dashboard.html:448
 #, python-format
 msgid ""
 "You are attacked by %(monster)s and got <strong>%(damage)s</strong> "
 "damage."
 msgstr "%(monster)s에게 공격받아 <strong>%(damage)s</strong> 데미지를 입었다."
 
-#: templates/dashboard.html:450
+#: templates/dashboard.html:456
 msgid "You learned from the mistake of the previous. <small>(XP +1)</small>"
 msgstr "나는 아까의 과오에서 배움을 얻었다. <small>(XP +1)</small>"
 
-#: templates/dashboard.html:457
+#: templates/dashboard.html:463
 #, python-format
 msgid "You defeated %(monster)s!"
 msgstr "%(monster)s를(을) 해치웠다!"
 
-#: templates/dashboard.html:464
+#: templates/dashboard.html:470
 #, python-format
 msgid "You are defeated by %(monster)s..."
 msgstr "%(monster)s에게 패배했다..."
 
-#: templates/dashboard.html:471
+#: templates/dashboard.html:477
 #, python-format
 msgid "%(monster)s has run away..."
 msgstr "%(monster)s는(은) 도망가버렸다..."
 
-#: templates/dashboard.html:478
+#: templates/dashboard.html:484
 #, python-format
 msgid "You optained %(item)s!"
 msgstr "%(item)s을(를) 얻었다!"
 
-#: templates/dashboard.html:485
+#: templates/dashboard.html:491
 #, python-format
 msgid "You used %(item)s. <small>(%(status_change)s)</small>"
 msgstr "%(item)s 을(를) 사용했다. <small>(%(status_change)s)</small>"
 
-#: templates/dashboard.html:492
+#: templates/dashboard.html:498
 #, python-format
 msgid "You tried to use %(item)s but it doesn't works."
 msgstr "%(item)s를 사용했으나 효과가 없었다."
 
-#: templates/dashboard.html:514
+#: templates/dashboard.html:520
 #, python-format
 msgid "Level Up! Now, your level is %(lv)s."
 msgstr "레벨 업! 이제 레벨 %(lv)s입니다."
 
-#: templates/dashboard.html:518
+#: templates/dashboard.html:524
 msgid "Level up was failed"
 msgstr "레벨 업 실패"
 
-#: templates/dashboard.html:536
+#: templates/dashboard.html:542
 msgid "HP was recovered by sleep."
 msgstr "수면을 통해 체력 회복"
 
-#: templates/dashboard.html:562
+#: templates/dashboard.html:568
 #, python-format
 msgid "You delievered %(amount)s of %(item)s."
 msgstr "%(item)s %(amount)s개를 전달했습니다."
 
-#: templates/dashboard.html:568
+#: templates/dashboard.html:574
 msgid "Receiver:"
 msgstr "받은 사람:"
 
-#: templates/dashboard.html:582
+#: templates/dashboard.html:588
 #, python-format
 msgid ""
 "\n"
@@ -237,11 +241,11 @@ msgstr ""
 "\n"
 "                            %(result)s 제작에 성공했습니다."
 
-#: templates/dashboard.html:587
+#: templates/dashboard.html:593
 msgid "Your combination was failed."
 msgstr "조합은 실패였습니다."
 
-#: templates/dashboard.html:594
+#: templates/dashboard.html:600
 #, python-format
 msgid "Ingredients: %(item1)s, %(item2)s, and %(item3)s"
 msgstr "재료: %(item1)s, %(item2)s, %(item3)s"

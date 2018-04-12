@@ -144,6 +144,7 @@ def test_combine_move(fx_user, fx_novice_status):
     avatar.items['EGGS'] = 1
     avatar.items['CHKN'] = 1
     avatar.items['RICE'] = 1
+    avatar.items['GOLD'] = 1
 
     combine = fx_user.combine('EGGS', 'CHKN', 'RICE')
     fx_user.create_block([combine])
@@ -151,6 +152,7 @@ def test_combine_move(fx_user, fx_novice_status):
     avatar, result = combine.execute(avatar)
     assert result['result'] == 'success'
     assert result['result_item'] == 'OYKD'
+    assert avatar.items['GOLD'] == 0
 
     avatar, result = combine.execute(avatar)
     assert result['result'] == 'failure'

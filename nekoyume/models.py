@@ -714,6 +714,12 @@ class Combine(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
+        if avatar.items['GOLD'] <= 0:
+            return avatar, dict(
+                type='combine',
+                result='failure',
+                reason='insufficient_gold'
+            )
         for i in ('item1', 'item2', 'item3'):
             if (self.details[i] not in avatar.items or
                avatar.items[self.details[i]] <= 0):
@@ -730,6 +736,7 @@ class Combine(Move):
                 avatar.items[self.details['item1']] -= 1
                 avatar.items[self.details['item2']] -= 1
                 avatar.items[self.details['item3']] -= 1
+                avatar.items['GOLD'] -= 1
                 if self.roll(randoms, self.success_roll[result]) == 1:
                     avatar.get_item(result)
                     return avatar, dict(

@@ -72,10 +72,10 @@ def get_new_novice():
         ).first()
         if not move:
             move = g.user.create_novice({
-                'strength': '15',
+                'strength': '12',
                 'dexterity': '12',
-                'constitution': '16',
-                'intelligence': '9',
+                'constitution': '9',
+                'intelligence': '10',
                 'wisdom': '8',
                 'charisma': '13'})
             db.session.add(move)

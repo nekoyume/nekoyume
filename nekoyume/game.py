@@ -89,6 +89,12 @@ def get_new_novice():
 def post_move():
     if request.values.get('name') in ('hack_and_slash', 'sleep'):
         move = getattr(g.user, request.values.get('name'))()
+    unconfirmed_move = Move.query.filter_by(
+        user=g.user.address, block=None
+    ).first()
+
+    if unconfirmed_move:
+        return redirect(url_for('.get_dashboard'))
     if request.values.get('name') == 'level_up':
         move = g.user.level_up(request.values.get('new_status'))
     if request.values.get('name') == 'say':

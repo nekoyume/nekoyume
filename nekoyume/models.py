@@ -1024,7 +1024,10 @@ class Avatar():
         ).order_by(HackAndSlash.block_id.desc()).first()
 
         if last_has:
-            return last_has.details['weapon']
+            try:
+                return last_has.details['weapon']
+            except KeyError:
+                return None
         else:
             return None
 
@@ -1035,7 +1038,10 @@ class Avatar():
         ).order_by(HackAndSlash.block_id.desc()).first()
 
         if last_has:
-            return last_has.details['armor']
+            try:
+                return last_has.details['armor']
+            except KeyError:
+                return None
         else:
             return None
 

@@ -25,6 +25,12 @@ from nekoyume.exc import (InvalidBlockError,
                           InvalidMoveError,
                           InvalidNameError,
                           OutOfRandomError)
+from nekoyume.items import (Armor,
+                            Combined,
+                            get_related_items,
+                            Item,
+                            Weapon,
+                            Food)
 from nekoyume import hashcash
 
 
@@ -683,34 +689,6 @@ class Combine(Move):
         'polymorphic_identity': 'combine',
     }
 
-    recipes = {
-        'OYKD': {'RICE', 'EGGS', 'CHKN'},
-        'CBNR': {'WHET', 'EGGS', 'MEAT'},
-        'STKD': {'RICE', 'RKST', 'MEAT'},
-        'CHKR': {'RICE', 'RKST', 'CHKN'},
-        'STEK': {'MEAT', 'RKST', 'OLIV'},
-        'STCB': {'STEK', 'WHET', 'EGGS'},
-        'FRCH': {'CHKN', 'RKST', 'OLIV'},
-        'FSWD': {'LSWD', 'FLNT', 'OLIV'},
-        'FSW1': {'FSWD', 'FSWD', 'FSWD'},
-        'FSW2': {'FSW1', 'FSW1', 'FSW1'},
-        'FSW3': {'FSW2', 'FSW2', 'FSW2'},
-    }
-
-    success_roll = {
-        'OYKD': '1d1',
-        'CBNR': '1d1',
-        'STKD': '1d1',
-        'CHKR': '1d1',
-        'STEK': '1d1',
-        'STCB': '1d1',
-        'FRCH': '1d1',
-        'FSWD': '1d2',
-        'FSW1': '1d2',
-        'FSW2': '1d4',
-        'FSW3': '1d6',
-    }
-
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
@@ -729,7 +707,11 @@ class Combine(Move):
                     reason='insufficient_item'
                 )
         randoms = self.get_randoms()
-        for result, recipe in self.recipes.items():
+        recipes = {scls.ticker_name: scls.recipe
+                   for scls in Combined.__subclasses__()}
+        dices = {scls.ticker_name: scls.dice
+                 for scls in Combined.__subclasses__()}
+        for result, recipe in recipes.items():
             if recipe == {self.details['item1'],
                           self.details['item2'],
                           self.details['item3']}:
@@ -737,7 +719,7 @@ class Combine(Move):
                 avatar.items[self.details['item2']] -= 1
                 avatar.items[self.details['item3']] -= 1
                 avatar.items['GOLD'] -= 1
-                if self.roll(randoms, self.success_roll[result]) == 1:
+                if self.roll(randoms, dices[result]) == 1:
                     avatar.get_item(result)
                     return avatar, dict(
                         type='combine',

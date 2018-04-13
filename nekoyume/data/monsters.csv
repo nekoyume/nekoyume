@@ -1,5 +1,5 @@
 id,tag,damage,piercing,damage_option,hp,armor,special,url,reward1,reward2,reward3,reward4,reward5,reward6,reward7,reward8,reward9,reward10
-Elvish Warrior,"Horde, Intelligent, Organized",2d6,0,,3,2,Sharp sense,http://codex.dungeon-world.com/monster/42024,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG
+Elvish Warrior,"Horde, Intelligent, Organized",2d6,0,,3,2,Sharp sense,http://codex.dungeon-world.com/monster/42024,BNDG,BNDG,BNDG,BNDG,LMIL,LMIL,BNDG,BNDG,LSWD,LSWD
 Sprite,"Horde, Tiny, Stealthy, Magical, Devious, Intelligent",2d4,0,,3,0,"Wings, Fey Magic",http://codex.dungeon-world.com/monster/38020,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG
 Worg,"Horde, Organized",1d6,0,,3,1,,http://codex.dungeon-world.com/monster/32029,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT
 Blink Dog,"Group , Small , Magical , Organized",1d8,0,,6,4,Illusion,http://codex.dungeon-world.com/monster/45025,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT
@@ -8,9 +8,9 @@ Eagle Lord,"Group, Large, Organized, Intelligent",2d8+1,1,,10,1,Mighty wings,htt
 Griffin,"Group, Large, Organized",1d8+3,0,,10,1,Wings,http://codex.dungeon-world.com/monster/39020,EGGS,EGGS,CHKN,CHKN,CHKN,CHKN,CHKN,CHKN,CHKN,CHKN
 Hill Giant,"Group, Huge, Intelligent, Organized",1d8+3,0,,10,1,,http://codex.dungeon-world.com/monster/38019,RKST,RKST,RKST,RKST,RKST,RKST,FLNT,FLNT,FLNT,FLNT
 Satyr,"Group, Devious, Magical, Hoarder",2d8,0,,10,1,Enchantment,http://codex.dungeon-world.com/monster/39021,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG
-Centaur,"Horde , Large , Organized , Intelligent",1d6+2,1,,11,1,"Half-horse, Half-man",http://codex.dungeon-world.com/monster/39019,BNDG,BNDG,LMIL,SHLD,CRBW,LSWD,LMIL,SHLD,CRBW,LSWD
+Centaur,"Horde , Large , Organized , Intelligent",1d6+2,1,,11,1,"Half-horse, Half-man",http://codex.dungeon-world.com/monster/39019,BNDG,BNDG,LMIL,LMIL,LMIL,LMIL,LSWD,LSWD,LSWD,LSWD
 Dryad,"Solitary, Magical, Intelligent, Devious,",2d8,0,,12,2,Plant,http://codex.dungeon-world.com/monster/41013,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG
-Elvish High Arcanist,"Solitary, Magical, Intelligent, Organized",1d10,1,,12,0,Sharp sense,http://codex.dungeon-world.com/monster/44022,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG,BNDG
+Elvish High Arcanist,"Solitary, Magical, Intelligent, Organized",1d10,1,,12,0,Sharp sense,http://codex.dungeon-world.com/monster/44022,BNDG,BNDG,BNDG,BNDG,BNDG,LMIL,LMIL,LMIL,LMIL,LMIL
 Werewolf,"Solitary, Intelligent",1d10+2,1,,12,1,Weak to silver,http://codex.dungeon-world.com/monster/40019,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT
 Assassin Vine,"Solitary , Stealthy , Amorphous",1d10,1,,15,1,Plant,http://codex.dungeon-world.com/monster/40018,WHET,WHET,WHET,WHET,RICE,RICE,RICE,RICE,OLIV,OLIV
 Razor Boar,Solitary,1d10,3,,16,1,,http://codex.dungeon-world.com/monster/44023,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT,MEAT

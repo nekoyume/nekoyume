@@ -11,7 +11,7 @@
 
 {% block style %}
 <style>
-    .move, .move-bar, .in-progress, .avatar-status {
+    .move, .move-bar, .in-progress, .avatar-status, .rank {
         margin-bottom: 20px;
         width:100%;
     }
@@ -112,6 +112,10 @@
       position: relative;
       top: -2px;
       left: -2px;
+    }
+
+    .rank .me td {
+      font-weight: bold;
     }
 </style>
 {% endblock %}
@@ -289,6 +293,25 @@
                       <td>{{ amount }}</td>
                     </tr>
                   {% endfor %}
+                  </tbody>
+                </table>
+
+                <table class="mdl-data-table mdl-js-data-table rank mdl-shadow--2dp">
+                  <thead>
+                    <tr>
+                      <th class="mdl-data-table__cell--non-numeric">Address</th>
+                      <th>Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for name, level in rank %}
+                    <tr{% if avatar.user == name %} class="me" {% endif %}>
+                      <td class="mdl-data-table__cell--non-numeric">
+                        {{ name|truncate(18) }}
+                      </td>
+                      <td>{{ level + 1 }}</td>
+                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>

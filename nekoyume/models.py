@@ -826,7 +826,7 @@ class User():
 
         return new_move
 
-    def hack_and_slash(self, weapon, armor, food):
+    def hack_and_slash(self, weapon=None, armor=None, food=None):
         details = dict()
         if weapon:
             details['weapon'] = weapon

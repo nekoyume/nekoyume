@@ -25,6 +25,12 @@ from nekoyume.exc import (InvalidBlockError,
                           InvalidMoveError,
                           InvalidNameError,
                           OutOfRandomError)
+from nekoyume.items import (Armor,
+                            Combined,
+                            get_related_items,
+                            Item,
+                            Weapon,
+                            Food)
 from nekoyume import hashcash
 
 
@@ -450,8 +456,31 @@ class HackAndSlash(Move):
         for key in ('hp', 'piercing', 'armor'):
             monster[key] = int(monster[key])
 
+        def get_item(ticker_name):
+            items = get_related_items(Item)
+            for item in items:
+                if item.ticker_name == ticker_name:
+                    return item
+            return None
+
+        weapon = armor = food = None
+        if 'weapon' in self.details:
+            weapon = get_item(self.details['weapon'])
+        if 'armor' in self.details:
+            armor = get_item(self.details['armor'])
+        if 'food' in self.details:
+            food = get_item(self.details['food'])
+
         while True:
             try:
+                if (avatar.hp <= avatar.max_hp * 0.5
+                   and food and food.ticker_name in avatar.items
+                   and avatar.items[food.ticker_name] > 0):
+                    avatar, status = food().execute(avatar)
+                    battle_status.append(status)
+                    avatar.items[food.ticker_name] -= 1
+                    food = None
+
                 if (avatar.hp <= avatar.max_hp * 0.2
                    and 'BNDG' in avatar.items and avatar.items['BNDG'] > 0):
                     rolled = self.roll(randoms, '2d6')
@@ -477,6 +506,8 @@ class HackAndSlash(Move):
                     damage = max(
                         self.roll(randoms, avatar.damage) - monster['armor'], 0
                     )
+                    if weapon:
+                        damage += weapon.attack_modifier(avatar, monster)
                     battle_status.append({
                         'type': 'attack_monster',
                         'damage': damage,
@@ -486,6 +517,8 @@ class HackAndSlash(Move):
 
                 elif rolled in (2, 3, 4, 5, 6, 7, 8, 9):
                     monster_damage = self.roll(randoms, monster['damage'])
+                    if armor:
+                        monster_damage -= armor.armor_modifier(avatar, monster)
                     battle_status.append({
                         'type': 'attacked_by_monster',
                         'damage': monster_damage,
@@ -683,34 +716,6 @@ class Combine(Move):
         'polymorphic_identity': 'combine',
     }
 
-    recipes = {
-        'OYKD': {'RICE', 'EGGS', 'CHKN'},
-        'CBNR': {'WHET', 'EGGS', 'MEAT'},
-        'STKD': {'RICE', 'RKST', 'MEAT'},
-        'CHKR': {'RICE', 'RKST', 'CHKN'},
-        'STEK': {'MEAT', 'RKST', 'OLIV'},
-        'STCB': {'STEK', 'WHET', 'EGGS'},
-        'FRCH': {'CHKN', 'RKST', 'OLIV'},
-        'FSWD': {'LSWD', 'FLNT', 'OLIV'},
-        'FSW1': {'FSWD', 'FSWD', 'FSWD'},
-        'FSW2': {'FSW1', 'FSW1', 'FSW1'},
-        'FSW3': {'FSW2', 'FSW2', 'FSW2'},
-    }
-
-    success_roll = {
-        'OYKD': '1d1',
-        'CBNR': '1d1',
-        'STKD': '1d1',
-        'CHKR': '1d1',
-        'STEK': '1d1',
-        'STCB': '1d1',
-        'FRCH': '1d1',
-        'FSWD': '1d2',
-        'FSW1': '1d2',
-        'FSW2': '1d4',
-        'FSW3': '1d6',
-    }
-
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
@@ -729,7 +734,11 @@ class Combine(Move):
                     reason='insufficient_item'
                 )
         randoms = self.get_randoms()
-        for result, recipe in self.recipes.items():
+        recipes = {scls.ticker_name: scls.recipe
+                   for scls in Combined.__subclasses__()}
+        dices = {scls.ticker_name: scls.dice
+                 for scls in Combined.__subclasses__()}
+        for result, recipe in recipes.items():
             if recipe == {self.details['item1'],
                           self.details['item2'],
                           self.details['item3']}:
@@ -737,7 +746,7 @@ class Combine(Move):
                 avatar.items[self.details['item2']] -= 1
                 avatar.items[self.details['item3']] -= 1
                 avatar.items['GOLD'] -= 1
-                if self.roll(randoms, self.success_roll[result]) == 1:
+                if self.roll(randoms, dices[result]) == 1:
                     avatar.get_item(result)
                     return avatar, dict(
                         type='combine',
@@ -817,8 +826,15 @@ class User():
 
         return new_move
 
-    def hack_and_slash(self, spot=''):
-        return self.move(HackAndSlash(details={'spot': spot}))
+    def hack_and_slash(self, weapon=None, armor=None, food=None):
+        details = dict()
+        if weapon:
+            details['weapon'] = weapon
+        if armor:
+            details['armor'] = armor
+        if food:
+            details['food'] = food
+        return self.move(HackAndSlash(details=details))
 
     def sleep(self, spot=''):
         return self.move(Sleep())
@@ -940,7 +956,7 @@ class Avatar():
         ).filter(
             Move.block_id >= create_move.block_id,
             Move.block_id <= block_id
-        )
+        ).order_by(Move.block_id.asc())
         avatar, result = create_move.execute(None)
         avatar.items['GOLD'] += session.query(Block).filter_by(
             creator=user_addr
@@ -969,7 +985,7 @@ class Avatar():
             return 1
         elif status in (16, 17):
             return 2
-        elif status == 18:
+        elif status >= 18:
             return 3
         return 0
 
@@ -990,6 +1006,58 @@ class Avatar():
     @property
     def profile_image_url(self):
         return f'https://www.gravatar.com/avatar/{self.gravatar_hash}?d=mm'
+
+    @property
+    def weapons(self) -> list:
+        result = []
+        for weapon in get_related_items(Weapon):
+            if (weapon.ticker_name in self.items.keys() and
+               self.items[weapon.ticker_name] > 0):
+                result.append(weapon)
+
+        return result
+
+    @property
+    def last_weapon(self) -> Weapon:
+        last_has = HackAndSlash.query.filter_by(
+            user=self.user
+        ).order_by(HackAndSlash.block_id.desc()).first()
+
+        if last_has:
+            return last_has.details['weapon']
+        else:
+            return None
+
+    @property
+    def last_armor(self) -> Armor:
+        last_has = HackAndSlash.query.filter_by(
+            user=self.user
+        ).order_by(HackAndSlash.block_id.desc()).first()
+
+        if last_has:
+            return last_has.details['armor']
+        else:
+            return None
+
+    @property
+    def armors(self) -> list:
+        result = []
+        for armor in get_related_items(Armor):
+            if (armor.ticker_name in self.items.keys() and
+               self.items[armor.ticker_name] > 0):
+                result.append(armor)
+
+        return result
+
+    @property
+    def foods(self) -> list:
+        result = []
+        for food in get_related_items(Food):
+            if (food.ticker_name in self.items.keys() and
+               self.items[food.ticker_name] > 0):
+                result.append(food)
+
+        return result
 
 
 class Novice(Avatar):

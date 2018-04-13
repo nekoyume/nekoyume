@@ -3,8 +3,9 @@ from functools import wraps
 from flask import (Blueprint, g, request, redirect, render_template,
                    session, url_for)
 from flask.ext.babel import Babel
+from sqlalchemy import func
 
-from nekoyume.models import db, Node, Move, User
+from nekoyume.models import db, LevelUp, Move, Node, User
 
 
 game = Blueprint('game', __name__, template_folder='templates')
@@ -53,13 +54,20 @@ def get_logout():
 def get_dashboard():
     if not g.user.avatar():
         return redirect(url_for('.get_new_novice'))
+
     unconfirmed_move = Move.query.filter_by(
         user=g.user.address, block=None
     ).first()
+
+    rank = db.session.query(
+        LevelUp.user, func.count(LevelUp.id)
+    ).group_by(LevelUp.user).order_by(func.count(LevelUp.id).desc()).limit(10)
+
     feed = g.user.moves
     return render_template('dashboard.html',
                            unconfirmed_move=unconfirmed_move,
-                           feed=feed)
+                           feed=feed,
+                           rank=rank)
 
 
 @game.route('/new')

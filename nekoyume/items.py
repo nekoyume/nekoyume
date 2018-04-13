@@ -44,6 +44,7 @@ class HPMaxFood(Food):
             'status_change': 'HP MAX'
         }
 
+
 class Oyakodong(Combined, HP10Food):
     ticker_name = 'OYKD'
     recipe = {'RICE', 'EGGS', 'CHKN'}

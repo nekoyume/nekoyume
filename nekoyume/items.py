@@ -76,7 +76,7 @@ class SteakCarbonara(Combined, HPMaxFood):
 
 
 class FriedChicken(Combined, HP10Food):
-    ticker_name = 'STCB'
+    ticker_name = 'FCHK'
     recipe = {'CHKN', 'RKST', 'OLIV'}
 
 

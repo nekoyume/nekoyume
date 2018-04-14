@@ -5,7 +5,7 @@ from flask import (Blueprint, g, request, redirect, render_template,
 from flask.ext.babel import Babel
 from sqlalchemy import func
 
-from nekoyume.models import db, LevelUp, Move, Node, User
+from nekoyume.models import cache, db, LevelUp, Move, Node, User
 
 
 game = Blueprint('game', __name__, template_folder='templates')
@@ -49,6 +49,15 @@ def get_logout():
     return redirect(url_for('game.get_login'))
 
 
+@cache.memoize(60)
+def get_rank():
+    return db.session.query(
+        LevelUp.user, func.count(LevelUp.id)
+    ).group_by(LevelUp.user).order_by(
+        func.count(LevelUp.id
+    ).desc()).limit(10).all()
+
+
 @game.route('/')
 @login_required
 def get_dashboard():
@@ -59,15 +68,11 @@ def get_dashboard():
         user=g.user.address, block=None
     ).first()
 
-    rank = db.session.query(
-        LevelUp.user, func.count(LevelUp.id)
-    ).group_by(LevelUp.user).order_by(func.count(LevelUp.id).desc()).limit(10)
-
     feed = g.user.moves
     return render_template('dashboard.html',
                            unconfirmed_move=unconfirmed_move,
                            feed=feed,
-                           rank=rank)
+                           rank=get_rank())
 
 
 @game.route('/new')

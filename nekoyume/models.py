@@ -938,7 +938,7 @@ class User():
 
 class Avatar():
     @classmethod
-    @cache.memoize()
+    @cache.memoize(timeout=0)
     def get(cls, user_addr, block_id, session=db.session):
         create_move = session.query(Move).filter_by(user=user_addr).filter(
             Move.block_id <= block_id

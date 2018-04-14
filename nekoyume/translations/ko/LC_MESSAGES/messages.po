@@ -251,7 +251,7 @@ msgid "Ingredients: %(item1)s, %(item2)s, and %(item3)s"
 msgstr "재료: %(item1)s, %(item2)s, %(item3)s"
 
 #: templates/login.html:32
-msgid "Enter you private key"
+msgid "Enter your private key"
 msgstr "프라이빗 키를 입력해주세요."
 
 #: templates/new.html:33

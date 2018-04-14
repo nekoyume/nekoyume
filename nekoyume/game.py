@@ -54,8 +54,8 @@ def get_rank():
     return db.session.query(
         LevelUp.user, func.count(LevelUp.id)
     ).group_by(LevelUp.user).order_by(
-        func.count(LevelUp.id
-    ).desc()).limit(10).all()
+        func.count(LevelUp.id).desc()
+    ).limit(10).all()
 
 
 @game.route('/')

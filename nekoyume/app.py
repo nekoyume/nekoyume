@@ -53,7 +53,10 @@ def create_app():
 
 app = create_app()
 cel = make_celery(app)
-cache.init_app(app, config={'CACHE_TYPE': 'simple'})
+cache.init_app(app, config={'CACHE_TYPE': 'redis',
+                            'CACHE_REDIS_URL': os.environ.get(
+                                'REDIS_URL', 'redis://localhost:6379'
+                            )})
 
 
 def run():

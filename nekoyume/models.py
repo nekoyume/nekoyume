@@ -809,7 +809,7 @@ class User():
     def moves(self):
         return self.session.query(Move).filter_by(user=self.address).filter(
             Move.block != None # noqa
-        ).order_by(Move.created_at.desc())
+        ).order_by(Move.block_id.desc())
 
     def move(self, new_move, tax=0, commit=True):
         new_move.user = self.address

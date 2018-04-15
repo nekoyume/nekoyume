@@ -69,9 +69,12 @@ def get_dashboard():
     ).first()
 
     feed = g.user.moves
+    # for caching
+    for move in reversed(feed.limit(10).all()):
+        avatar, result = move.execute()
     return render_template('dashboard.html',
                            unconfirmed_move=unconfirmed_move,
-                           feed=feed,
+                           feed=feed.order_by(Move.block_id.desc()),
                            rank=get_rank())
 
 

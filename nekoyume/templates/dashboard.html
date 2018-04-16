@@ -519,7 +519,7 @@
                                            damage=status['damage'],
                                            monster_hp=status['monster']['hp'],
                                            monster_hp_after_damage = status['monster']['hp'] - status['damage'] -%}
-                                  You attacked {{ monster }} and wounded <strong>{{ damage }}</strong> damage. <small>(HP {{ monster_hp }} → {{ monster_hp_after_damage }})</small>
+                                  You attacked {{ monster }} and wounded it for <strong>{{ damage }}</strong> damage. <small>(HP {{ monster_hp }} → {{ monster_hp_after_damage }})</small>
                                   {%- endtrans %}
                                 </li>
                                 {% elif status['type'] == 'attacked_by_monster' %}
@@ -527,14 +527,14 @@
                                   😫
                                   {% trans monster=name_of(status['monster']),
                                            damage=status['damage'] -%}
-                                  You are attacked by {{ monster }} and got <strong>{{ damage }}</strong> damage.
+                                  You are attacked by {{ monster }} and take <strong>{{ damage }}</strong> damage.
                                   {%- endtrans %}
                                 </li>
                                 {% elif status['type'] == 'get_xp' %}
                                 <li>
                                   🤔
                                   {% trans -%}
-                                  You learned from the mistake of the previous. <small>(XP +1)</small>
+                                  You learned from your previous mistake. <small>(XP +1)</small>
                                   {%- endtrans %}
                                 </li>
                                 {% elif status['type'] == 'kill_monster' %}

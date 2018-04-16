@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-04-15 09:53+0900\n"
+"POT-Creation-Date: 2018-04-16 13:07+0900\n"
 "PO-Revision-Date: 2018-04-04 09:14+0900\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -175,21 +175,22 @@ msgstr "전투 패배!"
 #: templates/dashboard.html:518
 #, python-format
 msgid ""
-"You attacked %(monster)s and wounded <strong>%(damage)s</strong> damage. "
-"<small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
+"You attacked %(monster)s and wounded it for <strong>%(damage)s</strong> "
+"damage. <small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
 msgstr ""
-"%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다. <small>(HP "
-"%(monster_hp)s → %(monster_hp_after_damage)s)</small>"
+"%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다."
+" <small>(HP %(monster_hp)s → "
+"%(monster_hp_after_damage)s)</small>"
 
 #: templates/dashboard.html:528
 #, python-format
 msgid ""
-"You are attacked by %(monster)s and got <strong>%(damage)s</strong> "
+"You are attacked by %(monster)s and take <strong>%(damage)s</strong> "
 "damage."
 msgstr "%(monster)s에게 공격받아 <strong>%(damage)s</strong> 데미지를 입었다."
 
 #: templates/dashboard.html:536
-msgid "You learned from the mistake of the previous. <small>(XP +1)</small>"
+msgid "You learned from your previous mistake. <small>(XP +1)</small>"
 msgstr "나는 아까의 과오에서 배움을 얻었다. <small>(XP +1)</small>"
 
 #: templates/dashboard.html:543
@@ -267,9 +268,9 @@ msgid ""
 "Hello! Welcome to the world of Nekoyume. Please set your own private key "
 "and input that in the form below so that you can start game right know. "
 "Private key is a password that identify you. Please make this unique."
-msgstr "안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 프라이빗 키를 정해서 아래 양식에 "
-"입력해주시면 게임을 시작하실 수 있습니다. 프라이빗 키는 자신을 정의하는 암호입니다. 다른 사람이 "
-"알기 어려운 고유한 것으로 만들어주세요."
+msgstr ""
+"안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 프라이빗 키를 정해서 아래 양식에 입력해주시면 게임을 시작하실 수 있습니다. "
+"프라이빗 키는 자신을 정의하는 암호입니다. 다른 사람이 알기 어려운 고유한 것으로 만들어주세요."
 
 #: templates/login.html:44
 msgid "Enter your private key"
@@ -290,4 +291,3 @@ msgstr ""
 #: templates/new.html:39
 msgid "Know in advance!"
 msgstr "미리 알아두세요!"
-

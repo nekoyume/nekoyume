@@ -68,16 +68,46 @@ The following figure illustrates the various elements shared by Nekoyume's cats 
 
 ### 5.1. Adventurer
 
-Adventurers can set their own jobs, take an adventure, grow in-game items and experience, and grow stronger.
+Adventurers can set their own jobs, take an adventure, grow in-game items and experience, and grow stronger. The player can perform the following actions in Nekoyume.
 
-#### 5.1.1. Moves
+#### 5.1.1. ⚔️ Hack & Slash
 
-The player can perform the following actions in Nekoyume.
+```
+👶 J4tQdM ∙ 2018-04-17 12:33:26.837628
 
-  * ⚔️ Hack & Slash: Combats monsters from the current area.
-  * 💤 Sleep: Player sleeps to regain physical strength.
-  * 🆙 Level Up: Raises the player level, thus improving player skill and ability.
-  * 🗣 Conversation: Allows the player to communicate with other players.
+👍 You won the battle!
+
+😫 You are attacked by Worg and take 2 damage.
+🤔 You learned from your previous mistake. (XP +1)
+💥 You attacked Worg and wounded it for 2 damage. (HP 3 → 1)
+😫 You are attacked by Worg and take 2 damage.
+🤔 You learned from your previous mistake. (XP +1)
+💥 You attacked Worg and wounded it for 2 damage. (HP 1 → -1)
+☠️ You defeated Worg !
+🎁 You optained MEAT!
+```
+
+Combats monsters from the current area.
+
+#### 5.1.2. 💤 Sleep
+
+```
+👶 J4tQdM ∙ 2018-04-17 12:32:55.006145
+
+💤 HP was recovered by sleep.
+```
+
+Player sleeps to regain physical strength.
+
+#### 5.1.3. 🆙 Level Up
+
+```
+👶 J4tQdM ∙ 2018-04-17 12:36:07.846423
+
+🆙 Level Up! Now, your level is 5.
+```
+
+Raises the player level, thus improving player skill and ability.
 
 When the player moves, the behavior information is passed to the network, and the move is actually performed after the creation of the next block. The block creation cycle is takes approximately 15 seconds; moreover, one block cannot contain more than two actions per user, therefore the minimum action cycle is also approximately 15 seconds.
 
@@ -111,7 +141,7 @@ Nekoyume adopted the hashcash as a key consensus because it uses the Hash random
 
 #### 5.2.2. Compensation system
 
-After the completion of block search, the miner can receive gold as compensation. Initially, 16 gold per block are awarded; the reward reduces by half every four years, and will be affixed at one gold per block after 16 years.
+After the completion of block search, the miner can receive gold as compensation. Initially, 16 gold per block are awarded; the reward reduces by half every four years, and will be affixed at one gold per block after 16 years. This compensation is divided by half to the client and the block creator, so virtually in the first year the cats receive a reward of 8 gold, and after 16 years they will receive 0.5 gold per block.
 
 ```eval_rst
 +-----------------------------------+-----------------------+
@@ -128,6 +158,35 @@ After the completion of block search, the miner can receive gold as compensation
 |                         8,409,600 |                     1 |
 +-----------------------------------+-----------------------+
 ```
+
+### 5.3. Gold
+
+In order for a decentralized community to be sustainable, an economic structure is needed that can reasonably balance production and consumption. Gold is the main virtual currency of Nekoyume, which publishes and exchanges, gives consumers a pleasant game experience, and producers receive reasonable rewards for their contributions.
+
+#### 5.3.1. Benefit of gold
+
+Adventurers can use gold to enjoy a more pleasant and fast gaming experience. Typically, the following benefits exist.
+
+- 🔼 Obtain a status bonus proportional to the amount held
+- 🤓 Obtain valuable items through composition
+- 🤝 Collect various items through trading
+
+#### 5.3.2. The way to earn gold
+
+#### 5.3.2.1. Gold generation event
+
+In May 2018, Nekoyume Gold (NYG), which is available on the mainnet, will be issued in the form of the Ethereum ERC20 token. We will issue 21% of the total volume. In this minting, we achieve two objectives.
+
+1. Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributers.
+2. Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delievered to early stage players.
+
+#### 5.3.2.2. Participate in the core team
+
+During the intensive development period over the next year, 9% of the gold reserves will be distributed to the core team members in proportion to their contribution amounts. Like 5.3.2.1., it is a compensation method for initial intensive development.
+
+#### 5.3.2.3. Participate in the network
+
+After launching the mainnet, you can obtain gold by providing a client based on the published code or creating a block by executing $ neko. It will be the largest of all rewards portions and will be the only way to earn Gold from 2019 on. The planned amounts over four years are as follows.
 
 
 ## 6. Limitations

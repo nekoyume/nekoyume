@@ -45,6 +45,11 @@ class HPMaxFood(Food):
         }
 
 
+class MeatPlatter(Combined, HP10Food):
+    ticker_name = 'MPLT'
+    recipe = {'MEAT', 'MEAT', 'MEAT'}
+
+
 class Oyakodong(Combined, HP10Food):
     ticker_name = 'OYKD'
     recipe = {'RICE', 'EGGS', 'CHKN'}

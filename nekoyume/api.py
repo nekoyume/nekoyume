@@ -25,7 +25,7 @@ def get_my_public_url():
         has_public_address = requests.get(
             f'{request.scheme}://{ip}{port}/ping'
         ).text == 'pong'
-    except:
+    except requests.exceptions.ConnectionError:
         return None
     if has_public_address:
         return f'{request.scheme}://{ip}{port}'
@@ -44,7 +44,7 @@ def get_public_url():
 def get_nodes():
     nodes = Node.query.filter(
         Node.last_connected_at >= datetime.datetime.now() -
-                                  datetime.timedelta(60 * 3)
+        datetime.timedelta(60 * 3)
     ).order_by(Node.last_connected_at.desc()).limit(2500).all()
 
     public_url = get_my_public_url()

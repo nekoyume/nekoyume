@@ -52,6 +52,47 @@ class Node(db.Model):
     post_move_endpoint = '/moves'
 
     @classmethod
+    def update(cls, node=None):
+        """
+        Update recent node list by scrapping other nodes' information.
+        """
+
+        if not node:
+            recent_nodes = Node.query.filter(
+                Node.last_connected_at >= datetime.datetime.now() -
+                                          datetime.timedelta(60 * 3)
+            ).order_by(Node.last_connected_at.desc()).limit(2500)
+            if Node.query.count() == 0:
+                recent_nodes = [cls(url='http://seed.nekoyu.me')]
+        else:
+            recent_nodes = [node]
+
+        for n in recent_nodes:
+            try:
+                response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
+                for url in response.json()['nodes']:
+                    new_node = Node.query.get(url)
+                    if not new_node:
+                        new_node = Node(url=url)
+                        db.session.add(new_node)
+                    new_node.ping()
+                else:
+                    continue
+            except:
+                continue
+            db.session.commit()
+            break
+
+    def ping(self):
+        try:
+            result = requests.get(f'{self.url}/ping').text == 'pong'
+            if result:
+                self.last_connected_at = datetime.datetime.now()
+            return result
+        except:
+            return False
+
+    @classmethod
     def broadcast(cls,
                   endpoint: str,
                   serialized_obj: dict,
@@ -177,17 +218,35 @@ class Block(db.Model):
                               sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node: Node, session=db.session) -> bool:
+    def sync(cls, node: Node=None, session=db.session) -> bool:
         """
         Sync blockchain with other node.
 
         :param node: sync target :class:`nekoyume.models.Node`.
         """
         if not node:
-            return True
-        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
+            nodes = Node.query.filter(
+                Node.last_connected_at >= datetime.datetime.now() -
+                                          datetime.timedelta(60 * 3)
+            ).order_by(Node.last_connected_at.desc())
+        else:
+            nodes = [node]
+
+        if not nodes:
+            return False
+
+        node_last_block = None
+        for node in nodes:
+            try:
+                response = requests.get(
+                    f"{node.url}{Node.get_blocks_endpoint}/last"
+                )
+                node_last_block = response.json()['block']
+                break
+            except:
+                continue
+
         last_block = session.query(Block).order_by(Block.id.desc()).first()
-        node_last_block = response.json()['block']
 
         if not node_last_block:
             return True

@@ -56,8 +56,7 @@ class Node(db.Model):
         """
         Update recent node list by scrapping other nodes' information.
         """
-
-        if not node:
+        if not node or not node.url:
             recent_nodes = Node.query.filter(
                 Node.last_connected_at >= datetime.datetime.now() -
                                           datetime.timedelta(60 * 3)
@@ -285,48 +284,53 @@ class Block(db.Model):
                 move.block_id = None
             session.delete(block)
 
-        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
-                                params={'from': branch_point + 1})
+        from_ = branch_point + 1
+        limit = 1000
+        while True:
+            print(f'Syncing blocks...(from: {from_})')
+            response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
+                                    params={'from': from_,
+                                            'to': from_ + limit - 1})
+            if len(response.json()['blocks']) == 0:
+                return True
+            for new_block in response.json()['blocks']:
+                block = Block()
+                block.id = new_block['id']
+                block.creator = new_block['creator']
+                block.created_at = datetime.datetime.strptime(
+                    new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
+                block.prev_hash = new_block['prev_hash']
+                block.hash = new_block['hash']
+                block.difficulty = new_block['difficulty']
+                block.suffix = new_block['suffix']
+                block.root_hash = new_block['root_hash']
 
-        for new_block in response.json()['blocks']:
-            block = Block()
-            block.id = new_block['id']
-            block.creator = new_block['creator']
-            block.created_at = datetime.datetime.strptime(
-                new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-            block.prev_hash = new_block['prev_hash']
-            block.hash = new_block['hash']
-            block.difficulty = new_block['difficulty']
-            block.suffix = new_block['suffix']
-            block.root_hash = new_block['root_hash']
+                for new_move in new_block['moves']:
+                    move = session.query(Move).get(new_move['id'])
+                    if not move:
+                        move = Move(
+                            id=new_move['id'],
+                            user=new_move['user'],
+                            name=new_move['name'],
+                            signature=new_move['signature'],
+                            tax=new_move['tax'],
+                            details=new_move['details'],
+                            created_at=datetime.datetime.strptime(
+                                new_move['created_at'],
+                                '%Y-%m-%d %H:%M:%S.%f'),
+                            block_id=block.id,
+                        )
+                    if not move.valid:
+                        session.rollback()
+                        raise InvalidMoveError
+                    session.add(move)
 
-            for new_move in new_block['moves']:
-                move = session.query(Move).get(new_move['id'])
-                if not move:
-                    move = Move(
-                        id=new_move['id'],
-                        user=new_move['user'],
-                        name=new_move['name'],
-                        signature=new_move['signature'],
-                        tax=new_move['tax'],
-                        details=new_move['details'],
-                        created_at=datetime.datetime.strptime(
-                            new_move['created_at'],
-                            '%Y-%m-%d %H:%M:%S.%f'),
-                        block_id=block.id,
-                    )
-                if not move.valid:
+                if not block.valid:
                     session.rollback()
-                    raise InvalidMoveError
-                session.add(move)
-
-            if not block.valid:
-                session.rollback()
-                raise InvalidBlockError
-            session.add(block)
-
-        session.commit()
-        return True
+                    raise InvalidBlockError
+                session.add(block)
+            db.session.commit()
+            from_ += limit
 
 
 def get_address(public_key):

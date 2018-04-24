@@ -18,8 +18,9 @@ def shell():
 
 
 @click.command()
-@click.option('--seed', default=None,
-                        help='Seed node URL to connect')
+@click.option('--seed',
+              default=None,
+              help='Seed node URL to connect')
 def init(seed):
     print('Creating database...')
     db.create_all()

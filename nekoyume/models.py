@@ -59,7 +59,7 @@ class Node(db.Model):
         if not node or not node.url:
             recent_nodes = Node.query.filter(
                 Node.last_connected_at >= datetime.datetime.now() -
-                                          datetime.timedelta(60 * 3)
+                datetime.timedelta(60 * 3)
             ).order_by(Node.last_connected_at.desc()).limit(2500)
             if Node.query.count() == 0:
                 recent_nodes = [cls(url='http://seed.nekoyu.me')]
@@ -77,7 +77,7 @@ class Node(db.Model):
                     new_node.ping()
                 else:
                     continue
-            except:
+            except requests.exceptions.ConnectionError:
                 continue
             db.session.commit()
             break
@@ -88,7 +88,7 @@ class Node(db.Model):
             if result:
                 self.last_connected_at = datetime.datetime.now()
             return result
-        except:
+        except requests.exceptions.ConnectionError:
             return False
 
     @classmethod
@@ -226,7 +226,7 @@ class Block(db.Model):
         if not node:
             nodes = Node.query.filter(
                 Node.last_connected_at >= datetime.datetime.now() -
-                                          datetime.timedelta(60 * 3)
+                datetime.timedelta(60 * 3)
             ).order_by(Node.last_connected_at.desc())
         else:
             nodes = [node]
@@ -242,7 +242,7 @@ class Block(db.Model):
                 )
                 node_last_block = response.json()['block']
                 break
-            except:
+            except requests.exceptions.ConnectionError:
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()

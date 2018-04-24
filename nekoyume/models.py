@@ -46,6 +46,7 @@ class Node(db.Model):
     #: last connected datetime of the node
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
+    get_nodes_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
     post_block_endpoint = '/blocks'
     post_move_endpoint = '/moves'

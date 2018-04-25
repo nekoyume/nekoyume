@@ -158,37 +158,6 @@ def test_combine_move(fx_user, fx_novice_status):
     assert result['result'] == 'failure'
 
 
-def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
-              fx_novice_status):
-    assert fx_other_session.query(Block).count() == 0
-    assert fx_session.query(Block).count() == 0
-
-    Block.sync(Node(url=fx_server.url), fx_other_session)
-    assert fx_other_session.query(Block).count() == 0
-    assert fx_session.query(Block).count() == 0
-
-    fx_other_user.create_block([])
-    Block.sync(Node(url=fx_server.url), fx_other_session)
-    assert fx_other_session.query(Block).count() == 1
-    assert fx_session.query(Block).count() == 0
-
-    move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
-    fx_user.create_block([])
-    fx_user.create_block([])
-
-    assert fx_other_session.query(Block).count() == 1
-    assert fx_other_session.query(Move).count() == 0
-    assert fx_session.query(Block).count() == 3
-    assert fx_session.query(Move).count() == 1
-
-    Block.sync(Node(url=fx_server.url), fx_other_session)
-    assert fx_other_session.query(Block).count() == 3
-    assert fx_other_session.query(Move).count() == 1
-    assert fx_session.query(Block).count() == 3
-    assert fx_session.query(Move).count() == 1
-
-
 def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
                          fx_server):
     assert fx_other_session.query(Block).count() == 0
@@ -218,3 +187,34 @@ def test_move_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
 
     move.broadcast(session=fx_other_session)
     assert fx_session.query(Move).get(move.id)
+
+
+def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
+              fx_novice_status):
+    assert fx_other_session.query(Block).count() == 0
+    assert fx_session.query(Block).count() == 0
+
+    Block.sync(Node(url=fx_server.url), fx_other_session)
+    assert fx_other_session.query(Block).count() == 0
+    assert fx_session.query(Block).count() == 0
+
+    fx_other_user.create_block([])
+    Block.sync(Node(url=fx_server.url), fx_other_session)
+    assert fx_other_session.query(Block).count() == 1
+    assert fx_session.query(Block).count() == 0
+
+    move = fx_user.create_novice(fx_novice_status)
+    fx_user.create_block([move])
+    fx_user.create_block([])
+    fx_user.create_block([])
+
+    assert fx_other_session.query(Block).count() == 1
+    assert fx_other_session.query(Move).count() == 0
+    assert fx_session.query(Block).count() == 3
+    assert fx_session.query(Move).count() == 1
+
+    Block.sync(Node(url=fx_server.url), fx_other_session)
+    assert fx_other_session.query(Block).count() == 3
+    assert fx_other_session.query(Move).count() == 1
+    assert fx_session.query(Block).count() == 3
+    assert fx_session.query(Move).count() == 1

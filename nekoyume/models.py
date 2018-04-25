@@ -293,7 +293,7 @@ class Block(db.Model):
                                     params={'from': from_,
                                             'to': from_ + limit - 1})
             if len(response.json()['blocks']) == 0:
-                return True
+                break
             for new_block in response.json()['blocks']:
                 block = Block()
                 block.id = new_block['id']
@@ -330,8 +330,9 @@ class Block(db.Model):
                     session.rollback()
                     raise InvalidBlockError
                 session.add(block)
-            db.session.commit()
             from_ += limit
+        db.session.commit()
+        return True
 
 
 def get_address(public_key: str) -> str:

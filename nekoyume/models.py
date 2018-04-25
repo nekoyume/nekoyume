@@ -151,6 +151,7 @@ class Block(db.Model):
 
     @property
     def valid(self) -> bool:
+        """Check if this object is valid or not"""
         stamp = self.serialize().decode('utf-8') + self.suffix
         valid = (self.hash == h(str.encode(stamp)).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
@@ -333,7 +334,8 @@ class Block(db.Model):
             from_ += limit
 
 
-def get_address(public_key):
+def get_address(public_key: str) -> str:
+    """Get address based on the public key"""
     return base58.encode(public_key)
 
 
@@ -489,6 +491,9 @@ class Move(db.Model):
 
 
 class MoveDetail(db.Model):
+    """ This object contains move's key/value information. """
+
+    #: move id
     move_id = db.Column(db.String,  db.ForeignKey('move.id'),
                         nullable=True, primary_key=True)
     move = db.relationship(Move, backref=db.backref(
@@ -496,7 +501,9 @@ class MoveDetail(db.Model):
         collection_class=attribute_mapped_collection("key"),
         cascade="all, delete-orphan"
     ))
+    #: MoveDetail's key
     key = db.Column(db.String, nullable=False, primary_key=True)
+    #: MoveDetail's value
     value = db.Column(db.String, nullable=False, index=True)
 
 
@@ -844,6 +851,8 @@ class Buy(Move):
 
 
 class User():
+    """ It contains user's keys and avatar information. """
+
     def __init__(self, private_key, session=db.session):
         self.private_key = private_key
         self.public_key = str(seccure.passphrase_to_pubkey(
@@ -852,10 +861,12 @@ class User():
         self.session = session
 
     @property
-    def address(self):
+    def address(self) -> str:
+        """ It returns address of the user. """
         return get_address(self.public_key.encode('utf-8'))
 
-    def sign(self, move):
+    def sign(self, move: Move):
+        """ put signature into the given move using the user's private key. """
         if move.name is None:
             raise InvalidNameError
         move.user = self.address
@@ -871,11 +882,19 @@ class User():
 
     @property
     def moves(self):
+        """ return the user's moves. """
         return self.session.query(Move).filter_by(user=self.address).filter(
             Move.block != None # noqa
         ).order_by(Move.block_id.desc())
 
     def move(self, new_move, tax=0, commit=True):
+        """
+        make a move of the user.
+
+        :params new_move: Move object to make
+        :params      tax: Tax to apply
+        :params   commit: commit in this function automatically or not
+        """
         new_move.user = self.address
         new_move.tax = tax
         new_move.created_at = datetime.datetime.now()
@@ -934,6 +953,7 @@ class User():
                                           'item3': item3}))
 
     def create_block(self, moves, commit=True):
+        """ Create a block. """
         for move in moves:
             if not move.valid:
                 raise InvalidMoveError(move)
@@ -990,6 +1010,11 @@ class User():
         return block
 
     def avatar(self, block_id=None):
+        """
+        get avatar of the user.
+
+        :params block_id: Avatar's block timing. If None, it sets last block.
+        """
         if not block_id:
             block = self.session.query(Block).order_by(
                 Block.id.desc()).first()
@@ -1004,6 +1029,13 @@ class Avatar():
     @classmethod
     @cache.memoize(timeout=0)
     def get(cls, user_addr, block_id, session=db.session):
+        """
+        get avatar.
+
+        :params user_addr: Avatar's user address
+        :params  block_id: Avatar's block timing
+        :params   session: Database session to get data
+        """
         create_move = session.query(Move).filter_by(user=user_addr).filter(
             Move.block_id <= block_id
         ).order_by(
@@ -1036,6 +1068,7 @@ class Avatar():
         return avatar
 
     def modifier(self, status):
+        """ Return modifier of the status. """
         status = getattr(self, status)
         if status in (1, 2, 3):
             return -3
@@ -1054,6 +1087,11 @@ class Avatar():
         return 0
 
     def get_item(self, item):
+        """
+        Get given item.
+
+        :params item: item's ticker name
+        """
         if item not in self.items:
             self.items[item] = 1
         else:

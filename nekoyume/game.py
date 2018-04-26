@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import (Blueprint, g, request, redirect, render_template,
                    session, url_for)
-from flask.ext.babel import Babel
+from flask_babel import Babel
 from sqlalchemy import func
 
 from nekoyume.models import cache, db, LevelUp, Move, Node, User

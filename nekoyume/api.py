@@ -10,6 +10,51 @@ from nekoyume.models import db, Block, Node, Move
 api = Blueprint('api', __name__, template_folder='templates')
 
 
+@api.route('/ping')
+def get_pong():
+    return 'pong'
+
+
+def get_my_public_url():
+    try:
+        if ':' in request.host:
+            port = ':' + request.host.split(':')[1]
+        else:
+            port = ''
+        ip = requests.get('http://ip.42.pl/raw').text
+        has_public_address = requests.get(
+            f'{request.scheme}://{ip}{port}/ping'
+        ).text == 'pong'
+    except requests.exceptions.ConnectionError:
+        return None
+    if has_public_address:
+        return f'{request.scheme}://{ip}{port}'
+    else:
+        return None
+
+
+@api.route('/public_url')
+def get_public_url():
+    return jsonify(
+        url=get_my_public_url()
+    )
+
+
+@api.route(Node.get_nodes_endpoint, methods=['GET'])
+def get_nodes():
+    nodes = Node.query.filter(
+        Node.last_connected_at >= datetime.datetime.now() -
+        datetime.timedelta(60 * 3)
+    ).order_by(Node.last_connected_at.desc()).limit(2500).all()
+
+    public_url = get_my_public_url()
+    if public_url:
+        nodes.append(Node(url=public_url,
+                          last_connected_at=datetime.datetime.now()))
+
+    return jsonify(nodes=[n.url for n in nodes])
+
+
 @api.route('/nodes', methods=['POST'])
 def post_node():
     url = request.values.get('url')
@@ -18,7 +63,7 @@ def post_node():
         node = Node(url=url)
         db.session.add(node)
     try:
-        response = requests.get(f'{node.url}/blocks/last')
+        response = requests.get(f'{node.url}/blocks/last').json()
     except requests.exceptions.ConnectionError:
         return jsonify(
             result='failed',

@@ -46,9 +46,50 @@ class Node(db.Model):
     #: last connected datetime of the node
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
+    get_nodes_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
     post_block_endpoint = '/blocks'
     post_move_endpoint = '/moves'
+
+    @classmethod
+    def update(cls, node=None):
+        """
+        Update recent node list by scrapping other nodes' information.
+        """
+        if not node or not node.url:
+            recent_nodes = Node.query.filter(
+                Node.last_connected_at >= datetime.datetime.now() -
+                datetime.timedelta(60 * 3)
+            ).order_by(Node.last_connected_at.desc()).limit(2500)
+            if Node.query.count() == 0:
+                recent_nodes = [cls(url='http://seed.nekoyu.me')]
+        else:
+            recent_nodes = [node]
+
+        for n in recent_nodes:
+            try:
+                response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
+                for url in response.json()['nodes']:
+                    new_node = Node.query.get(url)
+                    if not new_node:
+                        new_node = Node(url=url)
+                        db.session.add(new_node)
+                    new_node.ping()
+                else:
+                    continue
+            except requests.exceptions.ConnectionError:
+                continue
+            db.session.commit()
+            break
+
+    def ping(self):
+        try:
+            result = requests.get(f'{self.url}/ping').text == 'pong'
+            if result:
+                self.last_connected_at = datetime.datetime.now()
+            return result
+        except requests.exceptions.ConnectionError:
+            return False
 
     @classmethod
     def broadcast(cls,
@@ -110,6 +151,7 @@ class Block(db.Model):
 
     @property
     def valid(self) -> bool:
+        """Check if this object is valid or not"""
         stamp = self.serialize().decode('utf-8') + self.suffix
         valid = (self.hash == h(str.encode(stamp)).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
@@ -176,17 +218,35 @@ class Block(db.Model):
                               sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node: Node, session=db.session) -> bool:
+    def sync(cls, node: Node=None, session=db.session) -> bool:
         """
         Sync blockchain with other node.
 
         :param node: sync target :class:`nekoyume.models.Node`.
         """
         if not node:
-            return True
-        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}/last")
+            nodes = Node.query.filter(
+                Node.last_connected_at >= datetime.datetime.now() -
+                datetime.timedelta(60 * 3)
+            ).order_by(Node.last_connected_at.desc())
+        else:
+            nodes = [node]
+
+        if not nodes:
+            return False
+
+        node_last_block = None
+        for node in nodes:
+            try:
+                response = requests.get(
+                    f"{node.url}{Node.get_blocks_endpoint}/last"
+                )
+                node_last_block = response.json()['block']
+                break
+            except requests.exceptions.ConnectionError:
+                continue
+
         last_block = session.query(Block).order_by(Block.id.desc()).first()
-        node_last_block = response.json()['block']
 
         if not node_last_block:
             return True
@@ -225,51 +285,58 @@ class Block(db.Model):
                 move.block_id = None
             session.delete(block)
 
-        response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
-                                params={'from': branch_point + 1})
+        from_ = branch_point + 1
+        limit = 1000
+        while True:
+            print(f'Syncing blocks...(from: {from_})')
+            response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
+                                    params={'from': from_,
+                                            'to': from_ + limit - 1})
+            if len(response.json()['blocks']) == 0:
+                break
+            for new_block in response.json()['blocks']:
+                block = Block()
+                block.id = new_block['id']
+                block.creator = new_block['creator']
+                block.created_at = datetime.datetime.strptime(
+                    new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
+                block.prev_hash = new_block['prev_hash']
+                block.hash = new_block['hash']
+                block.difficulty = new_block['difficulty']
+                block.suffix = new_block['suffix']
+                block.root_hash = new_block['root_hash']
 
-        for new_block in response.json()['blocks']:
-            block = Block()
-            block.id = new_block['id']
-            block.creator = new_block['creator']
-            block.created_at = datetime.datetime.strptime(
-                new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-            block.prev_hash = new_block['prev_hash']
-            block.hash = new_block['hash']
-            block.difficulty = new_block['difficulty']
-            block.suffix = new_block['suffix']
-            block.root_hash = new_block['root_hash']
+                for new_move in new_block['moves']:
+                    move = session.query(Move).get(new_move['id'])
+                    if not move:
+                        move = Move(
+                            id=new_move['id'],
+                            user=new_move['user'],
+                            name=new_move['name'],
+                            signature=new_move['signature'],
+                            tax=new_move['tax'],
+                            details=new_move['details'],
+                            created_at=datetime.datetime.strptime(
+                                new_move['created_at'],
+                                '%Y-%m-%d %H:%M:%S.%f'),
+                            block_id=block.id,
+                        )
+                    if not move.valid:
+                        session.rollback()
+                        raise InvalidMoveError
+                    session.add(move)
 
-            for new_move in new_block['moves']:
-                move = session.query(Move).get(new_move['id'])
-                if not move:
-                    move = Move(
-                        id=new_move['id'],
-                        user=new_move['user'],
-                        name=new_move['name'],
-                        signature=new_move['signature'],
-                        tax=new_move['tax'],
-                        details=new_move['details'],
-                        created_at=datetime.datetime.strptime(
-                            new_move['created_at'],
-                            '%Y-%m-%d %H:%M:%S.%f'),
-                        block_id=block.id,
-                    )
-                if not move.valid:
+                if not block.valid:
                     session.rollback()
-                    raise InvalidMoveError
-                session.add(move)
-
-            if not block.valid:
-                session.rollback()
-                raise InvalidBlockError
-            session.add(block)
-
-        session.commit()
+                    raise InvalidBlockError
+                session.add(block)
+            from_ += limit
+        db.session.commit()
         return True
 
 
-def get_address(public_key):
+def get_address(public_key: str) -> str:
+    """Get address based on the public key"""
     return base58.encode(public_key)
 
 
@@ -425,6 +492,9 @@ class Move(db.Model):
 
 
 class MoveDetail(db.Model):
+    """ This object contains move's key/value information. """
+
+    #: move id
     move_id = db.Column(db.String,  db.ForeignKey('move.id'),
                         nullable=True, primary_key=True)
     move = db.relationship(Move, backref=db.backref(
@@ -432,7 +502,9 @@ class MoveDetail(db.Model):
         collection_class=attribute_mapped_collection("key"),
         cascade="all, delete-orphan"
     ))
+    #: MoveDetail's key
     key = db.Column(db.String, nullable=False, primary_key=True)
+    #: MoveDetail's value
     value = db.Column(db.String, nullable=False, index=True)
 
 
@@ -780,6 +852,8 @@ class Buy(Move):
 
 
 class User():
+    """ It contains user's keys and avatar information. """
+
     def __init__(self, private_key, session=db.session):
         self.private_key = private_key
         self.public_key = str(seccure.passphrase_to_pubkey(
@@ -788,10 +862,12 @@ class User():
         self.session = session
 
     @property
-    def address(self):
+    def address(self) -> str:
+        """ It returns address of the user. """
         return get_address(self.public_key.encode('utf-8'))
 
-    def sign(self, move):
+    def sign(self, move: Move):
+        """ put signature into the given move using the user's private key. """
         if move.name is None:
             raise InvalidNameError
         move.user = self.address
@@ -807,11 +883,19 @@ class User():
 
     @property
     def moves(self):
+        """ return the user's moves. """
         return self.session.query(Move).filter_by(user=self.address).filter(
             Move.block != None # noqa
         ).order_by(Move.block_id.desc())
 
     def move(self, new_move, tax=0, commit=True):
+        """
+        make a move of the user.
+
+        :params new_move: Move object to make
+        :params      tax: Tax to apply
+        :params   commit: commit in this function automatically or not
+        """
         new_move.user = self.address
         new_move.tax = tax
         new_move.created_at = datetime.datetime.now()
@@ -870,6 +954,7 @@ class User():
                                           'item3': item3}))
 
     def create_block(self, moves, commit=True):
+        """ Create a block. """
         for move in moves:
             if not move.valid:
                 raise InvalidMoveError(move)
@@ -926,6 +1011,11 @@ class User():
         return block
 
     def avatar(self, block_id=None):
+        """
+        get avatar of the user.
+
+        :params block_id: Avatar's block timing. If None, it sets last block.
+        """
         if not block_id:
             block = self.session.query(Block).order_by(
                 Block.id.desc()).first()
@@ -940,6 +1030,13 @@ class Avatar():
     @classmethod
     @cache.memoize(timeout=0)
     def get(cls, user_addr, block_id, session=db.session):
+        """
+        get avatar.
+
+        :params user_addr: Avatar's user address
+        :params  block_id: Avatar's block timing
+        :params   session: Database session to get data
+        """
         create_move = session.query(Move).filter_by(user=user_addr).filter(
             Move.block_id <= block_id
         ).order_by(
@@ -972,6 +1069,7 @@ class Avatar():
         return avatar
 
     def modifier(self, status):
+        """ Return modifier of the status. """
         status = getattr(self, status)
         if status in (1, 2, 3):
             return -3
@@ -990,6 +1088,11 @@ class Avatar():
         return 0
 
     def get_item(self, item):
+        """
+        Get given item.
+
+        :params item: item's ticker name
+        """
         if item not in self.items:
             self.items[item] = 1
         else:

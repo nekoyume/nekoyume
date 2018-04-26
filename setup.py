@@ -63,7 +63,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'nekoyume-shell = nekoyume.shell:run',
+            'nekoyume = nekoyume.cli:cli',
             'neko = nekoyume.neko:run'
         ],
     },

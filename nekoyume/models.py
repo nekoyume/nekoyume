@@ -79,8 +79,9 @@ class Node(db.Model):
                     continue
             except requests.exceptions.ConnectionError:
                 continue
-            db.session.commit()
             break
+
+        db.session.commit()
 
     def ping(self):
         try:
@@ -362,6 +363,7 @@ class Block(db.Model):
                     raise InvalidBlockError
                 session.add(block)
             from_ += limit
+            db.session.commit()
         db.session.commit()
         return True
 

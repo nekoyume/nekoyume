@@ -1,8 +1,9 @@
 import click
+import time
 
 from ptpython.repl import embed
 
-from nekoyume.models import Node, Block
+from nekoyume.models import Node, Block, Move, User
 from nekoyume.app import app, db
 
 
@@ -30,8 +31,22 @@ def init(seed):
     Block.sync()
 
 
+@click.command()
+def sync():
+    while True:
+        prev_id = Block.query.order_by(Block.id.desc()).first().id
+        if not prev_id:
+            print("You need to initialize. try `nekoyume init`.")
+            break
+        Block.sync()
+        if prev_id == Block.query.order_by(Block.id.desc()).first().id:
+            print("The blockchain is up to date.")
+            time.sleep(15)
+
+
 cli.add_command(init)
 cli.add_command(shell)
+cli.add_command(sync)
 
 
 if __name__ == '__main__':

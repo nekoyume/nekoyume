@@ -196,7 +196,6 @@ def post_block():
             return jsonify(result='failed',
                            message=f"move {move.id} isn't valid."), 400
         block.moves.append(move)
-
     if not block.valid:
         return jsonify(result='failed',
                        message="new block isn't valid."), 400

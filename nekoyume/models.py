@@ -135,8 +135,7 @@ class Block(db.Model):
     #: current block's hash
     hash = db.Column(db.String, nullable=False, index=True, unique=True)
     #: previous block's hash
-    prev_hash = db.Column(db.String,
-                          index=True)
+    prev_hash = db.Column(db.String, index=True)
     #: block creator's address
     creator = db.Column(db.String, nullable=False, index=True)
     #: hash of every linked move's ordered hash list
@@ -148,6 +147,7 @@ class Block(db.Model):
     #: block creation datetime
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.now())
+    size_limit = 10000
 
     @property
     def valid(self) -> bool:
@@ -155,7 +155,37 @@ class Block(db.Model):
         stamp = self.serialize().decode('utf-8') + self.suffix
         valid = (self.hash == h(str.encode(stamp)).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
-        """ This function checks if the block this valid. """
+
+        valid = valid and (
+            len(self.serialize(True, True, True, True)) <= Block.size_limit
+        )
+
+        if self.id > 1:
+            prev_block = Block.query.get(self.id - 1)
+            valid = valid and self.prev_hash == prev_block.hash
+
+            difficulty = prev_block.difficulty
+            difficulty_check_block = Block.query.get(
+                max(1, self.id - 10)
+            )
+            avg_timedelta = (
+                (self.created_at - difficulty_check_block.created_at) /
+                (self.id - difficulty_check_block.id)
+            )
+            if avg_timedelta <= datetime.timedelta(0, 5):
+                valid = valid and self.difficulty == difficulty + 1
+            elif avg_timedelta > datetime.timedelta(0, 15):
+                valid = valid and self.difficulty == difficulty - 1
+            else:
+                valid = valid and self.difficulty == difficulty
+        else:
+            valid = valid and self.prev_hash is None
+            valid = valid and self.difficulty == 0
+
+        valid = valid and self.root_hash == h(
+            ''.join(sorted((m.id for m in self.moves))).encode('utf-8')
+        ).hexdigest()
+
         for move in self.moves:
             valid = valid and move.valid
         return valid
@@ -324,6 +354,7 @@ class Block(db.Model):
                     if not move.valid:
                         session.rollback()
                         raise InvalidMoveError
+                    block.moves.append(move)
                     session.add(move)
 
                 if not block.valid:
@@ -958,7 +989,6 @@ class User():
         for move in moves:
             if not move.valid:
                 raise InvalidMoveError(move)
-        # TODO: Need to add block size limit
         block = Block()
         block.root_hash = h(
             ''.join(sorted((m.id for m in moves))).encode('utf-8')
@@ -1003,6 +1033,9 @@ class User():
 
         for move in moves:
             move.block = block
+
+        if not block.valid:
+            raise InvalidBlockError
 
         if commit:
             self.session.add(block)

@@ -13,6 +13,22 @@ def cli():
 
 
 @click.command()
+@click.option('--private-key',
+              default='test',
+              help='Private key of neko')
+def neko(private_key):
+    app.app_context().push()
+    while True:
+        Block.sync()
+        block = User(private_key).create_block(
+            Move.query.filter_by(block=None).limit(20).all()
+        )
+        if block:
+            block.broadcast()
+            print(block)
+
+
+@click.command()
 def shell():
     app.app_context().push()
     embed(globals(), locals())
@@ -49,6 +65,7 @@ def sync():
 
 
 cli.add_command(init)
+cli.add_command(neko)
 cli.add_command(shell)
 cli.add_command(sync)
 

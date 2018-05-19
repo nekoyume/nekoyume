@@ -96,6 +96,9 @@ def get_new_novice():
                 'charisma': '13'})
             db.session.add(move)
             db.session.commit()
+            move.broadcast(
+                my_node=Node(url=f'{request.scheme}://{request.host}')
+            )
         return render_template('new.html', move=move)
     return redirect(url_for('.get_dashboard'))
 

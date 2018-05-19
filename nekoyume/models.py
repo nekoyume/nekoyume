@@ -293,7 +293,7 @@ class Block(db.Model):
             block = session.query(Block).get(mid)
             if value > high:
                 return 0
-            if (response.json()['block'] and
+            if (response.json()['block'] and block and
                block.hash == response.json()['block']['hash']):
                 if value == mid:
                         return value
@@ -362,6 +362,8 @@ class Block(db.Model):
                     session.rollback()
                     raise InvalidBlockError
                 session.add(block)
+            if len(response.json()['blocks']) < 1000:
+                break
             from_ += limit
             db.session.commit()
         db.session.commit()
@@ -711,6 +713,15 @@ class CreateNovice(Move):
         avatar.intelligence = int(self.details['intelligence'])
         avatar.wisdom = int(self.details['wisdom'])
         avatar.charisma = int(self.details['charisma'])
+
+        if (avatar.strength + avatar.dexterity + avatar.constitution +
+           avatar.intelligence + avatar.wisdom + avatar.charisma) > 64:
+            avatar.strength = 9
+            avatar.dexterity = 9
+            avatar.constitution = 9
+            avatar.intelligence = 9
+            avatar.wisdom = 9
+            avatar.charisma = 9
 
         if 'name' in self.details:
             avatar.name = self.details['name']

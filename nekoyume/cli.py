@@ -34,7 +34,11 @@ def init(seed):
 @click.command()
 def sync():
     while True:
-        prev_id = Block.query.order_by(Block.id.desc()).first().id
+        try:
+            prev_id = Block.query.order_by(Block.id.desc()).first().id
+        except AttributeError:
+            print("You need to initialize. try `nekoyume init`.")
+            break
         if not prev_id:
             print("You need to initialize. try `nekoyume init`.")
             break

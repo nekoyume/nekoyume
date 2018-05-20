@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>References &mdash; nekoyume 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="색인"
+              href="genindex.html"/>
+        <link rel="search" title="검색" href="search.html"/>
+    <link rel="top" title="nekoyume 0.0.0 documentation" href="index.html"/>
+        <link rel="next" title="Nekoyume: 탈중앙화된 대규모 다중 사용자 온라인 롤플레잉 게임" href="white_paper_ko.html"/>
+        <link rel="prev" title="Nekoyume Development Roadmap" href="roadmap.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> nekoyume
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">English:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="white_paper.html">White Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">한국어:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper_ko.html">백서</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap_ko.html">로드맵</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">nekoyume</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>References</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/references.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-nekoyume.models">
+<span id="references"></span><h1>References<a class="headerlink" href="#module-nekoyume.models" title="제목 주소">¶</a></h1>
+<div class="section" id="models">
+<h2>Models<a class="headerlink" href="#models" title="제목 주소">¶</a></h2>
+<p><cite>models.py</cite> contains every relations regarding nekoyume blockchain and
+game moves.</p>
+<dl class="class">
+<dt id="nekoyume.models.Block">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Block</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Block" title="정의 주소">¶</a></dt>
+<dd><p>This object contains block information.</p>
+<dl class="method">
+<dt id="nekoyume.models.Block.broadcast">
+<code class="descname">broadcast</code><span class="sig-paren">(</span><em>sent_node: bool = None</em>, <em>my_node: bool = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.broadcast" title="정의 주소">¶</a></dt>
+<dd><blockquote>
+<div>It broadcast this block to every nodes you know.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sent_node</strong> -- sent <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+this node ignore sent node.</li>
+<li><strong>my_node</strong> -- my <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+received node ignore my node when they
+broadcast received object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.created_at">
+<code class="descname">created_at</code><a class="headerlink" href="#nekoyume.models.Block.created_at" title="정의 주소">¶</a></dt>
+<dd><p>block creation datetime</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.creator">
+<code class="descname">creator</code><a class="headerlink" href="#nekoyume.models.Block.creator" title="정의 주소">¶</a></dt>
+<dd><p>block creator's address</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.difficulty">
+<code class="descname">difficulty</code><a class="headerlink" href="#nekoyume.models.Block.difficulty" title="정의 주소">¶</a></dt>
+<dd><p>difficulty of hashcash</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.hash">
+<code class="descname">hash</code><a class="headerlink" href="#nekoyume.models.Block.hash" title="정의 주소">¶</a></dt>
+<dd><p>current block's hash</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.id">
+<code class="descname">id</code><a class="headerlink" href="#nekoyume.models.Block.id" title="정의 주소">¶</a></dt>
+<dd><p>block id</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.prev_hash">
+<code class="descname">prev_hash</code><a class="headerlink" href="#nekoyume.models.Block.prev_hash" title="정의 주소">¶</a></dt>
+<dd><p>previous block's hash</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.root_hash">
+<code class="descname">root_hash</code><a class="headerlink" href="#nekoyume.models.Block.root_hash" title="정의 주소">¶</a></dt>
+<dd><p>hash of every linked move's ordered hash list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.Block.serialize">
+<code class="descname">serialize</code><span class="sig-paren">(</span><em>use_bencode: bool = True</em>, <em>include_suffix: bool = False</em>, <em>include_moves: bool = False</em>, <em>include_hash: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Block.serialize" title="정의 주소">¶</a></dt>
+<dd><p>This function serialize block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><ul class="first last simple">
+<li><strong>use_bencode</strong> -- check if you want to encode using bencode.</li>
+<li><strong>include_suffix</strong> -- check if you want to include suffix.</li>
+<li><strong>include_moves</strong> -- check if you want to include linked moves.</li>
+<li><strong>include_hash</strong> -- check if you want to include block hash.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.suffix">
+<code class="descname">suffix</code><a class="headerlink" href="#nekoyume.models.Block.suffix" title="정의 주소">¶</a></dt>
+<dd><p>suffix for hashcash</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="nekoyume.models.Block.sync">
+<em class="property">classmethod </em><code class="descname">sync</code><span class="sig-paren">(</span><em>node: nekoyume.models.Node = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.sync" title="정의 주소">¶</a></dt>
+<dd><p>Sync blockchain with other node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><strong>node</strong> -- sync target <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Block.valid">
+<code class="descname">valid</code><a class="headerlink" href="#nekoyume.models.Block.valid" title="정의 주소">¶</a></dt>
+<dd><p>Check if this object is valid or not</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Buy">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Buy</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Buy" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Combine">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Combine</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Combine" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.CreateNovice">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">CreateNovice</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.CreateNovice" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.HackAndSlash">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">HackAndSlash</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.HackAndSlash" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.LevelUp">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">LevelUp</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.LevelUp" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Move">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Move</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Move" title="정의 주소">¶</a></dt>
+<dd><p>This object contain general move information.</p>
+<dl class="attribute">
+<dt id="nekoyume.models.Move.block">
+<code class="descname">block</code><a class="headerlink" href="#nekoyume.models.Move.block" title="정의 주소">¶</a></dt>
+<dd><p>move's block</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.block_id">
+<code class="descname">block_id</code><a class="headerlink" href="#nekoyume.models.Move.block_id" title="정의 주소">¶</a></dt>
+<dd><p>move's block id. if the move isn't confirmed yet, this will be null</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.Move.broadcast">
+<code class="descname">broadcast</code><span class="sig-paren">(</span><em>sent_node=None</em>, <em>my_node=None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Move.broadcast" title="정의 주소">¶</a></dt>
+<dd><blockquote>
+<div>It broadcast this move to every nodes you know.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sent_node</strong> -- sent <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+this node ignore sent node.</li>
+<li><strong>my_node</strong> -- my <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+received node ignore my node when they
+broadcast received object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.confirmed">
+<code class="descname">confirmed</code><a class="headerlink" href="#nekoyume.models.Move.confirmed" title="정의 주소">¶</a></dt>
+<dd><p>Check if this object is confirmed or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.created_at">
+<code class="descname">created_at</code><a class="headerlink" href="#nekoyume.models.Move.created_at" title="정의 주소">¶</a></dt>
+<dd><p>move creation datetime.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.details">
+<code class="descname">details</code><a class="headerlink" href="#nekoyume.models.Move.details" title="정의 주소">¶</a></dt>
+<dd><p>move details. it contains parameters of move</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.Move.get_randoms">
+<code class="descname">get_randoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="headerlink" href="#nekoyume.models.Move.get_randoms" title="정의 주소">¶</a></dt>
+<dd><p>get random numbers by <a class="reference internal" href="white_paper.html"><span class="doc">Hash random</span></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.hash">
+<code class="descname">hash</code><a class="headerlink" href="#nekoyume.models.Move.hash" title="정의 주소">¶</a></dt>
+<dd><p>Get move hash</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.id">
+<code class="descname">id</code><a class="headerlink" href="#nekoyume.models.Move.id" title="정의 주소">¶</a></dt>
+<dd><p>move's hash</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.name">
+<code class="descname">name</code><a class="headerlink" href="#nekoyume.models.Move.name" title="정의 주소">¶</a></dt>
+<dd><p>move name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.Move.roll">
+<code class="descname">roll</code><span class="sig-paren">(</span><em>randoms: list</em>, <em>dice: str</em>, <em>combine=True</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Move.roll" title="정의 주소">¶</a></dt>
+<dd><p>Roll dices based on given randoms</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nekoyume.models</span> <span class="k">import</span> <span class="n">Move</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">move</span> <span class="o">=</span> <span class="n">Move</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">move</span><span class="o">.</span><span class="n">roll</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;2d6&#39;</span><span class="p">)</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Params randoms:</th><td class="field-body">random numbers from
+<a class="reference internal" href="#nekoyume.models.Move.get_randoms" title="nekoyume.models.Move.get_randoms"><code class="xref py py-func docutils literal notranslate"><span class="pre">nekoyume.models.Move.get_randoms()</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params dice:</th><td class="field-body">dice to roll (e.g. 2d6)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Params combine:</th><td class="field-body">return combined result or not if rolling it multiple.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.Move.serialize">
+<code class="descname">serialize</code><span class="sig-paren">(</span><em>use_bencode=True</em>, <em>include_signature=False</em>, <em>include_id=False</em>, <em>include_block=False</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Move.serialize" title="정의 주소">¶</a></dt>
+<dd><p>This function serialize block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><ul class="first last simple">
+<li><strong>use_bencode</strong> -- check if you want to encode using bencode.</li>
+<li><strong>include_signature</strong> -- check if you want to include signature.</li>
+<li><strong>include_id</strong> -- check if you want to include linked moves.</li>
+<li><strong>include_block</strong> -- check if you want to include block.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.signature">
+<code class="descname">signature</code><a class="headerlink" href="#nekoyume.models.Move.signature" title="정의 주소">¶</a></dt>
+<dd><p>move's signature</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.tax">
+<code class="descname">tax</code><a class="headerlink" href="#nekoyume.models.Move.tax" title="정의 주소">¶</a></dt>
+<dd><p>move tax (not implemented yet)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.user">
+<code class="descname">user</code><a class="headerlink" href="#nekoyume.models.Move.user" title="정의 주소">¶</a></dt>
+<dd><p>move's owner</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Move.valid">
+<code class="descname">valid</code><a class="headerlink" href="#nekoyume.models.Move.valid" title="정의 주소">¶</a></dt>
+<dd><p>Check if this object is valid or not</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.MoveDetail">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">MoveDetail</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.MoveDetail" title="정의 주소">¶</a></dt>
+<dd><p>This object contains move's key/value information.</p>
+<dl class="attribute">
+<dt id="nekoyume.models.MoveDetail.key">
+<code class="descname">key</code><a class="headerlink" href="#nekoyume.models.MoveDetail.key" title="정의 주소">¶</a></dt>
+<dd><p>MoveDetail's key</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.MoveDetail.move_id">
+<code class="descname">move_id</code><a class="headerlink" href="#nekoyume.models.MoveDetail.move_id" title="정의 주소">¶</a></dt>
+<dd><p>move id</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.MoveDetail.value">
+<code class="descname">value</code><a class="headerlink" href="#nekoyume.models.MoveDetail.value" title="정의 주소">¶</a></dt>
+<dd><p>MoveDetail's value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Node">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Node" title="정의 주소">¶</a></dt>
+<dd><p>This object contains node information you know.</p>
+<dl class="classmethod">
+<dt id="nekoyume.models.Node.broadcast">
+<em class="property">classmethod </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>endpoint: str</em>, <em>serialized_obj: dict</em>, <em>sent_node=None</em>, <em>my_node=None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Node.broadcast" title="정의 주소">¶</a></dt>
+<dd><p>It broadcast <cite>serialized_obj</cite> to every nodes you know.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">매개 변수:</th><td class="field-body"><ul class="first last simple">
+<li><strong>endpoint</strong> -- endpoint of node to broadcast</li>
+<li><strong>serialized_obj</strong> -- object that will be broadcasted.</li>
+<li><strong>sent_node</strong> -- sent <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+this node ignore sent node.</li>
+<li><strong>my_node</strong> -- my <a class="reference internal" href="#nekoyume.models.Node" title="nekoyume.models.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">nekoyume.models.Node</span></code></a>.
+received node ignore my node when they
+broadcast received object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Node.last_connected_at">
+<code class="descname">last_connected_at</code><a class="headerlink" href="#nekoyume.models.Node.last_connected_at" title="정의 주소">¶</a></dt>
+<dd><p>last connected datetime of the node</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="nekoyume.models.Node.update">
+<em class="property">classmethod </em><code class="descname">update</code><span class="sig-paren">(</span><em>node=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Node.update" title="정의 주소">¶</a></dt>
+<dd><p>Update recent node list by scrapping other nodes' information.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.Node.url">
+<code class="descname">url</code><a class="headerlink" href="#nekoyume.models.Node.url" title="정의 주소">¶</a></dt>
+<dd><p>URL of node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Say">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Say</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Say" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Sell">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Sell</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Sell" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Send">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Send</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Send" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.Sleep">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">Sleep</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.Sleep" title="정의 주소">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="nekoyume.models.User">
+<em class="property">class </em><code class="descclassname">nekoyume.models.</code><code class="descname">User</code><span class="sig-paren">(</span><em>private_key</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User" title="정의 주소">¶</a></dt>
+<dd><p>It contains user's keys and avatar information.</p>
+<dl class="attribute">
+<dt id="nekoyume.models.User.address">
+<code class="descname">address</code><a class="headerlink" href="#nekoyume.models.User.address" title="정의 주소">¶</a></dt>
+<dd><p>It returns address of the user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.User.avatar">
+<code class="descname">avatar</code><span class="sig-paren">(</span><em>block_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.avatar" title="정의 주소">¶</a></dt>
+<dd><p>get avatar of the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Params block_id:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Avatar's block timing. If None, it sets last block.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.User.create_block">
+<code class="descname">create_block</code><span class="sig-paren">(</span><em>moves</em>, <em>commit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.create_block" title="정의 주소">¶</a></dt>
+<dd><p>Create a block.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.User.move">
+<code class="descname">move</code><span class="sig-paren">(</span><em>new_move</em>, <em>tax=0</em>, <em>commit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.move" title="정의 주소">¶</a></dt>
+<dd><p>make a move of the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Params new_move:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Move object to make</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Params tax:</th><td class="field-body">Tax to apply</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Params commit:</th><td class="field-body">commit in this function automatically or not</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nekoyume.models.User.moves">
+<code class="descname">moves</code><a class="headerlink" href="#nekoyume.models.User.moves" title="정의 주소">¶</a></dt>
+<dd><p>return the user's moves.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nekoyume.models.User.sign">
+<code class="descname">sign</code><span class="sig-paren">(</span><em>move: nekoyume.models.Move</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.sign" title="정의 주소">¶</a></dt>
+<dd><p>put signature into the given move using the user's private key.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="nekoyume.models.get_address">
+<code class="descclassname">nekoyume.models.</code><code class="descname">get_address</code><span class="sig-paren">(</span><em>public_key: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#nekoyume.models.get_address" title="정의 주소">¶</a></dt>
+<dd><p>Get address based on the public key</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="white_paper_ko.html" class="btn btn-neutral float-right" title="Nekoyume: 탈중앙화된 대규모 다중 사용자 온라인 롤플레잉 게임" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="roadmap.html" class="btn btn-neutral" title="Nekoyume Development Roadmap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, JC Kim.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

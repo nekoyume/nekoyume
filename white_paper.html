@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Nekoyume: A truly decentralized massively multiplayer online role-playing game &mdash; nekoyume 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="색인"
+              href="genindex.html"/>
+        <link rel="search" title="검색" href="search.html"/>
+    <link rel="top" title="nekoyume 0.0.0 documentation" href="index.html"/>
+        <link rel="next" title="Nekoyume Development Roadmap" href="roadmap.html"/>
+        <link rel="prev" title="Nekoyume" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> nekoyume
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">English:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">White Paper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pseudo-random-number-generation-prng">2. Pseudo-random number generation (PRNG)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#random-generation-using-block-values">2.1. Random generation using block values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-generation-using-external-services">2.2. Random generation using external services</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hash-random">3. Hash Random</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#combination-of-behavior-information-from-hash-value-and-block-hash">3.1. Combination of behavior information from hash value and block hash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#behavior-information-that-can-be-included-in-a-block-time-limit">3.2. Behavior information that can be included in a block Time limit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#decentralized-mmorpg">4. Decentralized MMORPG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#economic-structure">5. Economic Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adventurer">5.1. Adventurer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hack-slash">5.1.1. ⚔️ Hack &amp; Slash</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sleep">5.1.2. 💤 Sleep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#level-up">5.1.3. 🆙 Level Up</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cat">5.2. Cat</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#block-generation-consensus">5.2.1. Block generation consensus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compensation-system">5.2.2. Compensation system</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gold">5.3. Gold</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#benefit-of-gold">5.3.1. Benefit of gold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-way-to-earn-gold">5.3.2. The way to earn gold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gold-generation-event">5.3.2.1. Gold generation event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#participate-in-the-core-team">5.3.2.2. Participate in the core team</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#participate-in-the-network">5.3.2.3. Participate in the network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations">6. Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#limitation-of-hash-random">6.1. Limitation of Hash Random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proof-of-work">6.2. Proof of Work</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">7. Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">한국어:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper_ko.html">백서</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap_ko.html">로드맵</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">nekoyume</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Nekoyume: A truly decentralized massively multiplayer online role-playing game</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/white_paper.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nekoyume-a-truly-decentralized-massively-multiplayer-online-role-playing-game">
+<span id="nekoyume-a-truly-decentralized-massively-multiplayer-online-role-playing-game"></span><h1>Nekoyume: A truly decentralized massively multiplayer online role-playing game<a class="headerlink" href="#nekoyume-a-truly-decentralized-massively-multiplayer-online-role-playing-game" title="제목 주소">¶</a></h1>
+<p><strong>Abstract:</strong> Nekoyume is a decentralized blockchain technology-based massively multiplayer online role-playing game (MMORPG). In Nekoyume, a large number of users can hunt virtual monsters to gain experience, collect essential in-game items from adventures, and become stronger. The action information of the game is recorded in a blockchain ledger, thereby enabling several users to participate without the requirement for a centralized server. In this work, we design a separate random consensus, called Hash random, to implement the game on the blockchain. Hash random is a random consensus obtained by combining the block hash, which is created by the proof of work, and the hash value of the individual action. Hash random minimizes the intentions of specific stakeholders, and is deterministic by each behavior.</p>
+<div class="section" id="background">
+<span id="background"></span><h2>1. Background<a class="headerlink" href="#background" title="제목 주소">¶</a></h2>
+<p>Bitcoin, proposed by Satoshi Nakamoto, introduced the concept of blockchain, which applied techniques such as digital signature, hashing, and proof of work, to create a public ledger. Blockchain has demonstrated that the decentralized main net is stable for nine years and that anyone can participate in the creation of a trustworthy virtual currency. <a class="reference external" href="https://bitcoin.org/bitcoin.pdf"><sup>1</sup></a> The vision of this trusted technology has also inspired several software projects.
+At present, blockchain technology is being implemented in applications that go beyond cryptocurrency. Vitalik Buterin further developed the bitcoin script to propose Ethereum, which is a decentralized application platform based on Turing complete Smart Contract. <a class="reference external" href="https://github.com/ethereum/wiki/wiki/%5BKorean%5D-White-Paper"><sup>2</sup></a></p>
+<p>In the efforts to create a wide variety of applications for blockchain, several researches attempted to  develop games. For example, CryptoKitties, is an online game where users can send and receive randomly generated cats. The enthusiastic response received almost paralyzed the Ethereum network temporarily <a class="reference external" href="https://www.dropbox.com/s/a5h3zso545wuqkm/CryptoKitties_WhitePapurr_V2.pdf?dl=0"><sup>3</sup></a>. However, since the use of random consensus on the blockchain is limited, there are several  limitations to the games that can be implemented at present. If a more general-purpose random number generation approach is developed, users will be able to create and develop several different types of gaming applications using blockchain technology.</p>
+</div>
+<div class="section" id="pseudo-random-number-generation-prng">
+<span id="pseudo-random-number-generation-prng"></span><h2>2. Pseudo-random number generation (PRNG)<a class="headerlink" href="#pseudo-random-number-generation-prng" title="제목 주소">¶</a></h2>
+<p>One of the major limitations of Blockchain is that the data on the chain and its execution result must be deterministic because of the nature of everyone sharing the ledger and same effect. In other words, it is not possible to use a typical random value in an application on the blockchain, because all the users will be able to view different values ​​based on the same data. However, several famous games, including Tetris, have random elements; therefore, implementing games on a blockchain without any restrictions is a significant limitation. To that end, there have been studies on pseudo-random number generation (PRNG) on blockchains to make blockchains more universal.</p>
+<div class="section" id="random-generation-using-block-values">
+<span id="random-generation-using-block-values"></span><h3>2.1. Random generation using block values<a class="headerlink" href="#random-generation-using-block-values" title="제목 주소">¶</a></h3>
+<p>As regards the implementation, the use of block values for random generation is relatively simple. However, the miner can edit all the block variables, and therefore, it is not suitable for blockchains where the miner and the user are the same entity. <a class="reference external" href="https://etherscan.io/address/0xa11e4ed59dc94e69612f3111942626ed513cb172#code"><sup>4</sup></a></p>
+</div>
+<div class="section" id="random-generation-using-external-services">
+<span id="random-generation-using-external-services"></span><h3>2.2. Random generation using external services<a class="headerlink" href="#random-generation-using-external-services" title="제목 주소">¶</a></h3>
+<p>Random generation using external services enables the complete concealment of  random generation. However, because it is not a decentralized approach, it may lead to trust issues. <a class="reference external" href="http://www.oraclize.it/"><sup>5</sup></a></p>
+<p>Thus, the random generation method proposed in this work has the disadvantage that it can intentionally intervene in a particular group. Just as dealers should not manipulate odds at a casino, randomness must be created fairly by minimizing the likelihood of intentional involvement of specific user interests. To address this problem, Nekoyume proposes a random generation method called Hash random.</p>
+</div>
+</div>
+<div class="section" id="hash-random">
+<span id="hash-random"></span><h2>3. Hash Random<a class="headerlink" href="#hash-random" title="제목 주소">¶</a></h2>
+<p>Hash random is designed to prevent stakeholders from attempting to generate an intentional number, in a way that would be detrimental to the interests of other users. To this end, we present two fundamental concepts.</p>
+<div class="section" id="combination-of-behavior-information-from-hash-value-and-block-hash">
+<span id="combination-of-behavior-information-from-hash-value-and-block-hash"></span><h3>3.1. Combination of behavior information from hash value and block hash<a class="headerlink" href="#combination-of-behavior-information-from-hash-value-and-block-hash" title="제목 주소">¶</a></h3>
+<p>The hash value derived from a user's behavior information contains the signature of the user; therefore, it prevents the miner from intentionally transforming the hash value. The block hash is a value created by the miner. Therefore, the user cannot deliberately intervene in the generation of the block hash. Using the values ​​of the two hash values ​​XORed as a random seed, (1) the user cannot intervene on random values, and (2) all user actions in one block can be based on individual random seeds.</p>
+</div>
+<div class="section" id="behavior-information-that-can-be-included-in-a-block-time-limit">
+<span id="behavior-information-that-can-be-included-in-a-block-time-limit"></span><h3>3.2. Behavior information that can be included in a block Time limit<a class="headerlink" href="#behavior-information-that-can-be-included-in-a-block-time-limit" title="제목 주소">¶</a></h3>
+<p>Even in the case that a combination of behavior information from hash and block hash value is used as a random seed, a miner can intentionally attempt to generate a favorable hash based on the behavior information of a user. To safeguard against this loophole, the timestamp corresponding to the creation of behavior information that can be included in the block is limited to 10 times the maximum block creation time. A miner may spend more time than other miners to find a hash that has a good combination of specific behavioral information at the expense of the following:</p>
+<ul class="simple">
+<li>The miners will be at a disadvantage when competing for hash compensation.</li>
+<li>The process of intentionally looking for profitable blocks is longer because of the requirement for periodically obtaining new behavior information.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="decentralized-mmorpg">
+<span id="decentralized-mmorpg"></span><h2>4. Decentralized MMORPG<a class="headerlink" href="#decentralized-mmorpg" title="제목 주소">¶</a></h2>
+<p>Nekoyume is a massively multiplayer online role-playing game (MMORPG) based on blockchain, which is regarded as the first game to incorporate the concept of Hash random. Users take on the role of adventure seekers, who venture and trade in the world of games, or become cats who can navigate blocks that are key to the game's progress.</p>
+<p>Because Nekoyume is an MMORPG based on a blockchain, there is no centralized server for a particular subject, which has the following advantages.</p>
+<ol class="simple">
+<li>In a centralized service operated by a specific entity, the service may be discontinued if the profitability of the game is not sustained. On the other hand, a blockchain-based game can continue as long as there is one participant left.</li>
+<li>The fun factor of the game is not subject to the business intention (profitability) of the operating entity. The change in game design is determined by the consensus of the participant-oriented community; several participants can develop the fun elements of the game through consensus.</li>
+<li>While centralized services give the service operator an economic advantage, blockchain-based games are distributed according to the agreed token economic model.</li>
+</ol>
+</div>
+<div class="section" id="economic-structure">
+<span id="economic-structure"></span><h2>5. Economic Structure<a class="headerlink" href="#economic-structure" title="제목 주소">¶</a></h2>
+<p>The following figure illustrates the various elements shared by Nekoyume's cats and adventurers.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>+-----------+                 +--------------+
+|           | → Block, Gold → |              |
+|    Cat    |                 |  Adventurer  |
+|           | ← Move,  Item ← |              |
++-----------+                 +--------------+
+</pre></div>
+</div>
+<div class="section" id="adventurer">
+<span id="adventurer"></span><h3>5.1. Adventurer<a class="headerlink" href="#adventurer" title="제목 주소">¶</a></h3>
+<p>Adventurers can set their own jobs, take an adventure, grow in-game items and experience, and grow stronger. The player can perform the following actions in Nekoyume.</p>
+<div class="section" id="hack-slash">
+<span id="hack-slash"></span><h4>5.1.1. ⚔️ Hack &amp; Slash<a class="headerlink" href="#hack-slash" title="제목 주소">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>👶 J4tQdM ∙ 2018-04-17 12:33:26.837628
+
+👍 You won the battle!
+
+😫 You are attacked by Worg and take 2 damage.
+🤔 You learned from your previous mistake. (XP +1)
+💥 You attacked Worg and wounded it for 2 damage. (HP 3 → 1)
+😫 You are attacked by Worg and take 2 damage.
+🤔 You learned from your previous mistake. (XP +1)
+💥 You attacked Worg and wounded it for 2 damage. (HP 1 → -1)
+☠️ You defeated Worg !
+🎁 You optained MEAT!
+</pre></div>
+</div>
+<p>Combats monsters from the current area.</p>
+</div>
+<div class="section" id="sleep">
+<span id="sleep"></span><h4>5.1.2. 💤 Sleep<a class="headerlink" href="#sleep" title="제목 주소">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>👶 J4tQdM ∙ 2018-04-17 12:32:55.006145
+
+💤 HP was recovered by sleep.
+</pre></div>
+</div>
+<p>Player sleeps to regain physical strength.</p>
+</div>
+<div class="section" id="level-up">
+<span id="level-up"></span><h4>5.1.3. 🆙 Level Up<a class="headerlink" href="#level-up" title="제목 주소">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>👶 J4tQdM ∙ 2018-04-17 12:36:07.846423
+
+🆙 Level Up! Now, your level is 5.
+</pre></div>
+</div>
+<p>Raises the player level, thus improving player skill and ability.</p>
+<p>When the player moves, the behavior information is passed to the network, and the move is actually performed after the creation of the next block. The block creation cycle is takes approximately 15 seconds; moreover, one block cannot contain more than two actions per user, therefore the minimum action cycle is also approximately 15 seconds.</p>
+<p>After the creation of a new block, the behavior contained in that block is evaluated. In the evaluation, the random value determined by the Hash random is reflected in the behavior result. The process of creating the random value by using the Hash random is as follows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">move</span><span class="o">.</span><span class="n">hash</span>
+<span class="go">&#39;42ff1bb9d4149463474a9c84cb1f580e3d78176038646d7bd66b135fa34bc739&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">move</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">hash</span>
+<span class="go">&#39;0000009d0d9bdd3fdfcd5a39d6313c6454653d881a3a59068c8a026ddf4f5803&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">randoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">^</span> <span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">move</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">hash</span><span class="p">,</span> <span class="n">move</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span>
+<span class="go">[4, 2, 86, 86, 1, 82, 91, 93, ... 3, 10]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">randoms</span> <span class="o">=</span> <span class="n">randoms</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">move</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">/</span> <span class="mi">4</span><span class="p">):]</span>
+<span class="go">[1, 82, 91, 93, ... 3, 10]</span>
+</pre></div>
+</div>
+<p>Players can acquire various in-game items through the adventure. However, since gold is only available through transactions, the players are required undertake adventures and obtain items through battles against stronger monsters, enabling the players to receive a lot of gold in the market.</p>
+<p>The life cycle of the adventurer has been adopted from the <a class="reference external" href="http://www.dungeon-world.com/">Dungeon World</a> rule. Dungeon World is a fantasy tabletop role-playing game (TRPG) based on Apocalypse World Engine and Dungeons &amp; Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the application of blockchain involving multiple users. Moreover, since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, it is suitable to use random element.</p>
+</div>
+</div>
+<div class="section" id="cat">
+<span id="cat"></span><h3>5.2. Cat<a class="headerlink" href="#cat" title="제목 주소">¶</a></h3>
+<p>The function of a Cat in Nekoyume is identical to that of a miner in Bitcoin. After receiving the adventurer's move information, the cat shares the move information with the other cats and explores blocks that package the move information.</p>
+<div class="section" id="block-generation-consensus">
+<span id="block-generation-consensus"></span><h4>5.2.1. Block generation consensus<a class="headerlink" href="#block-generation-consensus" title="제목 주소">¶</a></h4>
+<p>Nekoyume adopted the hashcash as a key consensus because it uses the Hash random with proof-of-work requirement. Since the block generation cycle is limited to 15 seconds, if the average of the recent block generation time is lower than 15 seconds, the demanding difficulty increases. Conversely, the average of the recent block generation time is higher than 15 seconds, the hard difficulty becomes lower.</p>
+</div>
+<div class="section" id="compensation-system">
+<span id="compensation-system"></span><h4>5.2.2. Compensation system<a class="headerlink" href="#compensation-system" title="제목 주소">¶</a></h4>
+<p>After the completion of block search, the miner can receive gold as compensation. Initially, 16 gold per block are awarded; the reward reduces by half every four years, and will be affixed at one gold per block after 16 years. This compensation is divided by half to the client and the block creator, so virtually in the first year the cats receive a reward of 8 gold, and after 16 years they will receive 0.5 gold per block.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="60%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Total miner &amp; client incentive/4y</th>
+<th class="head">Reward gold per block</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>134,553,600</td>
+<td>16</td>
+</tr>
+<tr class="row-odd"><td>67,276,800</td>
+<td>8</td>
+</tr>
+<tr class="row-even"><td>33,638,400</td>
+<td>4</td>
+</tr>
+<tr class="row-odd"><td>16,819,200</td>
+<td>2</td>
+</tr>
+<tr class="row-even"><td>8,409,600</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="gold">
+<span id="gold"></span><h3>5.3. Gold<a class="headerlink" href="#gold" title="제목 주소">¶</a></h3>
+<p>In order for a decentralized community to be sustainable, an economic structure is needed that can reasonably balance production and consumption. Gold is the main virtual currency of Nekoyume, which publishes and exchanges, gives consumers a pleasant game experience, and producers receive reasonable rewards for their contributions.</p>
+<div class="section" id="benefit-of-gold">
+<span id="benefit-of-gold"></span><h4>5.3.1. Benefit of gold<a class="headerlink" href="#benefit-of-gold" title="제목 주소">¶</a></h4>
+<p>Adventurers can use gold to enjoy a more pleasant and fast gaming experience. Typically, the following benefits exist.</p>
+<ul class="simple">
+<li>🔼 Obtain a status bonus proportional to the amount held</li>
+<li>🤓 Obtain valuable items through composition</li>
+<li>🤝 Collect various items through trading</li>
+</ul>
+</div>
+<div class="section" id="the-way-to-earn-gold">
+<span id="the-way-to-earn-gold"></span><h4>5.3.2. The way to earn gold<a class="headerlink" href="#the-way-to-earn-gold" title="제목 주소">¶</a></h4>
+</div>
+<div class="section" id="gold-generation-event">
+<span id="gold-generation-event"></span><h4>5.3.2.1. Gold generation event<a class="headerlink" href="#gold-generation-event" title="제목 주소">¶</a></h4>
+<p>In May 2018, Nekoyume Gold (NYG), which is available on the mainnet, will be issued in the form of the Ethereum ERC20 token. We will issue 21% of the total volume. In this minting, we achieve two objectives.</p>
+<ol class="simple">
+<li>Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributers.</li>
+<li>Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delievered to early stage players.</li>
+</ol>
+</div>
+<div class="section" id="participate-in-the-core-team">
+<span id="participate-in-the-core-team"></span><h4>5.3.2.2. Participate in the core team<a class="headerlink" href="#participate-in-the-core-team" title="제목 주소">¶</a></h4>
+<p>During the intensive development period over the next year, 9% of the gold reserves will be distributed to the core team members in proportion to their contribution amounts. Like 5.3.2.1., it is a compensation method for initial intensive development.</p>
+</div>
+<div class="section" id="participate-in-the-network">
+<span id="participate-in-the-network"></span><h4>5.3.2.3. Participate in the network<a class="headerlink" href="#participate-in-the-network" title="제목 주소">¶</a></h4>
+<p>After launching the mainnet, you can obtain gold by providing a client based on the published code or creating a block by executing $ neko. It will be the largest of all rewards portions and will be the only way to earn Gold from 2019 on. The planned amounts over four years are as follows.</p>
+</div>
+</div>
+</div>
+<div class="section" id="limitations">
+<span id="limitations"></span><h2>6. Limitations<a class="headerlink" href="#limitations" title="제목 주소">¶</a></h2>
+<p>Hash random is a random consensus that minimizes stakeholder intervention on the blockchain; however, it suffers from the following limitations.</p>
+<div class="section" id="limitation-of-hash-random">
+<span id="limitation-of-hash-random"></span><h3>6.1. Limitation of Hash Random<a class="headerlink" href="#limitation-of-hash-random" title="제목 주소">¶</a></h3>
+<p>Hash random eliminates room for user intervention and has added constraints over random intervention. This enables the miner to benefit significantly from proof-of-work, which does not intentionally involve random results. However, if the miner stands to gain a sufficiently large reward that offsets the structural damage, the miner may attempt to create a deliberate hash despite the constraints. Therefore, even if Hash random is used, it is necessary to design the system such that excessive compensation is not provided at random.</p>
+</div>
+<div class="section" id="proof-of-work">
+<span id="proof-of-work"></span><h3>6.2. Proof of Work<a class="headerlink" href="#proof-of-work" title="제목 주소">¶</a></h3>
+<p>Hash random is designed on the assumption that it should be used with proof-of-work. The use of Hash random is not suited to ecosystems using that use proof-of-stake or other consensus methods because certain stakeholders can easily intervene at random.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<span id="conclusion"></span><h2>7. Conclusion<a class="headerlink" href="#conclusion" title="제목 주소">¶</a></h2>
+<p>Nekoyume proposed and implemented a new random consensus, called Hash random, by combining the existing Bitcoin and Ethereum consensus systems to develop a decentralized MMORPG. In this article, we have summarized the difference between the random generation method and Hash random in the existing blockchain. In addition,  we also discussed the scope for Nekoyume’s further development. Hash random should be used with the proof-of-work consensus, and it will work as intended. Therefore, even if Hash random is used, the system must avoid providing heavy compensation to random values.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="roadmap.html" class="btn btn-neutral float-right" title="Nekoyume Development Roadmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Nekoyume" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, JC Kim.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

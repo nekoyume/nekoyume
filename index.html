@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Nekoyume &mdash; nekoyume 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="색인"
+              href="genindex.html"/>
+        <link rel="search" title="검색" href="search.html"/>
+    <link rel="top" title="nekoyume 0.0.0 documentation" href="#"/>
+        <link rel="next" title="Nekoyume: A truly decentralized massively multiplayer online role-playing game" href="white_paper.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> nekoyume
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">English:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper.html">White Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">한국어:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper_ko.html">백서</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap_ko.html">로드맵</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">nekoyume</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Nekoyume</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nekoyume">
+<h1>Nekoyume<a class="headerlink" href="#nekoyume" title="제목 주소">¶</a></h1>
+<p><a class="reference external" href="https://circleci.com/gh/nekoyume/nekoyume"><img alt="build" src="https://circleci.com/gh/nekoyume/nekoyume.svg?style=shield&amp;circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3" /></a> <a class="reference external" href="https://codecov.io/gh/nekoyume/nekoyume"><img alt="coverage" src="https://codecov.io/gh/nekoyume/nekoyume/branch/master/graph/badge.svg?token=VaVMWbOpm7" /></a> <a class="reference external" href="https://nekoyume-core-team-nekoyume.readthedocs-hosted.com/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.com/projects/nekoyume-core-team-nekoyume/badge/?version=latest" /></a></p>
+<p>Nekoyume is world's first <a class="reference external" href="https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game">MMORPG</a> based on <a class="reference external" href="https://en.wikipedia.org/wiki/Blockchain">Blockchain</a>.</p>
+<ul class="simple">
+<li>Nekoyume is entirely decentralized MMORPG game.</li>
+<li>Nekoyume uses <a class="reference external" href="https://en.wikipedia.org/wiki/Dungeon_World">Dungeon World</a> as a basic rule.</li>
+<li>To use randomness on the blockchain, This project implemented Hash random. (see <a class="reference internal" href="white_paper.html"><span class="doc">white paper</span></a>.)</li>
+</ul>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="제목 주소">¶</a></h2>
+<ul class="simple">
+<li>Python &gt;= 3.6</li>
+<li>Redis</li>
+<li>SQLite &gt;= 3.16.0</li>
+<li>(Recommended) PostgreSQL &gt;= 9.5</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="제목 주소">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip install nekoyume
+</pre></div>
+</div>
+<div class="section" id="installation-for-development">
+<h3>Installation for Development<a class="headerlink" href="#installation-for-development" title="제목 주소">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone git@github.com:nekoyume/nekoyume.git
+<span class="gp">$</span> <span class="nb">cd</span> nekoyume
+<span class="gp">$</span> mkvirtualenv -p <span class="k">$(</span>which python3.6<span class="k">)</span> -a <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span> nekoyume
+<span class="gp">$</span> pip install -e .<span class="o">[</span>dev,test<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="launching-node">
+<h2>Launching Node<a class="headerlink" href="#launching-node" title="제목 주소">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> gunicorn nekoyume.app:app
+</pre></div>
+</div>
+</div>
+<div class="section" id="mining">
+<h2>Mining<a class="headerlink" href="#mining" title="제목 주소">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> neko
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="제목 주소">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">English:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper.html">White Paper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#background">1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#pseudo-random-number-generation-prng">2. Pseudo-random number generation (PRNG)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#hash-random">3. Hash Random</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#decentralized-mmorpg">4. Decentralized MMORPG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#economic-structure">5. Economic Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#limitations">6. Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper.html#conclusion">7. Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#v0-preview-network-q2-2018">v0: Preview Network - Q2, 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#v1-test-network-q3-2018">v1: Test Network - Q3, 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#v2-main-network-q4-2018">v2: Main Network - Q4, 2018</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="references.html#models">Models</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">한국어:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper_ko.html">백서</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#">1. 배경</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#prng">2. 유사 랜덤 생성 (PRNG)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#">3. 해시 랜덤</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#mmorpg">4. 탈중앙화된 MMORPG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#">5. 경제 구조</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#">6. 한계</a></li>
+<li class="toctree-l2"><a class="reference internal" href="white_paper_ko.html#">7. 결론</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap_ko.html">로드맵</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap_ko.html#v0-preview-network-q2-2018">v0: Preview Network - Q2, 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap_ko.html#v1-test-network-q3-2018">v1: Test Network - Q3, 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap_ko.html#v2-main-network-q4-2018">v2: Main Network - Q4, 2018</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="제목 주소">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">색인</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">모듈 목록</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">검색 페이지</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="white_paper.html" class="btn btn-neutral float-right" title="Nekoyume: A truly decentralized massively multiplayer online role-playing game" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, JC Kim.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

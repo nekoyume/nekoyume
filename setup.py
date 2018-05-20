@@ -18,9 +18,10 @@ setup(
     author='JC Kim',
     author_email='jc@nekoyu.me',
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Game Player',
-        'Topic :: Blockchain :: Game',
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Other Audience',
+        'Topic :: Database :: Database Engines/Servers',
+        'Topic :: Games/Entertainment :: Role-Playing',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
     ],

@@ -26,6 +26,7 @@ Installation
 .. code-block:: console
 
    $ pip install nekoyume
+   $ nekoyume init
 
 
 Installation for Development
@@ -45,6 +46,7 @@ Launching Node
 .. code-block:: console
 
    $ pip install honcho
+   $ curl https://cdn.rawgit.com/nekoyume/nekoyume/master/Procfile > Procfile
    $ PORT=5000 honcho start
 
 

@@ -3,7 +3,7 @@ import time
 
 from ptpython.repl import embed
 
-from nekoyume.models import Node, Block, Move, User
+from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db
 
 
@@ -49,6 +49,10 @@ def init(seed):
 
 @click.command()
 def sync():
+    public_url = get_my_public_url()
+    if public_url:
+        click.echo(f"You have a public node url. ({public_url})")
+        Node.broadcast(Node.post_node_endpoint, {'url': public_url})
     while True:
         try:
             prev_id = Block.query.order_by(Block.id.desc()).first().id

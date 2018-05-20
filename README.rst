@@ -9,7 +9,7 @@ Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multi
 
 * Nekoyume is entirely decentralized MMORPG game.
 * Nekoyume uses `Dungeon World <https://en.wikipedia.org/wiki/Dungeon_World>`_ as a basic rule.
-* To use randomness on the blockchain, This project implemented Hash random. (see :doc:`white paper <white_paper>`.)
+* To use randomness on the blockchain, This project implemented Hash random. (see `white paper <//docs.nekoyu.me/white_paper.html>`_.)
 
 Dependencies
 ------------

@@ -38,6 +38,26 @@ db = SQLAlchemy()
 cache = Cache()
 
 
+def get_my_public_url():
+    if 'PUBLIC_URL' in os.environ:
+        return os.environ['PUBLIC_URL']
+    try:
+        if os.environ.get('PORT', '80') != '80':
+            port = ':' + os.environ.get('PORT', '80')
+        else:
+            port = ''
+        ip = requests.get('http://ip.42.pl/raw').text
+        has_public_address = requests.get(
+            f'http://{ip}{port}/ping'
+        ).text == 'pong'
+    except requests.exceptions.ConnectionError:
+        return None
+    if has_public_address:
+        return f'http://{ip}{port}'
+    else:
+        return None
+
+
 class Node(db.Model):
     """This object contains node information you know."""
 

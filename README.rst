@@ -44,7 +44,8 @@ Launching Node
 
 .. code-block:: console
 
-   $ gunicorn nekoyume.app:app
+   $ pip install honcho
+   $ PORT=5000 honcho start
 
 
 
@@ -53,7 +54,7 @@ Mining
 
 .. code-block:: console
 
-   $ neko
+   $ nekoyume neko
 
 
 .. |build| image:: https://circleci.com/gh/nekoyume/nekoyume.svg?style=shield&circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3

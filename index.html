@@ -164,7 +164,7 @@
             
   <div class="section" id="nekoyume">
 <h1>Nekoyume<a class="headerlink" href="#nekoyume" title="제목 주소">¶</a></h1>
-<p><a class="reference external" href="https://circleci.com/gh/nekoyume/nekoyume"><img alt="build" src="https://circleci.com/gh/nekoyume/nekoyume.svg?style=shield&amp;circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3" /></a> <a class="reference external" href="https://codecov.io/gh/nekoyume/nekoyume"><img alt="coverage" src="https://codecov.io/gh/nekoyume/nekoyume/branch/master/graph/badge.svg?token=VaVMWbOpm7" /></a> <a class="reference external" href="https://nekoyume-core-team-nekoyume.readthedocs-hosted.com/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.com/projects/nekoyume-core-team-nekoyume/badge/?version=latest" /></a></p>
+<p><a class="reference external" href="https://circleci.com/gh/nekoyume/nekoyume"><img alt="build" src="https://circleci.com/gh/nekoyume/nekoyume.svg?style=shield&amp;circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3" /></a> <a class="reference external" href="https://codecov.io/gh/nekoyume/nekoyume"><img alt="coverage" src="https://codecov.io/gh/nekoyume/nekoyume/branch/master/graph/badge.svg?token=VaVMWbOpm7" /></a></p>
 <p>Nekoyume is world's first <a class="reference external" href="https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game">MMORPG</a> based on <a class="reference external" href="https://en.wikipedia.org/wiki/Blockchain">Blockchain</a>.</p>
 <ul class="simple">
 <li>Nekoyume is entirely decentralized MMORPG game.</li>
@@ -183,6 +183,7 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="제목 주소">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip install nekoyume
+<span class="gp">$</span> nekoyume init
 </pre></div>
 </div>
 <div class="section" id="installation-for-development">
@@ -197,13 +198,15 @@
 </div>
 <div class="section" id="launching-node">
 <h2>Launching Node<a class="headerlink" href="#launching-node" title="제목 주소">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> gunicorn nekoyume.app:app
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip install honcho
+<span class="gp">$</span> curl https://cdn.rawgit.com/nekoyume/nekoyume/master/Procfile &gt; Procfile
+<span class="gp">$</span> <span class="nv">PORT</span><span class="o">=</span><span class="m">5000</span> honcho start
 </pre></div>
 </div>
 </div>
 <div class="section" id="mining">
 <h2>Mining<a class="headerlink" href="#mining" title="제목 주소">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> neko
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> nekoyume neko
 </pre></div>
 </div>
 </div>

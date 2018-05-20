@@ -178,7 +178,7 @@ game moves.</p>
 <dd><p>This object contains block information.</p>
 <dl class="method">
 <dt id="nekoyume.models.Block.broadcast">
-<code class="descname">broadcast</code><span class="sig-paren">(</span><em>sent_node: bool = None</em>, <em>my_node: bool = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.broadcast" title="정의 주소">¶</a></dt>
+<code class="descname">broadcast</code><span class="sig-paren">(</span><em>sent_node: bool = None</em>, <em>my_node: bool = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em>, <em>click=None</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.broadcast" title="정의 주소">¶</a></dt>
 <dd><blockquote>
 <div>It broadcast this block to every nodes you know.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
@@ -268,7 +268,7 @@ broadcast received object.</li>
 
 <dl class="classmethod">
 <dt id="nekoyume.models.Block.sync">
-<em class="property">classmethod </em><code class="descname">sync</code><span class="sig-paren">(</span><em>node: nekoyume.models.Node = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.sync" title="정의 주소">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">sync</code><span class="sig-paren">(</span><em>node: nekoyume.models.Node = None</em>, <em>session=&lt;sqlalchemy.orm.scoping.scoped_session object&gt;</em>, <em>click=None</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nekoyume.models.Block.sync" title="정의 주소">¶</a></dt>
 <dd><p>Sync blockchain with other node.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -582,7 +582,7 @@ broadcast received object.</li>
 
 <dl class="method">
 <dt id="nekoyume.models.User.create_block">
-<code class="descname">create_block</code><span class="sig-paren">(</span><em>moves</em>, <em>commit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.create_block" title="정의 주소">¶</a></dt>
+<code class="descname">create_block</code><span class="sig-paren">(</span><em>moves</em>, <em>commit=True</em>, <em>click=None</em><span class="sig-paren">)</span><a class="headerlink" href="#nekoyume.models.User.create_block" title="정의 주소">¶</a></dt>
 <dd><p>Create a block.</p>
 </dd></dl>
 

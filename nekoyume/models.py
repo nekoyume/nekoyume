@@ -67,6 +67,7 @@ class Node(db.Model):
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
     get_nodes_endpoint = '/nodes'
+    post_node_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
     post_block_endpoint = '/blocks'
     post_move_endpoint = '/moves'
@@ -254,7 +255,8 @@ class Block(db.Model):
     def broadcast(self,
                   sent_node: bool=None,
                   my_node: bool=None,
-                  session=db.session) -> bool:
+                  session=db.session,
+                  click=None) -> bool:
         """
         It broadcast this block to every nodes you know.
 
@@ -269,7 +271,7 @@ class Block(db.Model):
                               sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node: Node=None, session=db.session) -> bool:
+    def sync(cls, node: Node=None, session=db.session, click=None) -> bool:
         """
         Sync blockchain with other node.
 
@@ -339,7 +341,8 @@ class Block(db.Model):
         from_ = branch_point + 1
         limit = 1000
         while True:
-            print(f'Syncing blocks...(from: {from_})')
+            if click:
+                click.echo(f'Syncing blocks...(from: {from_})')
             response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
                                     params={'from': from_,
                                             'to': from_ + limit - 1})
@@ -1017,7 +1020,7 @@ class User():
                                           'item2': item2,
                                           'item3': item3}))
 
-    def create_block(self, moves, commit=True):
+    def create_block(self, moves, commit=True, click=None):
         """ Create a block. """
         for move in moves:
             if not move.valid:
@@ -1043,7 +1046,10 @@ class User():
                 (block.created_at - difficulty_check_block.created_at) /
                 (block.id - difficulty_check_block.id)
             )
-            print(avg_timedelta, block.difficulty)
+            if click:
+                click.echo(
+                    f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
+                )
             if avg_timedelta <= datetime.timedelta(0, 5):
                 block.difficulty = block.difficulty + 1
             elif avg_timedelta > datetime.timedelta(0, 15):

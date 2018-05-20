@@ -37,29 +37,31 @@ def get_nodes():
     return jsonify(nodes=[n.url for n in nodes])
 
 
-@api.route('/nodes', methods=['POST'])
+@api.route(Node.post_node_endpoint, methods=['POST'])
 def post_node():
     url = request.values.get('url')
     node = Node.query.get(url)
-    if not node:
-        node = Node(url=url)
-        db.session.add(node)
-    try:
-        response = requests.get(f'{node.url}/blocks/last').json()
-    except requests.exceptions.ConnectionError:
-        return jsonify(
-            result='failed',
-            message=f'Connection to node {node.url} was failed.'
-        ), 403
-    if response.status_code == 200:
-        node.last_connected_at = datetime.datetime.now()
-        db.session.commit()
+    if node:
         return jsonify(result='success')
     else:
-        return jsonify(
-            result='failed',
-            message=f'Connection to node {node.url} was failed.'
-        ), 403
+        node = Node(url=url)
+        db.session.add(node)
+        try:
+            response = requests.get(f'{node.url}/ping')
+        except requests.exceptions.ConnectionError:
+            return jsonify(
+                result='failed',
+                message=f'Connection to node {node.url} was failed.'
+            ), 403
+        if response.status_code == 200:
+            node.last_connected_at = datetime.datetime.now()
+            db.session.commit()
+            return jsonify(result='success')
+        else:
+            return jsonify(
+                result='failed',
+                message=f'Connection to node {node.url} was failed.'
+            ), 403
 
 
 @api.route(Node.get_blocks_endpoint, methods=['GET'])

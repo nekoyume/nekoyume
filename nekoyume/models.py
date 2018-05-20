@@ -38,6 +38,26 @@ db = SQLAlchemy()
 cache = Cache()
 
 
+def get_my_public_url():
+    if 'PUBLIC_URL' in os.environ:
+        return os.environ['PUBLIC_URL']
+    try:
+        if os.environ.get('PORT', '80') != '80':
+            port = ':' + os.environ.get('PORT', '80')
+        else:
+            port = ''
+        ip = requests.get('http://ip.42.pl/raw').text
+        has_public_address = requests.get(
+            f'http://{ip}{port}/ping'
+        ).text == 'pong'
+    except requests.exceptions.ConnectionError:
+        return None
+    if has_public_address:
+        return f'http://{ip}{port}'
+    else:
+        return None
+
+
 class Node(db.Model):
     """This object contains node information you know."""
 
@@ -47,6 +67,7 @@ class Node(db.Model):
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
     get_nodes_endpoint = '/nodes'
+    post_node_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
     post_block_endpoint = '/blocks'
     post_move_endpoint = '/moves'
@@ -79,8 +100,9 @@ class Node(db.Model):
                     continue
             except requests.exceptions.ConnectionError:
                 continue
-            db.session.commit()
             break
+
+        db.session.commit()
 
     def ping(self):
         try:
@@ -233,7 +255,8 @@ class Block(db.Model):
     def broadcast(self,
                   sent_node: bool=None,
                   my_node: bool=None,
-                  session=db.session) -> bool:
+                  session=db.session,
+                  click=None) -> bool:
         """
         It broadcast this block to every nodes you know.
 
@@ -248,7 +271,7 @@ class Block(db.Model):
                               sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node: Node=None, session=db.session) -> bool:
+    def sync(cls, node: Node=None, session=db.session, click=None) -> bool:
         """
         Sync blockchain with other node.
 
@@ -292,7 +315,7 @@ class Block(db.Model):
             block = session.query(Block).get(mid)
             if value > high:
                 return 0
-            if (response.json()['block'] and
+            if (response.json()['block'] and block and
                block.hash == response.json()['block']['hash']):
                 if value == mid:
                         return value
@@ -318,7 +341,8 @@ class Block(db.Model):
         from_ = branch_point + 1
         limit = 1000
         while True:
-            print(f'Syncing blocks...(from: {from_})')
+            if click:
+                click.echo(f'Syncing blocks...(from: {from_})')
             response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
                                     params={'from': from_,
                                             'to': from_ + limit - 1})
@@ -361,7 +385,10 @@ class Block(db.Model):
                     session.rollback()
                     raise InvalidBlockError
                 session.add(block)
+            if len(response.json()['blocks']) < 1000:
+                break
             from_ += limit
+            db.session.commit()
         db.session.commit()
         return True
 
@@ -710,6 +737,15 @@ class CreateNovice(Move):
         avatar.wisdom = int(self.details['wisdom'])
         avatar.charisma = int(self.details['charisma'])
 
+        if (avatar.strength + avatar.dexterity + avatar.constitution +
+           avatar.intelligence + avatar.wisdom + avatar.charisma) > 64:
+            avatar.strength = 9
+            avatar.dexterity = 9
+            avatar.constitution = 9
+            avatar.intelligence = 9
+            avatar.wisdom = 9
+            avatar.charisma = 9
+
         if 'name' in self.details:
             avatar.name = self.details['name']
         else:
@@ -984,7 +1020,7 @@ class User():
                                           'item2': item2,
                                           'item3': item3}))
 
-    def create_block(self, moves, commit=True):
+    def create_block(self, moves, commit=True, click=None):
         """ Create a block. """
         for move in moves:
             if not move.valid:
@@ -1010,7 +1046,10 @@ class User():
                 (block.created_at - difficulty_check_block.created_at) /
                 (block.id - difficulty_check_block.id)
             )
-            print(avg_timedelta, block.difficulty)
+            if click:
+                click.echo(
+                    f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
+                )
             if avg_timedelta <= datetime.timedelta(0, 5):
                 block.difficulty = block.difficulty + 1
             elif avg_timedelta > datetime.timedelta(0, 15):

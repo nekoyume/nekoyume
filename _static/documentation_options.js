@@ -1,6 +1,6 @@
 var DOCUMENTATION_OPTIONS = {
     URL_ROOT: '',
-    VERSION: '0.0.0',
+    VERSION: '0.0.1',
     LANGUAGE: 'ko',
     COLLAPSE_INDEX: false,
     FILE_SUFFIX: '.html',

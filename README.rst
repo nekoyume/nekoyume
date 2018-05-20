@@ -46,7 +46,7 @@ Launching Node
 .. code-block:: console
 
    $ pip install honcho
-   $ curl https://cdn.rawgit.com/nekoyume/nekoyume/master/Procfile > Procfile
+   $ curl https://raw.githubusercontent.com/nekoyume/nekoyume/master/Procfile > Procfile
    $ PORT=5000 honcho start
 
 

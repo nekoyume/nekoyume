@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 import requests
 
 from nekoyume.tasks import block_broadcast, move_broadcast
-from nekoyume.models import db, Block, Node, Move
+from nekoyume.models import db, Block, Node, Move, get_my_public_url
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -13,24 +13,6 @@ api = Blueprint('api', __name__, template_folder='templates')
 @api.route('/ping')
 def get_pong():
     return 'pong'
-
-
-def get_my_public_url():
-    try:
-        if ':' in request.host:
-            port = ':' + request.host.split(':')[1]
-        else:
-            port = ''
-        ip = requests.get('http://ip.42.pl/raw').text
-        has_public_address = requests.get(
-            f'{request.scheme}://{ip}{port}/ping'
-        ).text == 'pong'
-    except requests.exceptions.ConnectionError:
-        return None
-    if has_public_address:
-        return f'{request.scheme}://{ip}{port}'
-    else:
-        return None
 
 
 @api.route('/public_url')

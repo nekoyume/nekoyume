@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='nekoyume',
-    version='0.0.0',
+    version='0.0.1',
     description='Decentralized MMORPG based on Dungeon World',
     long_description=long_description,
     url='https://github.com/nekoyume/nekoyume',
@@ -66,7 +66,6 @@ setup(
     entry_points={
         'console_scripts': [
             'nekoyume = nekoyume.cli:cli',
-            'neko = nekoyume.neko:run'
         ],
     },
     project_urls={

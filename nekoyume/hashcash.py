@@ -18,7 +18,7 @@ The generalized form simply finds a suffix that creates zero bits in the
 hash of the string concatenating 'challenge' and 'suffix' without specifying
 any particular fields or delimiters in 'challenge'.  E.g., you might get:
 
-    >>> from hashcash import _mint
+    >>> from nekoyume.hashcash import _mint
     >>> _mint('foo', bits=16)
     '1369a'
     >>> from hashlib import sha256

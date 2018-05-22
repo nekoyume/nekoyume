@@ -39,7 +39,15 @@ def get_nodes():
 
 @api.route(Node.post_node_endpoint, methods=['POST'])
 def post_node():
-    url = request.values.get('url')
+    if 'url' in request.values:
+        url = request.values['url']
+    elif 'url' in request.get_json():
+        url = request.get_json()['url']
+    else:
+        return jsonify(
+            result='failed',
+            message='Invalid parameter.'
+        ), 400
     node = Node.query.get(url)
     if node:
         return jsonify(result='success')

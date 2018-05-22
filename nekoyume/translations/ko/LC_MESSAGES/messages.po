@@ -210,7 +210,7 @@ msgstr "%(monster)s는(은) 도망가버렸다..."
 
 #: templates/dashboard.html:564
 #, python-format
-msgid "You optained %(item)s!"
+msgid "You obtained %(item)s!"
 msgstr "%(item)s을(를) 얻었다!"
 
 #: templates/dashboard.html:571

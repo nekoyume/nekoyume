@@ -94,6 +94,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# Secret key
+.secret_key
+
+# Database
 other_test.db
 test.db
 yume.db

@@ -2,7 +2,7 @@
 Nekoyume
 ========
 
-|build| |coverage| |pypi|
+|build| |coverage| |pypi| |chat|
 
 Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `Blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
 
@@ -67,3 +67,6 @@ Mining
 
 .. |pypi| image:: https://img.shields.io/pypi/v/nekoyume.svg
   :target: https://pypi.org/project/nekoyume/
+
+.. |chat| image:: https://img.shields.io/badge/chat-on%20telegram-brightgreen.svg
+  :target: https://t.me/nekoyume

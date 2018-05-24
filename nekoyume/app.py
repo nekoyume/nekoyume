@@ -33,7 +33,16 @@ def create_app():
         'DATABASE_URL', 'sqlite:///yume.db')
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = b'\xc2o\x81?u+\x14j%\x99\xc5\xa6\x83\x06`\xfch$\n"a0\x96\x8c' # noqa
+
+    try:
+        with open('.secret_key', 'rb') as f:
+            app.secret_key = f.read()
+    except FileNotFoundError:
+        app.secret_key = os.urandom(64)
+        f = open('.secret_key', 'wb')
+        f.write(app.secret_key)
+        f.close()
+
     app.register_blueprint(api)
     app.register_blueprint(game)
 

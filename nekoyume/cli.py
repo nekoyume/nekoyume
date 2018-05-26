@@ -21,7 +21,9 @@ def neko(private_key):
     while True:
         Block.sync()
         block = User(private_key).create_block(
-            Move.query.filter_by(block=None).limit(20).all(),
+            [m
+             for m in Move.query.filter_by(block=None).limit(20).all()
+             if m.valid],
             click=click,
         )
         if block:

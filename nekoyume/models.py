@@ -205,9 +205,9 @@ class Block(db.Model):
                 (self.id - difficulty_check_block.id)
             )
             if avg_timedelta <= datetime.timedelta(0, 5):
-                valid = valid and max(0, self.difficulty == difficulty + 1)
+                valid = valid and self.difficulty == max(0, difficulty + 1)
             elif avg_timedelta > datetime.timedelta(0, 15):
-                valid = valid and max(0, self.difficulty == difficulty - 1)
+                valid = valid and self.difficulty == max(0, difficulty - 1)
             else:
                 valid = valid and self.difficulty == difficulty
         else:

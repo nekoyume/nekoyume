@@ -73,6 +73,20 @@ class Node(db.Model):
     post_move_endpoint = '/moves'
 
     @classmethod
+    def get(cls, url, session=db.session):
+        node = Node.query.filter_by(url=url).first()
+        if node:
+            return node
+        elif requests.get(f'{url}/ping').text == 'pong':
+            node = Node(url=url, last_connected_at=datetime.datetime.utcnow())
+            if session:
+                session.add(node)
+                session.commit()
+            return node
+        else:
+            return None
+
+    @classmethod
     def update(cls, node=None):
         """
         Update recent node list by scrapping other nodes' information.
@@ -91,11 +105,7 @@ class Node(db.Model):
             try:
                 response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
                 for url in response.json()['nodes']:
-                    new_node = Node.query.get(url)
-                    if not new_node:
-                        new_node = Node(url=url)
-                        db.session.add(new_node)
-                    new_node.ping()
+                    new_node = Node.get(url)
                 else:
                     continue
             except requests.exceptions.ConnectionError:

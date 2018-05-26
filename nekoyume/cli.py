@@ -43,7 +43,10 @@ def init(seed):
     click.echo('Creating database...')
     db.create_all()
     click.echo(f'Updating node... (seed: {seed})')
-    Node.update(Node(url=seed))
+    if seed:
+        Node.update(Node.get(url=seed))
+    else:
+        Node.update()
     click.echo('Syncing blocks...')
     Block.sync(click=click)
 

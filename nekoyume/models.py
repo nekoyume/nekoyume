@@ -79,7 +79,7 @@ class Node(db.Model):
         """
         if not node or not node.url:
             recent_nodes = Node.query.filter(
-                Node.last_connected_at >= datetime.datetime.now() -
+                Node.last_connected_at >= datetime.datetime.utcnow() -
                 datetime.timedelta(60 * 3)
             ).order_by(Node.last_connected_at.desc()).limit(2500)
             if Node.query.count() == 0:
@@ -108,7 +108,7 @@ class Node(db.Model):
         try:
             result = requests.get(f'{self.url}/ping').text == 'pong'
             if result:
-                self.last_connected_at = datetime.datetime.now()
+                self.last_connected_at = datetime.datetime.utcnow()
             return result
         except requests.exceptions.ConnectionError:
             return False
@@ -139,7 +139,7 @@ class Node(db.Model):
                 if my_node:
                     serialized_obj['sent_node'] = my_node.url
                 requests.post(node.url + endpoint, json=serialized_obj)
-                node.last_connected_at = datetime.datetime.now()
+                node.last_connected_at = datetime.datetime.utcnow()
                 session.add(node)
             except requests.exceptions.ConnectionError:
                 continue
@@ -168,7 +168,7 @@ class Block(db.Model):
     difficulty = db.Column(db.Integer, nullable=False)
     #: block creation datetime
     created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.datetime.now())
+                           default=datetime.datetime.utcnow())
     size_limit = 10000
 
     @property
@@ -279,7 +279,7 @@ class Block(db.Model):
         """
         if not node:
             nodes = Node.query.filter(
-                Node.last_connected_at >= datetime.datetime.now() -
+                Node.last_connected_at >= datetime.datetime.utcnow() -
                 datetime.timedelta(60 * 3)
             ).order_by(Node.last_connected_at.desc())
         else:
@@ -423,7 +423,7 @@ class Move(db.Model):
     tax = db.Column(db.BigInteger, default=0, nullable=False)
     #: move creation datetime.
     created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.datetime.now())
+                           default=datetime.datetime.utcnow())
 
     __mapper_args__ = {
         'polymorphic_identity': 'move',
@@ -965,7 +965,7 @@ class User():
         """
         new_move.user = self.address
         new_move.tax = tax
-        new_move.created_at = datetime.datetime.now()
+        new_move.created_at = datetime.datetime.utcnow()
         self.sign(new_move)
 
         if new_move.valid:
@@ -1030,7 +1030,7 @@ class User():
             ''.join(sorted((m.id for m in moves))).encode('utf-8')
         ).hexdigest()
         block.creator = self.address
-        block.created_at = datetime.datetime.now()
+        block.created_at = datetime.datetime.utcnow()
 
         prev_block = self.session.query(Block).order_by(
             Block.id.desc()

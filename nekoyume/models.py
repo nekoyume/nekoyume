@@ -195,9 +195,9 @@ class Block(db.Model):
                 (self.id - difficulty_check_block.id)
             )
             if avg_timedelta <= datetime.timedelta(0, 5):
-                valid = valid and self.difficulty == difficulty + 1
+                valid = valid and max(0, self.difficulty == difficulty + 1)
             elif avg_timedelta > datetime.timedelta(0, 15):
-                valid = valid and self.difficulty == difficulty - 1
+                valid = valid and max(0, self.difficulty == difficulty - 1)
             else:
                 valid = valid and self.difficulty == difficulty
         else:
@@ -1051,9 +1051,9 @@ class User():
                     f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
                 )
             if avg_timedelta <= datetime.timedelta(0, 5):
-                block.difficulty = block.difficulty + 1
+                block.difficulty = max(0, block.difficulty + 1)
             elif avg_timedelta > datetime.timedelta(0, 15):
-                block.difficulty = block.difficulty - 1
+                block.difficulty = max(0, block.difficulty - 1)
         else:
             #: Genesis block
             block.id = 1

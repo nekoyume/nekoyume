@@ -105,7 +105,7 @@ class Node(db.Model):
             try:
                 response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
                 for url in response.json()['nodes']:
-                    new_node = Node.get(url)
+                    Node.get(url)
                 else:
                     continue
             except requests.exceptions.ConnectionError:

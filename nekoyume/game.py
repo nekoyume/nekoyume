@@ -58,15 +58,23 @@ def get_rank():
     ).limit(10).all()
 
 
+def get_unconfirmed_move(address):
+    unconfirmed_moves = Move.query.filter_by(
+        user=address, block=None
+    )
+    for unconfirmed_move in unconfirmed_moves:
+        if unconfirmed_move.valid:
+            return unconfirmed_move
+    return None
+
+
 @game.route('/')
 @login_required
 def get_dashboard():
     if not g.user.avatar():
         return redirect(url_for('.get_new_novice'))
 
-    unconfirmed_move = Move.query.filter_by(
-        user=g.user.address, block=None
-    ).first()
+    unconfirmed_move = get_unconfirmed_move(g.user.address)
 
     feed = g.user.moves
     # for caching
@@ -106,9 +114,7 @@ def get_new_novice():
 @game.route('/session_moves', methods=['POST'])
 @login_required
 def post_move():
-    unconfirmed_move = Move.query.filter_by(
-        user=g.user.address, block=None
-    ).first()
+    unconfirmed_move = get_unconfirmed_move(g.user.address)
 
     if unconfirmed_move:
         return redirect(url_for('.get_dashboard'))

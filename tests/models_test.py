@@ -28,18 +28,6 @@ def fx_other_user(fx_other_session):
     return user
 
 
-@pytest.fixture
-def fx_novice_status():
-    return {
-        'strength': '13',
-        'dexterity': '12',
-        'constitution': '16',
-        'intelligence': '10',
-        'wisdom': '8',
-        'charisma': '5'
-    }
-
-
 def test_move_confirmed_and_validation(fx_user, fx_novice_status):
     move = Move()
     assert not move.confirmed

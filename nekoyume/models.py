@@ -194,6 +194,8 @@ class Block(db.Model):
 
         if self.id > 1:
             prev_block = Block.query.get(self.id - 1)
+            if not prev_block:
+                return False
             valid = valid and self.prev_hash == prev_block.hash
 
             difficulty = prev_block.difficulty

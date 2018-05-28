@@ -17,6 +17,7 @@ from flask_sqlalchemy import SQLAlchemy
 import requests
 import seccure
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 import tablib
@@ -400,8 +401,17 @@ class Block(db.Model):
             if len(response.json()['blocks']) < 1000:
                 break
             from_ += limit
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                return False
+
+        try:
             db.session.commit()
-        db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return False
         return True
 
 

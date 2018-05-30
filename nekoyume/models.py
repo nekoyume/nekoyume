@@ -1013,6 +1013,9 @@ class User():
         return self.move(Sleep())
 
     def send(self, item_name, amount, receiver):
+        if self.avatar().items[item_name] < int(amount):
+            raise InvalidMoveError
+
         return self.move(Send(details={
             'item_name': item_name,
             'amount': amount,

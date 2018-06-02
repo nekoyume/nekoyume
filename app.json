@@ -3,6 +3,9 @@
   "description": "Decentralized MMORPG based on Dungeon World",
   "repository": "https://github.com/nekoyume/nekoyume",
   "keywords": ["blockchain", "mmorpg", "game"],
+  "scripts": {
+      "postdeploy": "pip install -e . && nekoyume init"
+  },
   "addons": [
       "heroku-redis",
       "heroku-postgresql:hobby-basic",

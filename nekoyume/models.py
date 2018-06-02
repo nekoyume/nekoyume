@@ -844,6 +844,13 @@ class Send(Move):
         if not avatar:
             avatar = Avatar.get(self.user, self.block_id - 1)
 
+        if int(self.details['amount']) <= 0:
+            return avatar, dict(
+                type='send',
+                result='fail',
+                message="You can't send items with a negative or zero amount."
+            )
+
         if (self.details['item_name'] not in avatar.items or
            avatar.items[self.details['item_name']]
            - int(self.details['amount']) < 0):
@@ -1013,6 +1020,9 @@ class User():
         return self.move(Sleep())
 
     def send(self, item_name, amount, receiver):
+        if self.avatar().items[item_name] < int(amount) or int(amount) <= 0:
+            raise InvalidMoveError
+
         return self.move(Send(details={
             'item_name': item_name,
             'amount': amount,

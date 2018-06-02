@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
                              CreateNovice,
                              HackAndSlash,
@@ -80,14 +81,39 @@ def test_send(fx_user, fx_user2, fx_novice_status):
 
     assert fx_user.avatar(block.id).items['GOLD'] == 8
 
-    move = fx_user.move(Send(details={
-        'item_name': 'GOLD',
-        'amount': 1,
-        'receiver': fx_user2.address}))
+    move = fx_user.send('GOLD', 1, fx_user2.address)
     block = fx_user.create_block([move])
 
     assert fx_user.avatar(block.id).items['GOLD'] == 15
     assert fx_user2.avatar(block.id).items['GOLD'] == 1
+
+
+def test_send_validation(fx_user, fx_user2, fx_novice_status):
+    move = fx_user.create_novice(fx_novice_status)
+    move2 = fx_user2.create_novice(fx_novice_status)
+    block = fx_user.create_block([move, move2])
+
+    assert fx_user.avatar(block.id).items['GOLD'] == 8
+
+    with pytest.raises(InvalidMoveError):
+        fx_user.send('GOLD', 100, fx_user2.address)
+
+    with pytest.raises(InvalidMoveError):
+        fx_user.send('GOLD', -1, fx_user2.address)
+
+    with pytest.raises(InvalidMoveError):
+        fx_user.send('GOLD', 0, fx_user2.address)
+
+    # Even if a move object is created somehow,
+    # sending items with a negative amount must be prevented.
+    move = fx_user.move(Send(details={
+        'item_name': 'GOLD',
+        'amount': -1,
+        'receiver': fx_user2.address}))
+    block = fx_user.create_block([move])
+
+    assert fx_user.avatar(block.id).items['GOLD'] == 16
+    assert fx_user2.avatar(block.id).items['GOLD'] == 0
 
 
 def test_block_validation(fx_user, fx_novice_status):

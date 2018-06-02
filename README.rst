@@ -23,11 +23,16 @@ Dependencies
 Installation
 ------------
 
+Installation to local environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: console
 
    $ pip install nekoyume
    $ nekoyume init
 
+Installation to Heroku
+^^^^^^^^^^^^^^^^^^^^^^^
+|deploy|
 
 Installation for Development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -70,3 +75,6 @@ Mining
 
 .. |chat| image:: https://img.shields.io/badge/chat-on%20telegram-brightgreen.svg
   :target: https://t.me/nekoyume
+
+.. |deploy| image:: https://www.herokucdn.com/deploy/button.svg
+  :target: https://heroku.com/deploy

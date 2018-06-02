@@ -1,0 +1,10 @@
+{
+  "name": "Nekoyume",
+  "description": "Decentralized MMORPG based on Dungeon World",
+  "repository": "https://github.com/nekoyume/nekoyume",
+  "keywords": ["blockchain", "mmorpg", "game"],
+  "addons": [
+      "heroku-redis",
+      "heroku-postgresql:hobby-basic",
+  ],
+}

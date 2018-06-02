@@ -101,3 +101,5 @@ ENV/
 other_test.db
 test.db
 yume.db
+.DS_Store
+.vscode

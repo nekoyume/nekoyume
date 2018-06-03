@@ -12,7 +12,7 @@ import os
 
 from bencode import bencode
 from bitcoin import base58
-from flask_cache import Cache
+from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import seccure

@@ -33,7 +33,7 @@ setup(
         'click >= 6.7, < 7.0',
         'Flask >= 0.12.2, < 0.13.0',
         'Flask-Babel >= 0.11.2, < 0.12.0',
-        'Flask-Cache >= 0.13.1, < 0.14.0',
+        'Flask-Caching >= 1.4.0, < 1.5.0',
         'Flask-SQLAlchemy >= 2.3.2, < 2.4.0',
         'gevent == 1.3.1',
         'gunicorn >= 19.7.1, < 19.8.0',

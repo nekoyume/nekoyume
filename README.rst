@@ -14,11 +14,11 @@ Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multi
 Dependencies
 ------------
 
-
-* Python >= 3.6
-* Redis
-* SQLite >= 3.16.0
-* (Recommended) PostgreSQL >= 9.5
+* `Python <http://python.org/>`_ >= 3.6
+* `Redis <https://redis.io/>`_
+* `SQLite <https://www.sqlite.org/>`_ >= 3.16.0
+* `gmp <https://gmplib.org/>`_
+* (Recommended) `PostgreSQL <https://www.postgresql.org/>`_ >= 9.5
 
 Installation
 ------------

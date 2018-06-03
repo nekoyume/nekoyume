@@ -41,7 +41,10 @@ def shell():
 @click.option('--seed',
               default=None,
               help='Seed node URL to connect')
-def init(seed):
+@click.option('--sync/--skip-sync',
+              default=False,
+              help='Synchronize after initialization or skip it')
+def init(seed, skip_sync):
     click.echo('Creating database...')
     db.create_all()
     click.echo(f'Updating node... (seed: {seed})')

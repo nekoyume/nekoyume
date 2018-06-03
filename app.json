@@ -1,6 +1,7 @@
 {
   "name": "Nekoyume",
   "description": "Decentralized MMORPG based on Dungeon World",
+  "logo": "https://avatars0.githubusercontent.com/u/37520657?s=200&v=4",
   "repository": "https://github.com/nekoyume/nekoyume",
   "keywords": ["blockchain", "mmorpg", "game"],
   "scripts": {

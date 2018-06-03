@@ -5,10 +5,21 @@
   "repository": "https://github.com/nekoyume/nekoyume",
   "keywords": ["blockchain", "mmorpg", "game"],
   "scripts": {
-      "postdeploy": "pip install -e . && nekoyume init"
+      "postdeploy": "nekoyume init"
   },
   "addons": [
       "heroku-redis",
       "heroku-postgresql:hobby-basic",
   ],
+  "formation": {
+      "web": {
+          "quantity": 1,
+      },
+      "worker": {
+          "quantity": 1,
+      },
+      "sync": {
+          "quantity": 1,
+      },
+  }
 }

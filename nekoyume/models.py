@@ -105,11 +105,14 @@ class Node(db.Model):
         for n in recent_nodes:
             try:
                 response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
-                for url in response.json()['nodes']:
-                    Node.get(url)
-                else:
-                    continue
             except requests.exceptions.ConnectionError:
+                continue
+            for url in response.json()['nodes']:
+                try:
+                    Node.get(url)
+                except requests.exceptions.ConnectionError:
+                    continue
+            else:
                 continue
             break
 

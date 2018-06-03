@@ -44,7 +44,7 @@ def shell():
 @click.option('--sync/--skip-sync',
               default=False,
               help='Synchronize after initialization or skip it')
-def init(seed, skip_sync):
+def init(seed, sync):
     click.echo('Creating database...')
     db.create_all()
     click.echo(f'Updating node... (seed: {seed})')
@@ -52,8 +52,9 @@ def init(seed, skip_sync):
         Node.update(Node.get(url=seed))
     else:
         Node.update()
-    click.echo('Syncing blocks...')
-    Block.sync(click=click)
+    if sync:
+        click.echo('Syncing blocks...')
+        Block.sync(click=click)
 
 
 @click.command()
@@ -62,19 +63,25 @@ def sync():
     if public_url:
         click.echo(f"You have a public node url. ({public_url})")
         Node.broadcast(Node.post_node_endpoint, {'url': public_url})
+    Node.update()
+    engine = db.engine
+    if not engine.dialect.has_table(engine.connect(), Block.__tablename__):
+        click.echo("You need to initialize. try `nekoyume init`.")
+        return False
     while True:
         try:
             prev_id = Block.query.order_by(Block.id.desc()).first().id
         except AttributeError:
-            click.echo("You need to initialize. try `nekoyume init`.")
-            break
-        if not prev_id:
-            click.echo("You need to initialize. try `nekoyume init`.")
-            break
+            prev_id = 0
         Block.sync(click=click)
-        if prev_id == Block.query.order_by(Block.id.desc()).first().id:
-            click.echo("The blockchain is up to date.")
-            time.sleep(15)
+        try:
+            if prev_id == Block.query.order_by(Block.id.desc()).first().id:
+                click.echo("The blockchain is up to date.")
+                time.sleep(15)
+        except AttributeError:
+            click.echo(("There is no well-connected node. "
+                        "please check you network."))
+            break
 
 
 cli.add_command(init)

@@ -9,17 +9,17 @@
   },
   "addons": [
       "heroku-redis",
-      "heroku-postgresql:hobby-basic",
+      "heroku-postgresql:hobby-basic"
   ],
   "formation": {
       "web": {
-          "quantity": 1,
+          "quantity": 1
       },
       "worker": {
-          "quantity": 1,
+          "quantity": 1
       },
       "sync": {
-          "quantity": 1,
-      },
+          "quantity": 1
+      }
   }
 }

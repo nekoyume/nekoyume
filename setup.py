@@ -41,6 +41,7 @@ setup(
         'pycrypto == 2.6',
         'python_bitcoinlib == 0.9.0',
         'pytz >= 2018.3',
+        'raven==6.9.0',
         'redis >= 2.10.6, < 2.11.0',
         'requests >= 2.18.4, < 2.19.0',
         'seccure >= 0.3.2, < 0.4.0',

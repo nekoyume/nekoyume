@@ -1,7 +1,9 @@
 import click
 import time
+import os
 
 from ptpython.repl import embed
+from raven import Client
 
 from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db
@@ -18,6 +20,8 @@ def cli():
               help='Private key of neko')
 def neko(private_key):
     app.app_context().push()
+    client = Client(os.environ.get('SENTRY_DSN'))
+
     while True:
         Block.sync()
         block = User(private_key).create_block(
@@ -59,6 +63,7 @@ def init(seed, sync):
 
 @click.command()
 def sync():
+    client = Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
     if public_url:
         click.echo(f"You have a public node url. ({public_url})")

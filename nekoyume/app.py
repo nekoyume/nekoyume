@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from raven.contrib.flask import Sentry
 
 from nekoyume.models import cache, db
 from nekoyume.api import api
@@ -66,6 +67,7 @@ cache.init_app(app, config={'CACHE_TYPE': 'redis',
                             'CACHE_REDIS_URL': os.environ.get(
                                 'REDIS_URL', 'redis://localhost:6379'
                             )})
+sentry = Sentry(app)
 
 
 def run():

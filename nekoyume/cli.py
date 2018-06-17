@@ -20,7 +20,7 @@ def cli():
               help='Private key of neko')
 def neko(private_key):
     app.app_context().push()
-    client = Client(os.environ.get('SENTRY_DSN'))
+    Client(os.environ.get('SENTRY_DSN'))
 
     while True:
         Block.sync()
@@ -63,7 +63,7 @@ def init(seed, sync):
 
 @click.command()
 def sync():
-    client = Client(os.environ.get('SENTRY_DSN'))
+    Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
     if public_url:
         click.echo(f"You have a public node url. ({public_url})")

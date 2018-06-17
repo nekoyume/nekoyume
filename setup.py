@@ -29,6 +29,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
         'bencode.py >= 2.0.0, < 2.1.0',
+        'blinker >= 1.4, < 1.5',
         'celery >= 4.1.0, < 4.2.0',
         'click >= 6.7, < 7.0',
         'Flask >= 0.12.2, < 0.13.0',
@@ -41,6 +42,7 @@ setup(
         'pycrypto == 2.6',
         'python_bitcoinlib == 0.9.0',
         'pytz >= 2018.3',
+        'raven==6.9.0',
         'redis >= 2.10.6, < 2.11.0',
         'requests >= 2.18.4, < 2.19.0',
         'seccure >= 0.3.2, < 0.4.0',

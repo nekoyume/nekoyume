@@ -103,3 +103,5 @@ test.db
 yume.db
 .DS_Store
 .vscode
+
+.envrc

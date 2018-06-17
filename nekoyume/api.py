@@ -2,6 +2,7 @@ import datetime
 
 from flask import Blueprint, jsonify, request
 import requests
+from sqlalchemy.exc import IntegrityError
 
 from nekoyume.tasks import block_broadcast, move_broadcast
 from nekoyume.models import db, Block, Node, Move, get_my_public_url
@@ -194,7 +195,11 @@ def post_block():
                        message="new block isn't valid."), 400
 
     db.session.add(block)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        return jsonify(result='failed',
+                       message="This node already has this block."), 400
     sent_node = Node()
     if 'sent_node' in new_block:
         sent_node.url = new_block['sent_node']
@@ -232,8 +237,11 @@ def post_move():
                        message=f"move {move.id} isn't valid."), 400
 
     db.session.add(move)
-    db.session.commit()
-
+    try:
+        db.session.commit()
+    except IntegrityError:
+        return jsonify(result='failed',
+                       message="This node already has this move."), 400
     sent_node = Node()
     if 'sent_node' in new_move:
         sent_node.url = new_move['sent_node']

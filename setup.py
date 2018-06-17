@@ -29,6 +29,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
         'bencode.py >= 2.0.0, < 2.1.0',
+        'blinker >= 1.4, < 1.5',
         'celery >= 4.1.0, < 4.2.0',
         'click >= 6.7, < 7.0',
         'Flask >= 0.12.2, < 0.13.0',

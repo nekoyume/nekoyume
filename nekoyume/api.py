@@ -2,6 +2,7 @@ import datetime
 
 from flask import Blueprint, jsonify, request
 import requests
+from sqlalchemy.exc import IntegrityError
 
 from nekoyume.tasks import block_broadcast, move_broadcast
 from nekoyume.models import db, Block, Node, Move, get_my_public_url
@@ -26,15 +27,16 @@ def get_public_url():
 def get_nodes():
     nodes = Node.query.filter(
         Node.last_connected_at >= datetime.datetime.now() -
-        datetime.timedelta(60 * 3)
+        datetime.timedelta(minutes=60 * 3)
     ).order_by(Node.last_connected_at.desc()).limit(2500).all()
 
-    public_url = get_my_public_url()
-    if public_url:
-        nodes.append(Node(url=public_url,
-                          last_connected_at=datetime.datetime.now()))
+    nodes = [n.url for n in nodes]
 
-    return jsonify(nodes=[n.url for n in nodes])
+    public_url = get_my_public_url()
+    if public_url and public_url not in nodes:
+        nodes.append(public_url)
+
+    return jsonify(nodes=nodes)
 
 
 @api.route(Node.post_node_endpoint, methods=['POST'])
@@ -193,7 +195,11 @@ def post_block():
                        message="new block isn't valid."), 400
 
     db.session.add(block)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        return jsonify(result='failed',
+                       message="This node already has this block."), 400
     sent_node = Node()
     if 'sent_node' in new_block:
         sent_node.url = new_block['sent_node']
@@ -231,8 +237,11 @@ def post_move():
                        message=f"move {move.id} isn't valid."), 400
 
     db.session.add(move)
-    db.session.commit()
-
+    try:
+        db.session.commit()
+    except IntegrityError:
+        return jsonify(result='failed',
+                       message="This node already has this move."), 400
     sent_node = Node()
     if 'sent_node' in new_move:
         sent_node.url = new_move['sent_node']

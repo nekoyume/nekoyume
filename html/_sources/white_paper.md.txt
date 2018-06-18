@@ -84,7 +84,7 @@ Adventurers can set their own jobs, take an adventure, grow in-game items and ex
 🤔 You learned from your previous mistake. (XP +1)
 💥 You attacked Worg and wounded it for 2 damage. (HP 1 → -1)
 ☠️ You defeated Worg !
-🎁 You optained MEAT!
+🎁 You obtained MEAT!
 ```
 
 Combats monsters from the current area.

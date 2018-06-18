@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='nekoyume',
-    version='0.0.2',
+    version='0.0.3',
     description='Decentralized MMORPG based on Dungeon World',
     long_description=long_description,
     url='https://github.com/nekoyume/nekoyume',

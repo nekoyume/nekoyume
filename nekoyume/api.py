@@ -26,7 +26,7 @@ def get_public_url():
 @api.route(Node.get_nodes_endpoint, methods=['GET'])
 def get_nodes():
     nodes = Node.query.filter(
-        Node.last_connected_at >= datetime.datetime.now() -
+        Node.last_connected_at >= datetime.datetime.utcnow() -
         datetime.timedelta(minutes=60 * 3)
     ).order_by(Node.last_connected_at.desc()).limit(2500).all()
 
@@ -51,27 +51,25 @@ def post_node():
             message='Invalid parameter.'
         ), 400
     node = Node.query.get(url)
-    if node:
-        return jsonify(result='success')
-    else:
+    if not node:
         node = Node(url=url)
         db.session.add(node)
-        try:
-            response = requests.get(f'{node.url}/ping')
-        except requests.exceptions.ConnectionError:
-            return jsonify(
-                result='failed',
-                message=f'Connection to node {node.url} was failed.'
-            ), 403
-        if response.status_code == 200:
-            node.last_connected_at = datetime.datetime.now()
-            db.session.commit()
-            return jsonify(result='success')
-        else:
-            return jsonify(
-                result='failed',
-                message=f'Connection to node {node.url} was failed.'
-            ), 403
+    try:
+        response = requests.get(f'{node.url}/ping')
+    except requests.exceptions.ConnectionError:
+        return jsonify(
+            result='failed',
+            message=f'Connection to node {node.url} was failed.'
+        ), 403
+    if response.status_code == 200:
+        node.last_connected_at = datetime.datetime.utcnow()
+        db.session.commit()
+        return jsonify(result='success')
+    else:
+        return jsonify(
+            result='failed',
+            message=f'Connection to node {node.url} was failed.'
+        ), 403
 
 
 @api.route(Node.get_blocks_endpoint, methods=['GET'])

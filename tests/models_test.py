@@ -179,7 +179,7 @@ def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
     assert fx_session.query(Block).count() == 0
 
     fx_other_session.add(Node(url=fx_server.url,
-                              last_connected_at=datetime.datetime.now()))
+                              last_connected_at=datetime.datetime.utcnow()))
     fx_other_session.commit()
 
     block = fx_other_user.create_block([])
@@ -194,7 +194,7 @@ def test_move_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
     assert fx_session.query(Move).count() == 0
 
     fx_other_session.add(Node(url=fx_server.url,
-                              last_connected_at=datetime.datetime.now()))
+                              last_connected_at=datetime.datetime.utcnow()))
     fx_other_session.commit()
 
     move = fx_other_user.create_novice(fx_novice_status)

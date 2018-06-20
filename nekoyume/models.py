@@ -53,6 +53,8 @@ def get_my_public_url():
         ).text == 'pong'
     except requests.exceptions.ConnectionError:
         return None
+    except requests.exceptions.Timeout:
+        return None
     if has_public_address:
         return f'http://{ip}{port}'
     else:
@@ -107,10 +109,14 @@ class Node(db.Model):
                 response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
             except requests.exceptions.ConnectionError:
                 continue
+            except requests.exceptions.Timeout:
+                continue
             for url in response.json()['nodes']:
                 try:
                     Node.get(url)
                 except requests.exceptions.ConnectionError:
+                    continue
+                except requests.exceptions.Timeout:
                     continue
             else:
                 continue
@@ -125,6 +131,8 @@ class Node(db.Model):
                 self.last_connected_at = datetime.datetime.utcnow()
             return result
         except requests.exceptions.ConnectionError:
+            return False
+        except requests.exceptions.Timeout:
             return False
 
     @classmethod
@@ -152,10 +160,13 @@ class Node(db.Model):
             try:
                 if my_node:
                     serialized_obj['sent_node'] = my_node.url
-                requests.post(node.url + endpoint, json=serialized_obj)
+                requests.post(node.url + endpoint, json=serialized_obj,
+                              timeout=3)
                 node.last_connected_at = datetime.datetime.utcnow()
                 session.add(node)
             except requests.exceptions.ConnectionError:
+                continue
+            except requests.exceptions.Timeout:
                 continue
 
         session.commit()
@@ -294,10 +305,9 @@ class Block(db.Model):
         :param node: sync target :class:`nekoyume.models.Node`.
         """
         if not node:
-            nodes = Node.query.filter(
-                Node.last_connected_at >= datetime.datetime.utcnow() -
-                datetime.timedelta(minutes=60 * 3)
-            ).order_by(Node.last_connected_at.desc()).limit(10)
+            nodes = Node.query.order_by(
+                Node.last_connected_at.desc()
+            ).limit(10)
         else:
             nodes = [node]
 
@@ -305,15 +315,19 @@ class Block(db.Model):
             return False
 
         node_last_block = None
-        for node in nodes:
+        for n in nodes:
             try:
                 response = requests.get(
-                    f"{node.url}{Node.get_blocks_endpoint}/last"
+                    f"{n.url}{Node.get_blocks_endpoint}/last",
+                    timeout=3
                 )
                 if (not node_last_block or
                    node_last_block['id'] < response.json()['block']['id']):
                     node_last_block = response.json()['block']
+                    node = n
             except requests.exceptions.ConnectionError:
+                continue
+            except requests.exceptions.Timeout:
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()

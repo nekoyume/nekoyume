@@ -193,7 +193,7 @@ class Block(db.Model):
     difficulty = db.Column(db.Integer, nullable=False)
     #: block creation datetime
     created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.datetime.utcnow())
+                           default=datetime.datetime.utcnow)
     size_limit = 10000
 
     @property
@@ -463,7 +463,7 @@ class Move(db.Model):
     tax = db.Column(db.BigInteger, default=0, nullable=False)
     #: move creation datetime.
     created_at = db.Column(db.DateTime, nullable=False,
-                           default=datetime.datetime.utcnow())
+                           default=datetime.datetime.utcnow)
 
     __mapper_args__ = {
         'polymorphic_identity': 'move',

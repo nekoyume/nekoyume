@@ -89,10 +89,50 @@ def sync():
             break
 
 
+@click.command()
+def doctor():
+    id = 1
+    for block in Block.query.order_by(Block.id.asc()):
+        if block.id != id:
+            click.echo(f'Block {id}: is empty.')
+            id = block.id
+        if not block.valid:
+            click.echo(f'Block {id}: is invalid.')
+        id += 1
+
+
+@click.command()
+def repair():
+    id = 1
+    for block in Block.query.order_by(Block.id.asc()):
+        if block.id != id or not block.valid:
+            Block.query.filter(Block.id >= block.id).delete(
+                synchronize_session='fetch'
+            )
+            click.echo(f'Block {id}+ was removed.')
+            break
+        id += 1
+
+    deleted_move_ids = []
+    for move in Move.query:
+        if not move.valid:
+            move.delete()
+            deleted_move_ids.append(move.id)
+
+    if deleted_move_ids:
+        click.echo(f'Following moves were removed.')
+        for deleted_move_id in deleted_move_ids:
+            click.echo(f'   {deleted_move_id}')
+
+    db.session.commit()
+
+
 cli.add_command(init)
 cli.add_command(neko)
 cli.add_command(shell)
 cli.add_command(sync)
+cli.add_command(doctor)
+cli.add_command(repair)
 
 
 if __name__ == '__main__':

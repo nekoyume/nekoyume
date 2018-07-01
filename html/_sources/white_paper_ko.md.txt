@@ -58,11 +58,14 @@
 
 다음은 네코유메의 고양이 참여자와 모험가 참여자가 서로 공유하는 요소에 대한 간단한 도표입니다.
 
-    +-----------+                 +--------------+
-    |           | → Block, Gold → |              |
-    |    Cat    |                 |  Adventurer  |
-    |           | ← Move,  Item ← |              |
-    +-----------+                 +--------------+
+```eval_rst
+.. uml::
+
+   actor Cat
+   actor Adventurer
+   Adventurer -> Cat: Move,  Item
+   Cat -> Adventurer: Block, Gold
+```
 
 ### 5.1. 모험가
 

@@ -256,13 +256,12 @@
 <div class="section" id="">
 <span id="id7"></span><h2>5. 경제 구조<a class="headerlink" href="#" title="제목 주소">¶</a></h2>
 <p>다음은 네코유메의 고양이 참여자와 모험가 참여자가 서로 공유하는 요소에 대한 간단한 도표입니다.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>+-----------+                 +--------------+
-|           | → Block, Gold → |              |
-|    Cat    |                 |  Adventurer  |
-|           | ← Move,  Item ← |              |
-+-----------+                 +--------------+
-</pre></div>
-</div>
+<p class="plantuml">
+<img src="_images/plantuml-e93903672f7c0dcc2bc5040126a06bf50614bee5.png" alt="actor Cat
+actor Adventurer
+Adventurer -&gt; Cat: Move,  Item
+Cat -&gt; Adventurer: Block, Gold" />
+</p>
 <div class="section" id="">
 <span id="id8"></span><h3>5.1. 모험가<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
 <p>모험가는 자신의 직업을 설정하고, 모험을 하며 아이템과 경험을 모아 성장하며 더 강해질 수 있습니다. 아래와 같은 행동을 수행할 수 있습니다.</p>

@@ -60,11 +60,14 @@ Because Nekoyume is an MMORPG based on a blockchain, there is no centralized ser
 
 The following figure illustrates the various elements shared by Nekoyume's cats and adventurers.
 
-    +-----------+                 +--------------+
-    |           | → Block, Gold → |              |
-    |    Cat    |                 |  Adventurer  |
-    |           | ← Move,  Item ← |              |
-    +-----------+                 +--------------+
+```eval_rst
+.. uml::
+
+   actor Cat
+   actor Adventurer
+   Adventurer -> Cat: Move,  Item
+   Cat -> Adventurer: Block, Gold
+```
 
 ### 5.1. Adventurer
 

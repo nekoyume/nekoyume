@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>플라네타리움: 게임에 탑재하기 쉬운 블록체인 엔진 &mdash; nekoyume 0.0.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="색인"
+              href="genindex.html"/>
+        <link rel="search" title="검색" href="search.html"/>
+    <link rel="top" title="nekoyume 0.0.3 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> nekoyume
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">English:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper.html">White Paper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p class="caption"><span class="caption-text">한국어:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="white_paper_ko.html">백서</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap_ko.html">로드맵</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">nekoyume</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>플라네타리움: 게임에 탑재하기 쉬운 블록체인 엔진</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/planetarium_ko.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="">
+<span id="id1"></span><h1>플라네타리움: 게임에 탑재하기 쉬운 블록체인 엔진<a class="headerlink" href="#" title="제목 주소">¶</a></h1>
+<div class="section" id="">
+<span id="id2"></span><h2>배경<a class="headerlink" href="#" title="제목 주소">¶</a></h2>
+<p>수 많은 게임이 출시 이후 게임사의 사정에 의해 더 이상 온라인 기능을 즐기지 못하는 상황에 자주 부딪혀
+왔습니다. 그렇기 때문에 중소 규모의 개발사가 출시하는 게임의 온라인 재미 요소는 매우 제한적일 수밖에
+없었습니다. 블록체인 기술은 이에 관한 많은 문제를 해결할 수 있지만, 현행 블록체인을 그대로 게임에 도입
+하는 것에는 여러 장벽이 있습니다.</p>
+<ol class="simple">
+<li>현재 주류 블록체인의 수수료 체계는 개별 게임 경제와 괴리가 큽니다.</li>
+<li>게임과 상관 없는 모든 거래 기록이 원장에 담긴 주류 블록체인을 게임에 도입하는 것은 비효율적입니다.</li>
+<li>블록체인을 게임 클라이언트에 접목시키는 것에는 높은 난이도가 요구되었습니다.</li>
+</ol>
+<div class="section" id="">
+<span id="id3"></span><h3>현 주류 메인넷의 높은 수수료<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>이더리움과 같은 현재 주류 블록체인의 메인넷에서 게임을 개발하기 위한 시도가 여럿 있어왔습니다.
+크립토 키티를 비롯하여 수 많은 이더리움 기반 게임이 출시되고 있지만, 모두 행동당 비싼 수수료를 내야 했기
+때문에 유의미한 사용자를 끌어모으는데 실패하고 있습니다.</p>
+</div>
+<div class="section" id="">
+<span id="id4"></span><h3>주류 블록체인 도입의 비효율성<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>2018년 6월 기준, 이더리움의 풀 노드 용량은 500기가가 넘으며, 비트코인의 풀 노드 용량은 200기가가 넘
+습니다. 게다가 대부분의 트랜젝션은 이제 막 시작하는 게임에게는 의미가 없는 정보이기 때문에, 게임사가
+이를 위해 주류 블록체인을 게임에 접목 시키는 것은 비효율적입니다.</p>
+</div>
+<div class="section" id="">
+<span id="id5"></span><h3>블록체인 도입에 대한 높은 난이도<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>블록체인을 게임에 쉽게 도입시키려면, 그만한 도구의 지원이 필요합니다. 예를 들어, 이더리움의 경우 웹 기반
+DApp을 쉽게 개발할 수 있도록 web3.js라는 도구를 만들어 함께 배포하고 있고, 이는 DApp 생태계에서
+필수적인 존재가 되었습니다. 하지만 현재 게임을 위한 이런 지원은 전반적으로 매우 미비한 편입니다.</p>
+</div>
+</div>
+<div class="section" id="">
+<span id="id6"></span><h2>플라네타리움이란?<a class="headerlink" href="#" title="제목 주소">¶</a></h2>
+<p>플라네타리움은 게임을 위한 블록체인 코어 엔진입니다. 플라네타리움을 이용하면 누구나 자신의 게임에
+블록체인을 쉽게 탑재하고, 해당 게임을 위한 자체 메인넷을 빠르게 런칭할 수 있습니다.</p>
+<div class="section" id="">
+<span id="id7"></span><h3>플라네타리움의 특징<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>플라네타리움은 이와 같은 문제를 해결하기 위해, 게임개발자라면 누구나 쉽게 블록체인을 붙일 수 있는 형태의
+엔진을 고안하였습니다. 제공하고자 하는 것은 아래와 같습니다.</p>
+<ol class="simple">
+<li>해시 랜덤을 포함한 게임용 빌트인 함수와 컨센서스 제공</li>
+<li>쉽게 개발 가능한 네이티브 스마트 콘트랙 확장 기능 제공</li>
+<li>주요 게임 클라이언트용 연동 키트 제공</li>
+</ol>
+<p>이와 같이, 플라네타리움의 목표는 통상의 게임 서버보다 간단한 방법으로 온라인 요소를 블록체인 기반으로
+구현하고, 이를 게임클라이언트에 붙일 수 있도록 돕는 것입니다.</p>
+</div>
+<div class="section" id="">
+<span id="id8"></span><h3>컨센서스<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>플라네타리움은 블록 생성의 합의 알고리즘을 메인넷을 출시하는 초기 커뮤니티가 선택할 수 있도록 다양한 옵션
+을 제공하고자 하고 있습니다.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="44%" />
+<col width="14%" />
+<col width="16%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">이름</th>
+<th class="head">특징</th>
+<th class="head">체결속도</th>
+<th class="head">중앙화여부</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>작업 증명 (PoW)</td>
+<td>누구나 블록을 생성</td>
+<td>15초</td>
+<td>낮음</td>
+</tr>
+<tr class="row-odd"><td>위임된 지분 증명 (DPoS)</td>
+<td>투표로 선출된 노드가 블록 생성</td>
+<td>4초</td>
+<td>중간</td>
+</tr>
+<tr class="row-even"><td>권위 증명 (PoA)</td>
+<td>지정된 참여자가 블록 생성</td>
+<td>1초</td>
+<td>높음</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="proof-of-work">
+<span id="proof-of-work"></span><h4>작업 증명 (Proof of Work)<a class="headerlink" href="#proof-of-work" title="제목 주소">¶</a></h4>
+<p>가장 보편적으로 사용되기를 권장하는 방법입니다. 체결 속도는 블록이 전체 네트워크에 전달되는 시간을 고려
+하여 15초의 체결 시간을 가지나, 가장 탈중앙화된 방식으로 누구나 블록을 생성할 자격을 가지게 됩니다.
+첫번째 게임인 네코유메는 작업 증명 방식을 채택하고 있습니다.</p>
+</div>
+<div class="section" id="delegated-proof-of-stake">
+<span id="delegated-proof-of-stake"></span><h4>위임된 지분 증명 (Delegated Proof of Stake)<a class="headerlink" href="#delegated-proof-of-stake" title="제목 주소">¶</a></h4>
+<p>게임 내 가상 화폐를 이용한 투표로 선출된 N명의 노드가 블록 체결 권한을 가지는 방식입니다. 후술할 권위
+증명보다는 비용이 있지만 투표를 통한 공정성을 갖추면서 빠른 체결 속도를 끌어낼 수 있습니다.</p>
+</div>
+<div class="section" id="proof-of-authority">
+<span id="proof-of-authority"></span><h4>권위 증명 (Proof of Authority)<a class="headerlink" href="#proof-of-authority" title="제목 주소">¶</a></h4>
+<p>노드 내 지명된 N명의 참여자만이 블록 체결 권한을 가지는 방식입니다. 이는 중앙화된 방식이지만 투명한 방
+법으로 최상의 속도를 내는 블록체인이 필요할 때 쓸 수 있는 방법입니다.</p>
+</div>
+</div>
+</div>
+<div class="section" id="">
+<span id="id9"></span><h2>사용 시나리오<a class="headerlink" href="#" title="제목 주소">¶</a></h2>
+<div class="section" id="mmorpg">
+<span id="mmorpg"></span><h3>MMORPG<a class="headerlink" href="#mmorpg" title="제목 주소">¶</a></h3>
+<p class="plantuml">
+<img src="_images/plantuml-43b60b5b288df85407499e1edc0066f875e599ea.png" alt="actor Player
+participant &quot;Game Client&quot; as GC
+participant &quot;Blockchain Node&quot; as Blockchain
+Player -&gt; GC: Adventure (e.g. Fight, Sleep)
+GC -&gt; GC: Create Move
+GC -&gt; Blockchain: Send Move
+Blockchain -&gt; Blockchain: Mining
+Blockchain -&gt; GC: Send Block
+GC -&gt; GC: Render Game Status
+GC -&gt; Player: Show Interface" />
+</p>
+<p>플레이어의 모험 기록을 블록체인에 담는 것으로 MMORPG를 구현할 수 있습니다. 서버가 없이도 플레이어의
+레벨, 능력치, 그리고 재화 가치가 블록체인에 의해 보존됩니다. 모든 플레이어의 상태값은 누적된 트랜젝션의
+총합이므로, 블록체인 내 상태값 연산량은 선형적으로 증가하지만, 이는 체크포인트를 주기적으로 합의하는
+방식으로 연산량을 통제할 수 있습니다. 현재 플라네타리움 엔진 기반으로 네코유메를 개발하고 있습니다.</p>
+</div>
+<div class="section" id="">
+<span id="id10"></span><h3>스테이지형 게임<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p class="plantuml">
+<img src="_images/plantuml-d580a61c6fd0b072a0a032ec78c80a7228b736e6.png" alt="actor Player
+participant &quot;Game Client&quot; as GC
+participant &quot;Blockchain Node&quot; as Blockchain
+Player -&gt; GC: Create New Map
+Player -&gt; GC: Clear the Map
+GC -&gt; GC: Create &quot;CreateMap&quot; Move
+GC -&gt; Blockchain: Send Move
+Blockchain -&gt; Blockchain: Mining
+Blockchain -&gt; GC: Send Block
+GC -&gt; GC: Verify New Map Data
+GC -&gt; Player: Show the New Map" />
+</p>
+<p>스테이지 개념이 있는 퍼즐 게임이라면, 스테이지를 사용자가 만들고 공유하는 기능을 탑재하여 게임의 수명을
+비약적으로 연장시킬 수 있습니다. 대표적인 예로 마리오 메이커와 같은 게임이 있습니다. 이 게임 스테이지를
+블록체인에 담는 것으로, 중앙 서버 없이 플레이어에 의해 무한히 확장하는 게임을 개발할 수 있습니다.
+불필요한 스테이지가 쌓이는 것을 막기 위해, 플레이어는 스테이지 정보와 함께 클리어 리플레이 기록을 함께
+제출해야 하며, 이를 이용해 각 노드가 스테이지의 유효성을 검증할 수 있습니다.</p>
+</div>
+<div class="section" id="">
+<span id="id11"></span><h3>격투 게임<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p class="plantuml">
+<img src="_images/plantuml-23562a7349470fb4a9aeff18497d6d9dffe28a93.png" alt="actor Player
+participant &quot;Game Client&quot; as GC
+participant &quot;Blockchain Node&quot; as Blockchain
+Player -&gt; Player: Fight with the Other Player
+Player -&gt; GC: Send Battle Replay
+GC -&gt; GC: Create &quot;SubmitBattle&quot; Move
+GC -&gt; Blockchain: Send Move
+Blockchain -&gt; Blockchain: Mining
+Blockchain -&gt; GC: Send Block
+GC -&gt; GC: Calculate Rank
+GC -&gt; Player: Show a New Rank" />
+</p>
+<p>최근의 온라인 지원 격투 게임은 서버/클라이언트 구조를 이용해 격투 기록을 보관하고, 이에 근거한 랭킹
+시스템을 탑재하고 있습니다. 대표적인 예로 반다이남코사의 철권이 있습니다. 플라네타리움에 플레이어간 격투
+기록을 보관하고, 각 노드가 격투 기록의 유효성을 검증하는 것으로 중앙 서버가 없이도 랭킹 시스템과 매칭
+시스템을구현할 수 있습니다.</p>
+</div>
+</div>
+<div class="section" id="">
+<span id="id12"></span><h2>토큰 모델<a class="headerlink" href="#" title="제목 주소">¶</a></h2>
+<p>플라네타리움의 개발과 플라네타리움 생태계의 활성화를 위해 플래닛 토큰을 발행할 예정입니다. 플래닛 토큰
+을 통해 플레이어는 더 나은 게임 경험을 즐길 수 있습니다.</p>
+<div class="section" id="">
+<span id="id13"></span><h3>플래닛 토큰이란?<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p>플래닛 토큰은 플라네타리움 엔진 기반 게임에서 활용 가능한 토큰을 분배받을 수 있는 이더리움 ERC-20
+토큰입니다. 플래닛 토큰을 보유하고 있으면, 향후 플라네타리움 기반으로 출시되는 메인넷에서 해당 토큰에
+비례한 만큼의 게임 코인을 분배받게 됩니다.</p>
+</div>
+<div class="section" id="">
+<span id="id14"></span><h3>플래닛 토큰과 플라네타리움 코인의 관계<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p class="plantuml">
+<img src="_images/plantuml-395f10f4b74e5bee3f49c83723b340f6544b4534.png" alt="package &quot;Ethereum&quot; {
+  node &quot;Planet Token (PLNT)&quot; as PLNT
+}
+package &quot;Planetarium&quot; {
+  node &quot;Nekoyume Gold (NYG)&quot; as NYG
+  node &quot;A Game Coin (AGC)&quot; as AGC
+  node &quot;B Game Coin (BGC)&quot; as BGC
+}
+PLNT --&gt; NYG
+PLNT --&gt; AGC
+PLNT --&gt; BGC" />
+</p>
+<p>예를 들어, 플래닛 토큰을 50개 보유하고 있는 사용자가 있다고 가정해봅시다. A게임이 이더리움 500만번째
+블록 시점에서 메인넷을 런칭하고, 해당 사용자가 500만번째 블록에서 플래닛 토큰을 50개 보유하고 있다면,
+500만번째 블록 이후에 사용자는 아래와 같이 코인을 보유하게 됩니다.</p>
+<ul class="simple">
+<li>플래닛 토큰: 50</li>
+<li>A게임 코인: 50</li>
+</ul>
+<p>추후, 해당 사용자는 이더리움 501만번째 블록 시점에서 플래닛 토큰 30개를 다른 사용자에게 판매했다고 가
+정해봅시다. 이 때, 사용자는 아래와 같이 코인을 보유하게 됩니다.</p>
+<ul class="simple">
+<li>플래닛 토큰: 30</li>
+<li>A게임 코인: 50</li>
+</ul>
+<p>A게임 코인은 500만번째 블록 시점에서 '지급받은' 것이기 때문에, 플래닛 토큰을 판매한다고 하더라도 보유
+량은 변하지 않습니다. 추후, 이더리움 510만번째 블록 시점에서 B게임이 출시되며 플라네타리움 엔진을
+채택하였습니다. 해당 사용자가 이후 별도의 플래닛 토큰 거래가 없었다면 사용자의 토큰 보유량은 아래와 같이
+됩니다.</p>
+<ul class="simple">
+<li>플래닛 토큰: 30</li>
+<li>A게임 코인: 50</li>
+<li>B게임 코인: 30</li>
+</ul>
+<p>아와 같이, 플래닛 토큰은 플라네타리움 엔진용 게임에 필요한 코인을 받을 수 있는 권리 증서와 같은 개념으로
+동작합니다.</p>
+</div>
+<div class="section" id="">
+<span id="id15"></span><h3>토큰 분배<a class="headerlink" href="#" title="제목 주소">¶</a></h3>
+<p><img alt="Token Distribution" src="https://chart.googleapis.com/chart?cht=p3&amp;chs=600x200&amp;chd=t:40,30,10,10,10&amp;chl=TGE|Partner%20Program|Market%20Activation|Core%20Team|Community" /></p>
+<div class="section" id="">
+<span id="id16"></span><h4>토큰 발행 이벤트<a class="headerlink" href="#" title="제목 주소">¶</a></h4>
+<p>개발 초기 시점인 2018년 8월에 메인넷에서 사용할 수 있는 플래닛 토큰을 이더리움 ERC20 토큰 형태로 발행할 예정입니다. 총 발행량의 40%를 활용할 예정이며, 이는 메인넷 런칭 이후 가장 먼저 사용할 수 있는 방법입니다.</p>
+</div>
+<div class="section" id="">
+<span id="id17"></span><h4>파트너 프로그램<a class="headerlink" href="#" title="제목 주소">¶</a></h4>
+<p>플라네타리움 엔진을 기반으로 게임을 개발하는 초기 파트너사가 게임을 개발하기 위한 재원을 확보하는데 활용합니다.</p>
+</div>
+<div class="section" id="">
+<span id="id18"></span><h4>시장 활성화<a class="headerlink" href="#" title="제목 주소">¶</a></h4>
+<p>전체 발행량의 10%는 초기 플레이어 커뮤니티를 확장하기 위한 마케팅을 위해 활용합니다.</p>
+</div>
+<div class="section" id="">
+<span id="id19"></span><h4>코어팀에 합류하기<a class="headerlink" href="#" title="제목 주소">¶</a></h4>
+<p>향후 1년의 집중 개발 기간동안 코어팀에 참여하시는 분들께 예약된 10%의 토큰을 기여량에 비례하여 분배할 예정입니다. 1번과 마찬가지로, 초기 집중 개발을 위한 보상 방법입니다.</p>
+</div>
+<div class="section" id="">
+<span id="id20"></span><h4>개발 커뮤니티 합류하기<a class="headerlink" href="#" title="제목 주소">¶</a></h4>
+<p>향후 1년의 집중 개발 기간동안 주요 이슈 해결에 참여하는 모든 개발 커뮤니티 분들께 예약된 10%의 토큰을 기여량에 비례하여 분배할 예정입니다. 이 영역에는 어드바이저를 위한 분배가 포함됩니다.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, JC Kim.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

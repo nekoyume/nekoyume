@@ -240,3 +240,67 @@ def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
     assert fx_other_session.query(Move).count() == 1
     assert fx_session.query(Block).count() == 3
     assert fx_session.query(Move).count() == 1
+
+
+def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_novice_status):
+    # 1. block validation failure scenario
+    # syncing without flushing can cause block validation failure
+    move = fx_user.create_novice(fx_novice_status)
+    invalid_block = fx_user.create_block([move])
+    fx_session.delete(invalid_block)
+
+    # syncing valid blocks from another node
+    new_blocks = [{"created_at": "2018-04-13 11:36:17.920869",
+                   "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
+                   "difficulty": 0,
+                   "hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
+                   "id": 1,
+                   "moves": [],
+                   "prev_hash": None,
+                   "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                   "suffix": "0"},
+                  {"created_at": "2018-04-13 11:36:17.935392",
+                   "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
+                   "difficulty": 1,
+                   "hash": "0d357ed864822c6cc423d2c0cda1b76397403483511f53644359c14527841d55",
+                   "id": 2,
+                   "moves": [],
+                   "prev_hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
+                   "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                   "suffix": "2"}]
+
+    def add_block(new_block):
+        block = Block()
+        block.id = new_block['id']
+        block.creator = new_block['creator']
+        block.created_at = datetime.datetime.strptime(
+            new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
+        block.prev_hash = new_block['prev_hash']
+        block.hash = new_block['hash']
+        block.difficulty = new_block['difficulty']
+        block.suffix = new_block['suffix']
+        block.root_hash = new_block['root_hash']
+        fx_session.add(block)
+
+        return block
+
+    valid_block1 = add_block(new_blocks[0])
+    valid_block2 = add_block(new_blocks[1])
+
+    assert invalid_block.hash == fx_session.query(Block).get(valid_block2.id - 1).hash
+    assert valid_block2.valid is False
+
+    fx_session.query(Block).delete()
+
+    # 2. valid scenario
+    # flush session after deleting the invalid block
+    move = fx_user.create_novice(fx_novice_status)
+    invalid_block = fx_user.create_block([move])
+    fx_session.delete(invalid_block)
+    fx_session.flush()
+
+    valid_block1 = add_block(new_blocks[0])
+    valid_block2 = add_block(new_blocks[1])
+
+    assert valid_block1.hash == fx_session.query(Block).get(valid_block2.id - 1).hash
+    assert valid_block2.valid

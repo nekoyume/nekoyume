@@ -425,15 +425,15 @@ class Block(db.Model):
                 break
             from_ += limit
             try:
-                db.session.commit()
+                session.commit()
             except IntegrityError:
-                db.session.rollback()
+                session.rollback()
                 return False
 
         try:
-            db.session.commit()
+            session.commit()
         except IntegrityError:
-            db.session.rollback()
+            session.rollback()
             return False
         return True
 

@@ -369,6 +369,11 @@ class Block(db.Model):
                 move.block_id = None
             session.delete(block)
 
+        # Flush the above deletions to the database.
+        # If we don't flush here,
+        # stale objects can be fetched when validating blocks.
+        session.flush()
+
         from_ = branch_point + 1
         limit = 1000
         while True:
@@ -420,15 +425,15 @@ class Block(db.Model):
                 break
             from_ += limit
             try:
-                db.session.commit()
+                session.commit()
             except IntegrityError:
-                db.session.rollback()
+                session.rollback()
                 return False
 
         try:
-            db.session.commit()
+            session.commit()
         except IntegrityError:
-            db.session.rollback()
+            session.rollback()
             return False
         return True
 

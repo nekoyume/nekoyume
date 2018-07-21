@@ -5,11 +5,13 @@ services:
     networks:
       - nekoyume-net
   nekoyume:
-    image: "nekoyume:latest"
+    build: .
+    image: "nekoyume/nekoyume"
     environment:
-      - REDIS_URL=redis://redis:6379/
+      - REDIS_URL=redis://redis:6379
+      - C_FORCE_ROOT=true
     ports:
-      - "4000:80"
+      - "4000:8080"
     depends_on:
       - redis
     networks:

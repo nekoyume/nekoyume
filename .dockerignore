@@ -1,0 +1,4 @@
+*.db
+*.egg-info
+.git
+.secret_key

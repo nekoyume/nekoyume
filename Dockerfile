@@ -17,11 +17,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 RUN nekoyume init
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
 
 # Define environment variable
-ENV PORT 80
+ENV PORT 8080
 
 # Run app.py when the container launches
-CMD ["honcho", "start"]
+CMD ["bash", "-c", "nekoyume init && honcho start"]

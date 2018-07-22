@@ -4,12 +4,12 @@ Nekoyume
 
 |build| |coverage| |pypi| |chat|
 
-Nekoyume is world's first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `Blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
+Nekoyume is the first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
 
 
 * Nekoyume is entirely decentralized MMORPG game.
 * Nekoyume uses `Dungeon World <https://en.wikipedia.org/wiki/Dungeon_World>`_ as a basic rule.
-* To use randomness on the blockchain, This project implemented Hash random. (see `white paper <//docs.nekoyu.me/white_paper.html>`_.)
+* To achieve randomness on the blockchain, this project implements Hash random. (Read `white paper <//docs.nekoyu.me/white_paper.html>`_ for details.)
 
 Dependencies
 ------------
@@ -34,7 +34,7 @@ Installation to Heroku
 ^^^^^^^^^^^^^^^^^^^^^^^
 |deploy|
 
-Installation for Development
+Installation for development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
@@ -45,7 +45,7 @@ Installation for Development
    $ pip install -e .[dev,test]
 
 
-Launching Node
+Launching node
 --------------
 
 .. code-block:: console

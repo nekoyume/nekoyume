@@ -1,34 +1,50 @@
-version: '2'
+version: '3'
 services:
   redis:
     image: redis:alpine
     networks: [nekoyume-net]
+  postgres:
+    image: postgres:alpine
+    networks: [nekoyume-net]
+    environment:
+      POSTGRES_PASSWORD: nekoyume
+      POSTGRES_DB: nekoyume
   sync: &app
     build: .
     image: nekoyume/nekoyume
-    command: nekoyume sync
+    command:
+    -
+      nekoyume init --skip-sync &&
+      nekoyume sync
     environment: &app_environments
+      DATABASE_URL: postgresql://postgres:nekoyume@postgres/nekoyume
       REDIS_URL: redis://redis:6379
-    depends_on: [redis]
+    depends_on: [postgres, redis]
     networks: [nekoyume-net]
   web:
     <<: *app
-    command: >
+    command:
+    -
+      nekoyume init --skip-sync &&
       gunicorn
         -b 0.0.0.0:8080
         -w 3
         -k gevent
         --log-level debug
-        nekoyume.app:app
+        nekoyume.app:app;
+    depends_on: [sync]
     ports:
     - "4000:8080"
   worker:
     <<: *app
-    command: >
+    command:
+    -
+      nekoyume init --skip-sync &&
       celery
         -A nekoyume.app.cel
         worker
-          -l info
+          -l info;
+    depends_on: [sync]
     environment:
       <<: *app_environments
       C_FORCE_ROOT: "true"

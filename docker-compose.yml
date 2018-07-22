@@ -1,20 +1,36 @@
 version: '2'
 services:
   redis:
-    image: "redis:alpine"
-    networks:
-      - nekoyume-net
-  nekoyume:
+    image: redis:alpine
+    networks: [nekoyume-net]
+  sync: &app
     build: .
-    image: "nekoyume/nekoyume"
-    environment:
-      - REDIS_URL=redis://redis:6379
-      - C_FORCE_ROOT=true
+    image: nekoyume/nekoyume
+    command: nekoyume sync
+    environment: &app_environments
+      REDIS_URL: redis://redis:6379
+    depends_on: [redis]
+    networks: [nekoyume-net]
+  web:
+    <<: *app
+    command: >
+      gunicorn
+        -b 0.0.0.0:8080
+        -w 3
+        -k gevent
+        --log-level debug
+        nekoyume.app:app
     ports:
-      - "4000:8080"
-    depends_on:
-      - redis
-    networks:
-      - nekoyume-net
+    - "4000:8080"
+  worker:
+    <<: *app
+    command: >
+      celery
+        -A nekoyume.app.cel
+        worker
+          -l info
+    environment:
+      <<: *app_environments
+      C_FORCE_ROOT: "true"
 networks:
   nekoyume-net:

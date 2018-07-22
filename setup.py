@@ -38,6 +38,7 @@ setup(
         'Flask-SQLAlchemy >= 2.3.2, < 2.4.0',
         'gevent == 1.3.1',
         'gunicorn >= 19.7.1, < 19.8.0',
+        'psycopg2 >= 2.7.5, < 2.8.0',
         'ptpython == 0.41',
         'pycrypto == 2.6',
         'python_bitcoinlib == 0.9.0',

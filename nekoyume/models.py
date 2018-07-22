@@ -77,14 +77,21 @@ class Node(db.Model):
 
     @classmethod
     def get(cls, url, session=db.session):
-        node = Node.query.filter_by(url=url).first()
+        get = Node.query.filter_by(url=url).first
+        node = get()
         if node:
             return node
         elif requests.get(f'{url}/ping').text == 'pong':
             node = Node(url=url, last_connected_at=datetime.datetime.utcnow())
             if session:
                 session.add(node)
-                session.commit()
+                try:
+                    session.commit()
+                except IntegrityError:
+                    node = get()
+                    if node is None:
+                        raise
+                    return node
             return node
         else:
             return None

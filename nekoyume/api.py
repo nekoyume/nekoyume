@@ -158,16 +158,7 @@ def post_block():
         return jsonify(result='failed',
                        message="new block isn't our next block."), 403
 
-    block = Block()
-    block.id = new_block['id']
-    block.creator = new_block['creator']
-    block.created_at = datetime.datetime.strptime(
-        new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-    block.prev_hash = new_block['prev_hash']
-    block.hash = new_block['hash']
-    block.difficulty = new_block['difficulty']
-    block.suffix = new_block['suffix']
-    block.root_hash = new_block['root_hash']
+    block = Block.deserialize(new_block)
 
     for new_move in new_block['moves']:
         move = Move.query.get(new_move['id'])

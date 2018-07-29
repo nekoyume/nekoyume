@@ -35,6 +35,7 @@ from nekoyume.items import (Armor,
 from nekoyume import hashcash
 
 
+PROTOCOL_VERSION: int = 2
 db = SQLAlchemy()
 cache = Cache()
 
@@ -186,6 +187,8 @@ class Block(db.Model):
     __tablename__ = 'block'
     #: block id
     id = db.Column(db.Integer, primary_key=True)
+    #: protocol version
+    version = db.Column(db.Integer, default=PROTOCOL_VERSION, nullable=False)
     #: current block's hash
     hash = db.Column(db.String, nullable=False, index=True, unique=True)
     #: previous block's hash
@@ -195,19 +198,50 @@ class Block(db.Model):
     #: hash of every linked move's ordered hash list
     root_hash = db.Column(db.String, nullable=False)
     #: suffix for hashcash
-    suffix = db.Column(db.String, nullable=False)
+    suffix = db.Column(db.LargeBinary, nullable=False)
     #: difficulty of hashcash
     difficulty = db.Column(db.Integer, nullable=False)
     #: block creation datetime
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.utcnow)
     size_limit = 10000
+    __table_args__ = (
+        db.CheckConstraint(id > 0),
+        db.CheckConstraint(
+            db.case([
+                (id == 1, prev_hash.is_(None)),
+            ], else_=prev_hash.isnot(None))
+        ),
+        db.CheckConstraint((id == 1) | (difficulty > 0)),
+    )
+
+    @classmethod
+    def deserialize(cls, serialized: dict) -> 'Block':
+        version = serialized.get('version', 1)
+        return cls(
+            id=serialized['id'],
+            version=version,
+            creator=serialized['creator'],
+            created_at=datetime.datetime.strptime(
+                serialized['created_at'],
+                '%Y-%m-%d %H:%M:%S.%f'
+            ),
+            prev_hash=serialized['prev_hash'],
+            hash=serialized['hash'],
+            difficulty=serialized['difficulty'],
+            suffix=(
+                bytes.fromhex(serialized['suffix'])
+                if version >= 2
+                else serialized['suffix'].encode('ascii')
+            ),
+            root_hash=serialized['root_hash'],
+        )
 
     @property
     def valid(self) -> bool:
         """Check if this object is valid or not"""
-        stamp = self.serialize().decode('utf-8') + self.suffix
-        valid = (self.hash == h(str.encode(stamp)).hexdigest())
+        stamp = self.serialize() + self.suffix
+        valid = (self.hash == h(stamp).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
 
         valid = valid and (
@@ -259,6 +293,7 @@ class Block(db.Model):
         :param  include_moves: check if you want to include linked moves.
         :param   include_hash: check if you want to include block hash.
         """
+        binary = (lambda x: x) if use_bencode else bytes.hex
         serialized = dict(
             id=self.id,
             creator=self.creator,
@@ -267,8 +302,10 @@ class Block(db.Model):
             root_hash=self.root_hash,
             created_at=str(self.created_at),
         )
+        if self.version > 1:
+            serialized['version'] = self.version
         if include_suffix:
-            serialized['suffix'] = self.suffix
+            serialized['suffix'] = binary(self.suffix)
 
         if include_moves:
             serialized['moves'] = [m.serialize(
@@ -392,16 +429,7 @@ class Block(db.Model):
             if len(response.json()['blocks']) == 0:
                 break
             for new_block in response.json()['blocks']:
-                block = Block()
-                block.id = new_block['id']
-                block.creator = new_block['creator']
-                block.created_at = datetime.datetime.strptime(
-                    new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-                block.prev_hash = new_block['prev_hash']
-                block.hash = new_block['hash']
-                block.difficulty = new_block['difficulty']
-                block.suffix = new_block['suffix']
-                block.root_hash = new_block['root_hash']
+                block = Block.deserialize(new_block)
 
                 for new_move in new_block['moves']:
                     move = session.query(Move).get(new_move['id'])
@@ -1087,7 +1115,7 @@ class User():
         for move in moves:
             if not move.valid:
                 raise InvalidMoveError(move)
-        block = Block()
+        block = Block(version=PROTOCOL_VERSION)
         block.root_hash = h(
             ''.join(sorted((m.id for m in moves))).encode('utf-8')
         ).hexdigest()
@@ -1122,15 +1150,10 @@ class User():
             block.prev_hash = None
             block.difficulty = 0
 
-        block.suffix = hashcash._mint(
-            block.serialize().decode('utf-8'),
-            bits=block.difficulty
-        )
+        block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty)
         if self.session.query(Block).get(block.id):
             return None
-        block.hash = h(
-            (block.serialize().decode('utf-8') + block.suffix).encode('utf-8')
-        ).hexdigest()
+        block.hash = h(block.serialize() + block.suffix).hexdigest()
 
         for move in moves:
             move.block = block

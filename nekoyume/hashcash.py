@@ -1,60 +1,57 @@
 #!/usr/bin/env python3.6
-"""Implement Hashcash version 1 protocol in Python 3.6
-+---------------------------------------------------------------------------+
-| Written by David Mertz; Modified by Jc Kim; released to the Public Domain |
-+---------------------------------------------------------------------------+
+"""
+Generalized Hashcash
+====================
 
-Double spend database not implemented in this module, but stub
-for callbacks is provided in the 'check()' function
+The function :func:`check()` will validate *generalized Hashcash* tokens
+generically.
 
-The function 'check()' will validate 'generalized hashcash' tokens
-generically.  Future protocol version are treated as generalized tokens
-(should a future version be published w/o this module being correspondingly
-updated).
-
-A 'generalized hashcash' is implemented in the '_mint()' function, with the
-public function 'mint()' providing a wrapper for actual hashcash protocol.
+A *generalized Hashcash* is implemented in the :func:`_mint()` function.
 The generalized form simply finds a suffix that creates zero bits in the
-hash of the string concatenating 'challenge' and 'suffix' without specifying
-any particular fields or delimiters in 'challenge'.  E.g., you might get:
+hash of the string concatenating *challenge* and *suffix* without specifying
+any particular fields or delimiters in *challenge*.  E.g., you might get:
 
     >>> from nekoyume.hashcash import _mint
-    >>> _mint('foo', bits=16)
-    '1369a'
+    >>> _mint(b'foo', bits=16)
+    b'-g'
     >>> from hashlib import sha256
-    >>> sha256(b'foo1369a').hexdigest()
-    '0000ac007db1be2dcb5e1fb94685c64976c8485931a44b8546d3034ad853555f'
-    >>> sha256(b'1:16:180130:foo::QiTuo+Vq:19556').hexdigest()
-    '00002d016664c69bda0fe9730f058fa8b5ef508fc8078253e07948c769d4642a'
+    >>> sha256(b'foo-g').hexdigest()
+    '000090605c0a82a7aeac7bd99cb61002f16ced96e649edd58b8baaa3c747304a'
 
-Notice that '_mint()' behaves deterministically, finding the same suffix
-every time it is passed the same arguments.  'mint()' incorporates a random
-salt in stamps (as per the hashcash v.1 protocol).
+Notice that :func:`_mint()` behaves deterministically, finding the same suffix
+every time it is passed the same arguments.
 """
-from math import ceil, floor
-from hashlib import sha256
+import hashlib
+import math
+import sys
 
 
-tries = [0]                 # Count hashes performed for benchmark
+def _mint(challenge: bytes, bits: int) -> bytes:
+    """Answer a generalized Hashcash_ challenge.
 
-
-def _mint(challenge, bits):
-    """Answer a 'generalized hashcash' challenge'
-
-    Hashcash requires stamps of form 'ver:bits:date:res:ext:rand:counter'
-    This internal function accepts a generalized prefix 'challenge',
+    This function accepts a generalized prefix *challenge*,
     and returns only a suffix that produces the requested SHA leading zeros.
 
-    NOTE: Number of requested bits is rounded up to the nearest multiple of 4
+    .. _Hashcash: https://en.wikipedia.org/wiki/Hashcash
+
     """
-    counter = 0
-    hex_digits = int(ceil(bits/4.))
-    zeros = '0'*hex_digits
+    if not isinstance(challenge, bytes):
+        raise TypeError(
+            f'challenge must be an instance of bytes, not {challenge}'
+        )
+    # These function aliases purpose to prevent global lookup which is way
+    # slower than local lookup in Python VM.
+    log2 = math.log2
+    sha256 = hashlib.sha256
+    byteorder = sys.byteorder
+
+    counter = 1
     while 1:
-        digest = sha256(str.encode(challenge+hex(counter)[2:])).hexdigest()
-        if digest[:hex_digits] == zeros:
-            tries[0] = counter
-            return hex(counter)[2:]
+        answer_bytes_length = 1 + int(log2(counter) // 8)
+        answer = counter.to_bytes(answer_bytes_length, byteorder)
+        digest = sha256(challenge + answer).digest()
+        if has_leading_zero_bits(digest, bits):
+            return answer
         counter += 1
 
 
@@ -62,9 +59,20 @@ def check(stamp, resource=None, bits=None,
           check_expiration=None, ds_callback=None):
     if type(bits) is not int:
         return True
-    elif resource is not None and stamp.find(resource) < 0:
+    elif resource is not None and not stamp.endswith(resource):
         return False
     else:
-        hex_digits = int(floor(bits/4))
-        return sha256(str.encode(stamp)).hexdigest().startswith(
-            '0'*hex_digits)
+        return has_leading_zero_bits(hashlib.sha256(stamp).digest(), bits)
+
+
+def has_leading_zero_bits(digest: bytes, bits: int) -> bool:
+    leading_bytes = bits // 8
+    trailing_bits = bits % 8
+    if not digest.startswith(b'\0' * leading_bytes):
+        return False
+    if trailing_bits:
+        if len(digest) < leading_bytes:
+            return False
+        mask = 0b1111_1111 << (8 - trailing_bits) & 0xff
+        return not (mask & digest[leading_bytes])
+    return True

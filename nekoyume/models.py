@@ -195,7 +195,7 @@ class Block(db.Model):
     #: hash of every linked move's ordered hash list
     root_hash = db.Column(db.String, nullable=False)
     #: suffix for hashcash
-    suffix = db.Column(db.String, nullable=False)
+    suffix = db.Column(db.LargeBinary, nullable=False)
     #: difficulty of hashcash
     difficulty = db.Column(db.Integer, nullable=False)
     #: block creation datetime
@@ -206,8 +206,8 @@ class Block(db.Model):
     @property
     def valid(self) -> bool:
         """Check if this object is valid or not"""
-        stamp = self.serialize().decode('utf-8') + self.suffix
-        valid = (self.hash == h(str.encode(stamp)).hexdigest())
+        stamp = self.serialize() + self.suffix
+        valid = (self.hash == h(stamp).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
 
         valid = valid and (
@@ -259,6 +259,7 @@ class Block(db.Model):
         :param  include_moves: check if you want to include linked moves.
         :param   include_hash: check if you want to include block hash.
         """
+        binary = (lambda x: x) if use_bencode else bytes.hex
         serialized = dict(
             id=self.id,
             creator=self.creator,
@@ -268,7 +269,7 @@ class Block(db.Model):
             created_at=str(self.created_at),
         )
         if include_suffix:
-            serialized['suffix'] = self.suffix
+            serialized['suffix'] = binary(self.suffix)
 
         if include_moves:
             serialized['moves'] = [m.serialize(
@@ -400,7 +401,7 @@ class Block(db.Model):
                 block.prev_hash = new_block['prev_hash']
                 block.hash = new_block['hash']
                 block.difficulty = new_block['difficulty']
-                block.suffix = new_block['suffix']
+                block.suffix = bytes.fromhex(new_block['suffix'])
                 block.root_hash = new_block['root_hash']
 
                 for new_move in new_block['moves']:
@@ -1122,15 +1123,10 @@ class User():
             block.prev_hash = None
             block.difficulty = 0
 
-        block.suffix = hashcash._mint(
-            block.serialize().decode('utf-8'),
-            bits=block.difficulty
-        )
+        block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty)
         if self.session.query(Block).get(block.id):
             return None
-        block.hash = h(
-            (block.serialize().decode('utf-8') + block.suffix).encode('utf-8')
-        ).hexdigest()
+        block.hash = h(block.serialize() + block.suffix).hexdigest()
 
         for move in moves:
             move.block = block

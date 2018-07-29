@@ -258,7 +258,7 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
                    "moves": [],
                    "prev_hash": None,
                    "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "0"},
+                   "suffix": "30"},
                   {"created_at": "2018-04-13 11:36:17.935392",
                    "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
                    "difficulty": 1,
@@ -267,9 +267,11 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
                    "moves": [],
                    "prev_hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
                    "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "2"}]
+                   "suffix": "32"}]
 
     def add_block(new_block):
+        # FIXME: this deserialization code is duplicate with post_block() in
+        # the api.py file.  Shouldn't it be extracted to a function?
         block = Block()
         block.id = new_block['id']
         block.creator = new_block['creator']
@@ -278,7 +280,7 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
         block.prev_hash = new_block['prev_hash']
         block.hash = new_block['hash']
         block.difficulty = new_block['difficulty']
-        block.suffix = new_block['suffix']
+        block.suffix = bytes.fromhex(new_block['suffix'])
         block.root_hash = new_block['root_hash']
         fx_session.add(block)
 

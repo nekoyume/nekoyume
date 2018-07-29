@@ -166,7 +166,7 @@ def post_block():
     block.prev_hash = new_block['prev_hash']
     block.hash = new_block['hash']
     block.difficulty = new_block['difficulty']
-    block.suffix = new_block['suffix']
+    block.suffix = bytes.fromhex(new_block['suffix'])
     block.root_hash = new_block['root_hash']
 
     for new_move in new_block['moves']:

@@ -270,20 +270,8 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
                    "suffix": "32"}]
 
     def add_block(new_block):
-        # FIXME: this deserialization code is duplicate with post_block() in
-        # the api.py file.  Shouldn't it be extracted to a function?
-        block = Block()
-        block.id = new_block['id']
-        block.creator = new_block['creator']
-        block.created_at = datetime.datetime.strptime(
-            new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-        block.prev_hash = new_block['prev_hash']
-        block.hash = new_block['hash']
-        block.difficulty = new_block['difficulty']
-        block.suffix = bytes.fromhex(new_block['suffix'])
-        block.root_hash = new_block['root_hash']
+        block = Block.deserialize(new_block)
         fx_session.add(block)
-
         return block
 
     valid_block1 = add_block(new_blocks[0])

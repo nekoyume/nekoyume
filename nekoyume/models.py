@@ -212,6 +212,22 @@ class Block(db.Model):
         db.CheckConstraint((id == 1) | (difficulty > 0)),
     )
 
+    @classmethod
+    def deserialize(cls, serialized: dict) -> 'Block':
+        return cls(
+            id=serialized['id'],
+            creator=serialized['creator'],
+            created_at=datetime.datetime.strptime(
+                serialized['created_at'],
+                '%Y-%m-%d %H:%M:%S.%f'
+            ),
+            prev_hash=serialized['prev_hash'],
+            hash=serialized['hash'],
+            difficulty=serialized['difficulty'],
+            suffix=bytes.fromhex(serialized['suffix']),
+            root_hash=serialized['root_hash'],
+        )
+
     @property
     def valid(self) -> bool:
         """Check if this object is valid or not"""
@@ -402,16 +418,7 @@ class Block(db.Model):
             if len(response.json()['blocks']) == 0:
                 break
             for new_block in response.json()['blocks']:
-                block = Block()
-                block.id = new_block['id']
-                block.creator = new_block['creator']
-                block.created_at = datetime.datetime.strptime(
-                    new_block['created_at'], '%Y-%m-%d %H:%M:%S.%f')
-                block.prev_hash = new_block['prev_hash']
-                block.hash = new_block['hash']
-                block.difficulty = new_block['difficulty']
-                block.suffix = bytes.fromhex(new_block['suffix'])
-                block.root_hash = new_block['root_hash']
+                block = Block.deserialize(new_block)
 
                 for new_move in new_block['moves']:
                     move = session.query(Move).get(new_move['id'])

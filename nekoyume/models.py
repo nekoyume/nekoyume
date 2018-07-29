@@ -35,6 +35,7 @@ from nekoyume.items import (Armor,
 from nekoyume import hashcash
 
 
+PROTOCOL_VERSION: int = 2
 db = SQLAlchemy()
 cache = Cache()
 
@@ -186,6 +187,8 @@ class Block(db.Model):
     __tablename__ = 'block'
     #: block id
     id = db.Column(db.Integer, primary_key=True)
+    #: protocol version
+    version = db.Column(db.Integer, default=PROTOCOL_VERSION, nullable=False)
     #: current block's hash
     hash = db.Column(db.String, nullable=False, index=True, unique=True)
     #: previous block's hash
@@ -214,8 +217,10 @@ class Block(db.Model):
 
     @classmethod
     def deserialize(cls, serialized: dict) -> 'Block':
+        version = serialized.get('version', 1)
         return cls(
             id=serialized['id'],
+            version=version,
             creator=serialized['creator'],
             created_at=datetime.datetime.strptime(
                 serialized['created_at'],
@@ -224,7 +229,11 @@ class Block(db.Model):
             prev_hash=serialized['prev_hash'],
             hash=serialized['hash'],
             difficulty=serialized['difficulty'],
-            suffix=bytes.fromhex(serialized['suffix']),
+            suffix=(
+                bytes.fromhex(serialized['suffix'])
+                if version >= 2
+                else serialized['suffix'].encode('ascii')
+            ),
             root_hash=serialized['root_hash'],
         )
 
@@ -293,6 +302,8 @@ class Block(db.Model):
             root_hash=self.root_hash,
             created_at=str(self.created_at),
         )
+        if self.version > 1:
+            serialized['version'] = self.version
         if include_suffix:
             serialized['suffix'] = binary(self.suffix)
 
@@ -1104,7 +1115,7 @@ class User():
         for move in moves:
             if not move.valid:
                 raise InvalidMoveError(move)
-        block = Block()
+        block = Block(version=PROTOCOL_VERSION)
         block.root_hash = h(
             ''.join(sorted((m.id for m in moves))).encode('utf-8')
         ).hexdigest()

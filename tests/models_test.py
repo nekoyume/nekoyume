@@ -258,16 +258,17 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
                    "moves": [],
                    "prev_hash": None,
                    "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "30"},
+                   "suffix": "0"},
                   {"created_at": "2018-04-13 11:36:17.935392",
                    "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
                    "difficulty": 1,
-                   "hash": "0d357ed864822c6cc423d2c0cda1b76397403483511f53644359c14527841d55",
+                   "hash": "014c44b9382a45c2a70d817c090e6b78af22b8f34b57fd7edb474344f25c439c",
                    "id": 2,
+                   "version": 2,
                    "moves": [],
                    "prev_hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
                    "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "32"}]
+                   "suffix": "0b"}]
 
     def add_block(new_block):
         block = Block.deserialize(new_block)

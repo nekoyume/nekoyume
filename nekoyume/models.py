@@ -202,6 +202,15 @@ class Block(db.Model):
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.utcnow)
     size_limit = 10000
+    __table_args__ = (
+        db.CheckConstraint(id > 0),
+        db.CheckConstraint(
+            db.case([
+                (id == 1, prev_hash.is_(None)),
+            ], else_=prev_hash.isnot(None))
+        ),
+        db.CheckConstraint((id == 1) | (difficulty > 0)),
+    )
 
     @property
     def valid(self) -> bool:

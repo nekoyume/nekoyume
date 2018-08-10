@@ -138,6 +138,17 @@ def repair():
     db.session.commit()
 
 
+@cli.command()
+@click.option('--host',
+              default='127.0.0.1',
+              help='Host to listen')
+@click.option('--port',
+              type=click.IntRange(0, 65535),
+              metavar='PORT',
+              default=5000,
+              help='Port number to listen')
+def dev(host: str, port: int) -> None:
+    app.run(debug=True, host=host, port=port)
 
 
 if __name__ == '__main__':

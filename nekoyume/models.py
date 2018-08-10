@@ -219,10 +219,9 @@ class Block(db.Model):
 
     @classmethod
     def deserialize(cls, serialized: dict) -> 'Block':
-        version = serialized.get('version', 1)
         return cls(
             id=serialized['id'],
-            version=version,
+            version=serialized['version'],
             creator=serialized['creator'],
             created_at=datetime.datetime.strptime(
                 serialized['created_at'],
@@ -231,11 +230,7 @@ class Block(db.Model):
             prev_hash=serialized['prev_hash'],
             hash=serialized['hash'],
             difficulty=serialized['difficulty'],
-            suffix=(
-                bytes.fromhex(serialized['suffix'])
-                if version >= 2
-                else serialized['suffix'].encode('ascii')
-            ),
+            suffix=bytes.fromhex(serialized['suffix']),
             root_hash=serialized['root_hash'],
         )
 
@@ -303,9 +298,8 @@ class Block(db.Model):
             difficulty=self.difficulty,
             root_hash=self.root_hash,
             created_at=str(self.created_at),
+            version=self.version,
         )
-        if self.version > 1:
-            serialized['version'] = self.version
         if include_suffix:
             serialized['suffix'] = binary(self.suffix)
 

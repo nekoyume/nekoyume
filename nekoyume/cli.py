@@ -14,7 +14,7 @@ def cli():
     pass
 
 
-@click.command()
+@cli.command()
 @click.option('--private-key',
               default='test',
               help='Private key of neko')
@@ -35,13 +35,13 @@ def neko(private_key):
             click.echo(block)
 
 
-@click.command()
+@cli.command()
 def shell():
     app.app_context().push()
     embed(globals(), locals())
 
 
-@click.command()
+@cli.command()
 @click.option('--seed',
               default=None,
               help='Seed node URL to connect')
@@ -61,7 +61,7 @@ def init(seed, sync):
         Block.sync(click=click)
 
 
-@click.command()
+@cli.command()
 def sync():
     Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
@@ -89,7 +89,7 @@ def sync():
             break
 
 
-@click.command()
+@cli.command()
 def doctor():
     id = 1
     for block in Block.query.order_by(Block.id.asc()):
@@ -101,7 +101,7 @@ def doctor():
         id += 1
 
 
-@click.command()
+@cli.command()
 def repair():
     id = 1
     for block in Block.query.order_by(Block.id.asc()):
@@ -127,12 +127,6 @@ def repair():
     db.session.commit()
 
 
-cli.add_command(init)
-cli.add_command(neko)
-cli.add_command(shell)
-cli.add_command(sync)
-cli.add_command(doctor)
-cli.add_command(repair)
 
 
 if __name__ == '__main__':

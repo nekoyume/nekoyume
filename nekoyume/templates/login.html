@@ -55,4 +55,19 @@
         </main>
     </div>
 </div>
+<script src="https://cdn.rawgit.com/weepy/brequire/master/require.js"></script>
+<script>
+window.setTimeout(function () {
+    var elliptic = require(
+		'https://cdn.rawgit.com/indutny/elliptic/v6.4.1/dist/elliptic.min.js'
+	);
+	var ec = new elliptic.ec('secp256k1');
+	var keyPair = ec.genKeyPair();
+	var privKey = keyPair.getPrivate();
+	var input = document.getElementById('private_key');
+	var hex = privKey.toString('hex');
+	while (hex.length < 64) hex = '0' + hex;
+	input.value = hex;
+}, 0);
+</script>
 {% endblock %}

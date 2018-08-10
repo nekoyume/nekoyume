@@ -9,11 +9,12 @@ game moves.
 import datetime
 from hashlib import sha256 as h
 import os
+import re
 
 from bencode import bencode
-from bitcoin import base58
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
+from keccak import sha3_256
 import requests
 from secp256k1 import PrivateKey, PublicKey
 from sqlalchemy import or_
@@ -478,9 +479,9 @@ class Block(db.Model):
         return True
 
 
-def get_address(public_key: str) -> str:
-    """Get address based on the public key"""
-    return base58.encode(public_key.serialize())
+def get_address(public_key: PublicKey) -> str:
+    """Derive an Ethereum-style address from the given public key."""
+    return '0x' + sha3_256(public_key.serialize(False)[1:]).hexdigest()[-40:]
 
 
 class Move(db.Model):
@@ -495,7 +496,7 @@ class Move(db.Model):
     block = db.relationship('Block', uselist=False, backref='moves')
     #: 33 bytes long form (i.e., compressed from) of user's public key.
     user_public_key = db.Column(db.LargeBinary, nullable=False, index=True)
-    #: user's address
+    #: user's address ("0x"-prefixed 40 hexdecimal string; total 42 chars)
     user_address = db.Column(db.String, nullable=False, index=True)
     #: move's signature (71 bytes)
     signature = db.Column(db.LargeBinary, nullable=False)
@@ -513,6 +514,11 @@ class Move(db.Model):
                            default=datetime.datetime.utcnow)
 
     __table_args__ = (
+        db.CheckConstraint(
+            db.func.lower(user_address).like('0x%') &
+            (char_length(user_address) == 42)
+            # TODO: it should has proper test if 40-hex string
+        ),
         db.CheckConstraint(char_length(user_public_key) == 33),
         db.CheckConstraint(
             (char_length(signature) >= 70) &
@@ -535,6 +541,7 @@ class Move(db.Model):
         assert isinstance(self.user_public_key, bytes)
         assert len(self.user_public_key) == 33
         assert isinstance(self.user_address, str)
+        assert re.match(r'^(?:0[xX])?[0-9a-fA-F]{40}$', self.user_address)
         public_key = PublicKey(self.user_public_key, raw=True)
         verified = public_key.ecdsa_verify(
             self.serialize(include_signature=False),

@@ -35,12 +35,15 @@
                             <img width="80%" src="{{ url_for('static', filename='nekoyume.png') }}" alt="nekoyume">
                             <p>
                             {% trans %}Hello! Welcome to the world of Nekoyume. Please set your own private key and input that in the form below so that you can start game right know. Private key is a password that identify you. Please make this unique.{% endtrans %}</p>
+                            {% if request.args.get('error') == 'invalid-private-key' %}
+                                <p>{% trans %}Please enter a valid private key of 64 hexadecimal digits (it can be optionally prefixed with <tt>0x</tt>).{% endtrans %}</p>
+                            {% endif %}
                             </center>
                         </div>
                         <div class="mdl-card__actions">
                             <form action="{{ url_for('.post_login') }}" method="POST" style="text-align: center">
                               <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="private_key" name="private_key">
+                                  <input class="mdl-textfield__input" type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
                                 <label class="mdl-textfield__label" for="private_key">{% trans %}Enter your private key{% endtrans %}</label>
                               </div>
                               <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans %}OK{% endtrans %}">

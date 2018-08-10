@@ -4,9 +4,22 @@ import os
 
 from ptpython.repl import embed
 from raven import Client
+from secp256k1 import PrivateKey
 
 from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db
+
+
+class PrivateKeyType(click.ParamType):
+    name = 'private key'
+
+    def convert(self, value, param, ctx) -> PrivateKey:
+        val = value[2:] if value.startswith(('0x', '0X')) else value
+        try:
+            num = bytes.fromhex(val)
+            return PrivateKey(num)
+        except (ValueError, TypeError):
+            self.fail('%s is not a valid private key of 64 hexadecimal digits')
 
 
 @click.group()
@@ -15,10 +28,8 @@ def cli():
 
 
 @cli.command()
-@click.option('--private-key',
-              default='test',
-              help='Private key of neko')
-def neko(private_key):
+@click.argument('private_key', type=PrivateKeyType())
+def neko(private_key: PrivateKey):
     app.app_context().push()
     Client(os.environ.get('SENTRY_DSN'))
 

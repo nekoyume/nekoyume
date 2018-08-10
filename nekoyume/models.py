@@ -15,11 +15,12 @@ from bitcoin import base58
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 import requests
-import seccure
+from secp256k1 import PrivateKey, PublicKey
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.sql.functions import char_length
 import tablib
 
 from nekoyume.exc import (InvalidBlockError,
@@ -434,11 +435,15 @@ class Block(db.Model):
                 for new_move in new_block['moves']:
                     move = session.query(Move).get(new_move['id'])
                     if not move:
+                        # TODO: eliminate code duplication
                         move = Move(
                             id=new_move['id'],
-                            user=new_move['user'],
+                            user_address=new_move['user_address'],
                             name=new_move['name'],
-                            signature=new_move['signature'],
+                            user_public_key=bytes.fromhex(
+                                new_move['user_public_key']
+                            ),
+                            signature=bytes.fromhex(new_move['signature']),
                             tax=new_move['tax'],
                             details=new_move['details'],
                             created_at=datetime.datetime.strptime(
@@ -475,7 +480,7 @@ class Block(db.Model):
 
 def get_address(public_key: str) -> str:
     """Get address based on the public key"""
-    return base58.encode(public_key)
+    return base58.encode(public_key.serialize())
 
 
 class Move(db.Model):
@@ -488,10 +493,12 @@ class Move(db.Model):
                          nullable=True, index=True)
     #: move's block
     block = db.relationship('Block', uselist=False, backref='moves')
-    #: move's owner
-    user = db.Column(db.String, nullable=False, index=True)
-    #: move's signature
-    signature = db.Column(db.String, nullable=False)
+    #: 33 bytes long form (i.e., compressed from) of user's public key.
+    user_public_key = db.Column(db.LargeBinary, nullable=False, index=True)
+    #: user's address
+    user_address = db.Column(db.String, nullable=False, index=True)
+    #: move's signature (71 bytes)
+    signature = db.Column(db.LargeBinary, nullable=False)
     #: move name
     name = db.Column(db.String, nullable=False, index=True)
     #: move details. it contains parameters of move
@@ -505,6 +512,13 @@ class Move(db.Model):
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.utcnow)
 
+    __table_args__ = (
+        db.CheckConstraint(char_length(user_public_key) == 33),
+        db.CheckConstraint(
+            (char_length(signature) >= 70) &
+            (char_length(signature) <= 71)
+        ),
+    )
     __mapper_args__ = {
         'polymorphic_identity': 'move',
         'polymorphic_on': name,
@@ -513,24 +527,26 @@ class Move(db.Model):
     @property
     def valid(self):
         """Check if this object is valid or not"""
-        if not self.signature or self.signature.find(' ') < 0:
+        if not self.signature:
             return False
 
-        public_key = self.signature.split(' ')[1]
-        valid = True
-
-        valid = valid and seccure.verify(
+        assert isinstance(self.signature, bytes)
+        assert 70 <= len(self.signature) <= 71
+        assert isinstance(self.user_public_key, bytes)
+        assert len(self.user_public_key) == 33
+        assert isinstance(self.user_address, str)
+        public_key = PublicKey(self.user_public_key, raw=True)
+        verified = public_key.ecdsa_verify(
             self.serialize(include_signature=False),
-            self.signature.split(' ')[0],
-            public_key,
+            public_key.ecdsa_deserialize(self.signature)
         )
-        valid = valid and (
-            self.user == get_address(public_key.encode('utf-8'))
-        )
+        if not verified:
+            return False
 
-        valid = valid and (self.id == self.hash)
+        if get_address(public_key) != self.user_address:
+            return False
 
-        return valid
+        return self.id == self.hash
 
     @property
     def confirmed(self):
@@ -550,15 +566,19 @@ class Move(db.Model):
         :param        include_id: check if you want to include linked moves.
         :param     include_block: check if you want to include block.
         """
+        binary = (lambda x: x) if use_bencode else bytes.hex
         serialized = dict(
-            user=self.user,
+            user_address=self.user_address,
             name=self.name,
             details={k: str(v) for k, v in dict(self.details).items()},
             tax=self.tax,
             created_at=str(self.created_at),
         )
         if include_signature:
-            serialized['signature'] = self.signature
+            serialized.update(
+                signature=binary(self.signature),
+                user_public_key=binary(self.user_public_key),
+            )
         if include_id:
             serialized['id'] = self.id
         if include_block:
@@ -653,7 +673,7 @@ class HackAndSlash(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, 'data/monsters.csv')
         monsters = tablib.Dataset().load(
@@ -789,7 +809,7 @@ class Sleep(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
         avatar.hp = avatar.max_hp
         return avatar, dict(
             type='sleep',
@@ -829,14 +849,14 @@ class CreateNovice(Move):
         if 'name' in self.details:
             avatar.name = self.details['name']
         else:
-            avatar.name = self.user[:6]
+            avatar.name = self.user_address[:6]
 
         if 'gravatar_hash' in self.details:
             avatar.gravatar_hash = self.details['gravatar_hash']
         else:
             avatar.gravatar_hash = 'HASH'
 
-        avatar.user = self.user
+        avatar.user = self.user_address
         avatar.current_block = self.block
         avatar.hp = avatar.max_hp
         avatar.xp = 0
@@ -858,7 +878,7 @@ class LevelUp(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
         if avatar.xp < avatar.lv + 7:
             return avatar, dict(
                 type='level_up',
@@ -885,7 +905,7 @@ class Say(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
 
         return avatar, dict(
             type='say',
@@ -900,7 +920,7 @@ class Send(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
 
         if int(self.details['amount']) <= 0:
             return avatar, dict(
@@ -944,7 +964,7 @@ class Combine(Move):
 
     def execute(self, avatar=None):
         if not avatar:
-            avatar = Avatar.get(self.user, self.block_id - 1)
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
         if avatar.items['GOLD'] <= 0:
             return avatar, dict(
                 type='combine',
@@ -1008,38 +1028,42 @@ class Buy(Move):
 class User():
     """ It contains user's keys and avatar information. """
 
-    def __init__(self, private_key, session=db.session):
+    private_key: PrivateKey
+    public_key: PublicKey
+
+    def __init__(self, private_key: PrivateKey, session=db.session):
+        if not isinstance(private_key, PrivateKey):
+            raise TypeError(
+                f'private_key must be an instance of {PrivateKey.__module__}.'
+                f'{PrivateKey.__qualname__}, not {private_key!r}'
+            )
         self.private_key = private_key
-        self.public_key = str(seccure.passphrase_to_pubkey(
-            self.private_key.encode('utf-8')
-        ))
+        self.public_key: PublicKey = private_key.pubkey
         self.session = session
 
     @property
     def address(self) -> str:
         """ It returns address of the user. """
-        return get_address(self.public_key.encode('utf-8'))
+        return get_address(self.public_key)
 
-    def sign(self, move: Move):
+    def sign(self, move: Move) -> None:
         """ put signature into the given move using the user's private key. """
         if move.name is None:
             raise InvalidNameError
-        move.user = self.address
+        move.user_public_key = self.public_key.serialize(compressed=True)
+        move.user_address = self.address
         serialized = move.serialize(include_signature=False)
-        move.signature = '{signature} {public_key}'.format(
-            signature=seccure.sign(
-                serialized,
-                self.private_key.encode('utf-8')
-            ).decode('utf-8'),
-            public_key=self.public_key,
+        move.signature = self.private_key.ecdsa_serialize(
+            self.private_key.ecdsa_sign(serialized)
         )
         move.id = move.hash
 
     @property
     def moves(self):
         """ return the user's moves. """
-        return self.session.query(Move).filter_by(user=self.address).filter(
-            Move.block != None # noqa
+        return self.session.query(Move).filter(
+            Move.user_public_key == self.public_key.serialize(compressed=True),
+            Move.block != None,  # noqa: E711
         ).order_by(Move.block_id.desc())
 
     def move(self, new_move, tax=0, commit=True):
@@ -1050,7 +1074,6 @@ class User():
         :params      tax: Tax to apply
         :params   commit: commit in this function automatically or not
         """
-        new_move.user = self.address
         new_move.tax = tax
         new_move.created_at = datetime.datetime.utcnow()
         self.sign(new_move)
@@ -1194,7 +1217,8 @@ class Avatar():
         :params  block_id: Avatar's block timing
         :params   session: Database session to get data
         """
-        create_move = session.query(Move).filter_by(user=user_addr).filter(
+        create_move = session.query(Move).filter(
+            Move.user_address == user_addr,
             Move.block_id <= block_id
         ).order_by(
             Move.block_id.desc()
@@ -1204,7 +1228,7 @@ class Avatar():
         if not create_move or block_id < create_move.block_id:
             return None
         moves = session.query(Move).filter(
-            or_(Move.user == user_addr, Move.id.in_(
+            or_(Move.user_address == user_addr, Move.id.in_(
                     db.session.query(MoveDetail.move_id).filter_by(
                         key='receiver', value=user_addr)))
         ).filter(
@@ -1217,7 +1241,7 @@ class Avatar():
         ).filter(Block.id <= block_id).count() * 8
 
         for move in moves:
-            if move.user == user_addr:
+            if move.user_address == user_addr:
                 avatar, result = move.execute(avatar)
             if (type(move) == Send and
                move.details['receiver'] == user_addr):
@@ -1280,7 +1304,7 @@ class Avatar():
     @property
     def last_weapon(self) -> Weapon:
         last_has = HackAndSlash.query.filter_by(
-            user=self.user
+            user_address=self.user_address
         ).order_by(HackAndSlash.block_id.desc()).first()
 
         if last_has:
@@ -1294,7 +1318,7 @@ class Avatar():
     @property
     def last_armor(self) -> Armor:
         last_has = HackAndSlash.query.filter_by(
-            user=self.user
+            user_address=self.user_address
         ).order_by(HackAndSlash.block_id.desc()).first()
 
         if last_has:

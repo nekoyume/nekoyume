@@ -163,11 +163,13 @@ def post_block():
     for new_move in new_block['moves']:
         move = Move.query.get(new_move['id'])
         if not move:
+            # TODO: eliminate code duplication
             move = Move(
                 id=new_move['id'],
-                user=new_move['user'],
+                user_address=new_move['user_address'],
                 name=new_move['name'],
-                signature=new_move['signature'],
+                user_public_key=bytes.fromhex(new_move['user_public_key']),
+                signature=bytes.fromhex(new_move['signature']),
                 tax=new_move['tax'],
                 details=new_move['details'],
                 created_at=datetime.datetime.strptime(
@@ -209,11 +211,13 @@ def post_move():
         return jsonify(result='success')
 
     if not move:
+        # TODO: eliminate code duplication
         move = Move(
             id=new_move['id'],
-            user=new_move['user'],
+            user_address=new_move['user_address'],
             name=new_move['name'],
-            signature=new_move['signature'],
+            user_public_key=bytes.fromhex(new_move['user_public_key']),
+            signature=bytes.fromhex(new_move['signature']),
             tax=new_move['tax'],
             details=new_move['details'],
             created_at=datetime.datetime.strptime(

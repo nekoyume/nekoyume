@@ -436,22 +436,7 @@ class Block(db.Model):
                 for new_move in new_block['moves']:
                     move = session.query(Move).get(new_move['id'])
                     if not move:
-                        # TODO: eliminate code duplication
-                        move = Move(
-                            id=new_move['id'],
-                            user_address=new_move['user_address'],
-                            name=new_move['name'],
-                            user_public_key=bytes.fromhex(
-                                new_move['user_public_key']
-                            ),
-                            signature=bytes.fromhex(new_move['signature']),
-                            tax=new_move['tax'],
-                            details=new_move['details'],
-                            created_at=datetime.datetime.strptime(
-                                new_move['created_at'],
-                                '%Y-%m-%d %H:%M:%S.%f'),
-                            block_id=block.id,
-                        )
+                        move = Move.deserialize(new_move, block.id)
                     if not move.valid:
                         session.rollback()
                         raise InvalidMoveError
@@ -529,6 +514,24 @@ class Move(db.Model):
         'polymorphic_identity': 'move',
         'polymorphic_on': name,
     }
+
+    @classmethod
+    def deserialize(cls, serialized: dict, block_id=None) -> 'Move':
+        if block_id is None and serialized.get('block'):
+            block_id = serialized['block'].get('id')
+        return cls(
+            id=serialized['id'],
+            user_address=serialized['user_address'],
+            name=serialized['name'],
+            user_public_key=bytes.fromhex(serialized['user_public_key']),
+            signature=bytes.fromhex(serialized['signature']),
+            tax=serialized['tax'],
+            details=serialized['details'],
+            created_at=datetime.datetime.strptime(
+                serialized['created_at'],
+                '%Y-%m-%d %H:%M:%S.%f'),
+            block_id=block_id,
+        )
 
     @property
     def valid(self):

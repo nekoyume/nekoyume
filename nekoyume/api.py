@@ -163,20 +163,7 @@ def post_block():
     for new_move in new_block['moves']:
         move = Move.query.get(new_move['id'])
         if not move:
-            # TODO: eliminate code duplication
-            move = Move(
-                id=new_move['id'],
-                user_address=new_move['user_address'],
-                name=new_move['name'],
-                user_public_key=bytes.fromhex(new_move['user_public_key']),
-                signature=bytes.fromhex(new_move['signature']),
-                tax=new_move['tax'],
-                details=new_move['details'],
-                created_at=datetime.datetime.strptime(
-                    new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'
-                ),
-                block_id=block.id,
-            )
+            Move.deserialize(new_move, block.id)
         if not move.valid:
             return jsonify(result='failed',
                            message=f"move {move.id} isn't valid."), 400
@@ -211,19 +198,7 @@ def post_move():
         return jsonify(result='success')
 
     if not move:
-        # TODO: eliminate code duplication
-        move = Move(
-            id=new_move['id'],
-            user_address=new_move['user_address'],
-            name=new_move['name'],
-            user_public_key=bytes.fromhex(new_move['user_public_key']),
-            signature=bytes.fromhex(new_move['signature']),
-            tax=new_move['tax'],
-            details=new_move['details'],
-            created_at=datetime.datetime.strptime(
-                new_move['created_at'], '%Y-%m-%d %H:%M:%S.%f'
-            ),
-        )
+        move = Move.deserialize(new_move)
 
     if not move.valid:
         return jsonify(result='failed',

@@ -3,6 +3,7 @@ from functools import wraps
 from flask import (Blueprint, g, request, redirect, render_template,
                    session, url_for)
 from flask_babel import Babel
+from secp256k1 import PrivateKey
 from sqlalchemy import func
 
 from nekoyume.models import cache, db, LevelUp, Move, Node, User
@@ -20,11 +21,20 @@ def get_locale():
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get('private_key') is None:
-            return redirect(url_for('.get_login', next=request.url))
-        else:
-            g.user = User(session['private_key'])
-        return f(*args, **kwargs)
+        private_key_hex = session.get('private_key')
+        error = None
+        if private_key_hex is not None:
+            if private_key_hex.startswith(('0x', '0X')):
+                private_key_hex = private_key_hex[2:]
+            try:
+                private_key_bytes = bytes.fromhex(private_key_hex)
+                private_key = PrivateKey(private_key_bytes)
+            except (ValueError, TypeError):
+                error = 'invalid-private-key'
+            else:
+                g.user = User(private_key)
+                return f(*args, **kwargs)
+        return redirect(url_for('.get_login', next=request.url, error=error))
     return decorated_function
 
 
@@ -52,15 +62,15 @@ def get_logout():
 @cache.memoize(60)
 def get_rank():
     return db.session.query(
-        LevelUp.user, func.count(LevelUp.id)
-    ).group_by(LevelUp.user).order_by(
+        LevelUp.user_address, func.count(LevelUp.id)
+    ).group_by(LevelUp.user_address).order_by(
         func.count(LevelUp.id).desc()
     ).limit(10).all()
 
 
 def get_unconfirmed_move(address):
     unconfirmed_moves = Move.query.filter_by(
-        user=address, block=None
+        user_address=address, block=None
     )
     for unconfirmed_move in unconfirmed_moves:
         if unconfirmed_move.valid:
@@ -91,7 +101,7 @@ def get_dashboard():
 def get_new_novice():
     if not g.user.avatar():
         move = Move.query.filter_by(
-            user=g.user.address,
+            user_address=g.user.address,
             name='create_novice',
         ).first()
         if not move:

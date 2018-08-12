@@ -2,6 +2,7 @@ import os
 
 import pytest
 from pytest_localserver.http import WSGIServer
+from secp256k1 import PrivateKey
 from sqlalchemy.orm import sessionmaker
 
 from nekoyume.app import create_app
@@ -34,8 +35,13 @@ def fx_session(fx_app):
 
 
 @pytest.fixture
-def fx_user(fx_session):
-    user = User('test')
+def fx_private_key() -> PrivateKey:
+    return PrivateKey()
+
+
+@pytest.fixture
+def fx_user(fx_session, fx_private_key: PrivateKey):
+    user = User(fx_private_key)
     user.session = fx_session
     return user
 

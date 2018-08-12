@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from secp256k1 import PrivateKey, PublicKey
 
 from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
@@ -12,19 +13,20 @@ from nekoyume.models import (Block,
                              Say,
                              Send,
                              Sleep,
-                             User)
+                             User,
+                             get_address)
 
 
 @pytest.fixture
 def fx_user2(fx_session):
-    user = User('test2')
+    user = User(PrivateKey())
     user.session = fx_session
     return user
 
 
 @pytest.fixture
 def fx_other_user(fx_other_session):
-    user = User('other_test')
+    user = User(PrivateKey())
     user.session = fx_other_session
     return user
 
@@ -255,10 +257,11 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
                    "difficulty": 0,
                    "hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
                    "id": 1,
+                   "version": 2,
                    "moves": [],
                    "prev_hash": None,
                    "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "0"},
+                   "suffix": "00"},
                   {"created_at": "2018-04-13 11:36:17.935392",
                    "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
                    "difficulty": 1,
@@ -295,3 +298,12 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
 
     assert valid_block1.hash == fx_session.query(Block).get(valid_block2.id - 1).hash
     assert valid_block2.valid
+
+
+def test_get_address():
+    raw_key = bytes.fromhex(
+        '04fb0af727d1839557ea5214a7b7dd799c05dab9da63329a6c6d9836fd19a29ce'
+        'bc34f7ba31877b22f6767bb1d9f376a33fc0f28f37ada368611b011c01dbef90f'
+    )
+    pubkey = PublicKey(raw_key, raw=True)
+    assert '0x80e0b0a7cc8001086a37648f993b2bd855d0ab59' == get_address(pubkey)

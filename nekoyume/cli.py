@@ -4,9 +4,22 @@ import os
 
 from ptpython.repl import embed
 from raven import Client
+from secp256k1 import PrivateKey
 
 from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db
+
+
+class PrivateKeyType(click.ParamType):
+    name = 'private key'
+
+    def convert(self, value, param, ctx) -> PrivateKey:
+        val = value[2:] if value.startswith(('0x', '0X')) else value
+        try:
+            num = bytes.fromhex(val)
+            return PrivateKey(num)
+        except (ValueError, TypeError):
+            self.fail('%s is not a valid private key of 64 hexadecimal digits')
 
 
 @click.group()
@@ -14,11 +27,9 @@ def cli():
     pass
 
 
-@click.command()
-@click.option('--private-key',
-              default='test',
-              help='Private key of neko')
-def neko(private_key):
+@cli.command()
+@click.argument('private_key', type=PrivateKeyType())
+def neko(private_key: PrivateKey):
     app.app_context().push()
     Client(os.environ.get('SENTRY_DSN'))
 
@@ -35,13 +46,13 @@ def neko(private_key):
             click.echo(block)
 
 
-@click.command()
+@cli.command()
 def shell():
     app.app_context().push()
     embed(globals(), locals())
 
 
-@click.command()
+@cli.command()
 @click.option('--seed',
               default=None,
               help='Seed node URL to connect')
@@ -61,7 +72,7 @@ def init(seed, sync):
         Block.sync(click=click)
 
 
-@click.command()
+@cli.command()
 def sync():
     Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
@@ -89,7 +100,7 @@ def sync():
             break
 
 
-@click.command()
+@cli.command()
 def doctor():
     id = 1
     for block in Block.query.order_by(Block.id.asc()):
@@ -101,7 +112,7 @@ def doctor():
         id += 1
 
 
-@click.command()
+@cli.command()
 def repair():
     id = 1
     for block in Block.query.order_by(Block.id.asc()):
@@ -127,12 +138,17 @@ def repair():
     db.session.commit()
 
 
-cli.add_command(init)
-cli.add_command(neko)
-cli.add_command(shell)
-cli.add_command(sync)
-cli.add_command(doctor)
-cli.add_command(repair)
+@cli.command()
+@click.option('--host',
+              default='127.0.0.1',
+              help='Host to listen')
+@click.option('--port',
+              type=click.IntRange(0, 65535),
+              metavar='PORT',
+              default=5000,
+              help='Port number to listen')
+def dev(host: str, port: int) -> None:
+    app.run(debug=True, host=host, port=port)
 
 
 if __name__ == '__main__':

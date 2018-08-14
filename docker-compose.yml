@@ -17,6 +17,7 @@ services:
       nekoyume init --skip-sync &&
       nekoyume sync
     environment: &app_environments
+      CACHE_TYPE: redis
       DATABASE_URL: postgresql://postgres:nekoyume@postgres/nekoyume
       REDIS_URL: redis://redis:6379
     depends_on: [postgres, redis]

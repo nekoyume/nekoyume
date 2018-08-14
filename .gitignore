@@ -101,7 +101,12 @@ ENV/
 other_test.db
 test.db
 yume.db
+yume_broker.db
+yume_result.db
 .DS_Store
 .vscode
 
 .envrc
+
+# Cache
+.yumecache

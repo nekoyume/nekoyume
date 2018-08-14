@@ -15,10 +15,10 @@ Dependencies
 ------------
 
 * `Python <http://python.org/>`_ >= 3.6
-* `Redis <https://redis.io/>`_
 * `SQLite <https://www.sqlite.org/>`_ >= 3.16.0
 * `gmp <https://gmplib.org/>`_
 * (Recommended) `PostgreSQL <https://www.postgresql.org/>`_ >= 9.5
+* (Recommended) `Redis <https://redis.io/>`_
 
 Installation
 ------------

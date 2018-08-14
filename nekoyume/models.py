@@ -16,7 +16,7 @@ from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 from keccak import sha3_256
 import requests
-from secp256k1 import PrivateKey, PublicKey
+from coincurve import PrivateKey, PublicKey
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -460,7 +460,7 @@ class Block(db.Model):
 
 def get_address(public_key: PublicKey) -> str:
     """Derive an Ethereum-style address from the given public key."""
-    return '0x' + sha3_256(public_key.serialize(False)[1:]).hexdigest()[-40:]
+    return '0x' + sha3_256(public_key.format(False)[1:]).hexdigest()[-40:]
 
 
 class Move(db.Model):
@@ -539,10 +539,10 @@ class Move(db.Model):
         assert len(self.user_public_key) == 33
         assert isinstance(self.user_address, str)
         assert re.match(r'^(?:0[xX])?[0-9a-fA-F]{40}$', self.user_address)
-        public_key = PublicKey(self.user_public_key, raw=True)
-        verified = public_key.ecdsa_verify(
+        public_key = PublicKey(self.user_public_key)
+        verified = public_key.verify(
+            self.signature,
             self.serialize(include_signature=False),
-            public_key.ecdsa_deserialize(self.signature)
         )
         if not verified:
             return False
@@ -1042,7 +1042,7 @@ class User():
                 f'{PrivateKey.__qualname__}, not {private_key!r}'
             )
         self.private_key = private_key
-        self.public_key: PublicKey = private_key.pubkey
+        self.public_key: PublicKey = private_key.public_key
         self.session = session
 
     @property
@@ -1054,11 +1054,11 @@ class User():
         """ put signature into the given move using the user's private key. """
         if move.name is None:
             raise InvalidNameError
-        move.user_public_key = self.public_key.serialize(compressed=True)
+        move.user_public_key = self.public_key.format(compressed=True)
         move.user_address = self.address
         serialized = move.serialize(include_signature=False)
-        move.signature = self.private_key.ecdsa_serialize(
-            self.private_key.ecdsa_sign(serialized)
+        move.signature = self.private_key.sign(
+            serialized
         )
         move.id = move.hash
 
@@ -1066,7 +1066,7 @@ class User():
     def moves(self):
         """ return the user's moves. """
         return self.session.query(Move).filter(
-            Move.user_public_key == self.public_key.serialize(compressed=True),
+            Move.user_public_key == self.public_key.format(compressed=True),
             Move.block != None,  # noqa: E711
         ).order_by(Move.block_id.desc())
 

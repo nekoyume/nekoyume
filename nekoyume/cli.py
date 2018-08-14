@@ -4,7 +4,7 @@ import os
 
 from ptpython.repl import embed
 from raven import Client
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 
 from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db

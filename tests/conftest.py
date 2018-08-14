@@ -2,7 +2,7 @@ import os
 
 import pytest
 from pytest_localserver.http import WSGIServer
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 from sqlalchemy.orm import sessionmaker
 
 from nekoyume.app import create_app

@@ -2,6 +2,7 @@ import click
 import time
 import os
 
+from babel.messages.frontend import compile_catalog
 from ptpython.repl import embed
 from raven import Client
 from coincurve import PrivateKey
@@ -70,6 +71,12 @@ def init(seed, sync):
     if sync:
         click.echo('Syncing blocks...')
         Block.sync(click=click)
+
+    click.echo('Compiling translations...')
+    compile_command = compile_catalog()
+    compile_command.directory = 'nekoyume/translations'
+    compile_command.finalize_options()
+    compile_command.run()
 
 
 @cli.command()

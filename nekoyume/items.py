@@ -48,7 +48,7 @@ class HPMaxFood(Food):
         }
 
 
-#Tier 1 Food (10HP)
+# Tier 1 Food (10HP)
 class MeatPlatter(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 10)
@@ -145,7 +145,7 @@ class PoorMansPizza(Combined, HPFood):
     recipe = {'MEAT', 'WHET', 'OLIV'}
 
 
-#Tier 2 (20HP)
+# Tier 2 (20HP)
 class ChickenFriedRice(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 20)
@@ -189,7 +189,7 @@ class MasterFriedRice(Combined, HPMaxFood):
     recipe = {'CFRC', 'EFRC', 'MFRC'}
 
 
-class MeatLoversBurger(Combined, HPMaxFood): # 2 Fried chicken pieces replacing the bun and filled with meat.
+class MeatLoversBurger(Combined, HPMaxFood):
     ticker_name = 'MLBG'
     recipe = {'FCHK', 'FCHK', 'MPLT'}
 

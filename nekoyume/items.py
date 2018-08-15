@@ -174,7 +174,7 @@ class SteakSandwich(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 20)
 
-    ticker_name = 'MFRC'
+    ticker_name = 'SKSW'
     recipe = {'BRED', 'STEK'}
 
 

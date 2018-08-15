@@ -678,6 +678,8 @@ class HackAndSlash(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user_address, self.block_id - 1)
+        if avatar.dead:
+            raise InvalidMoveError
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, 'data/monsters.csv')
         monsters = tablib.Dataset().load(
@@ -1352,6 +1354,10 @@ class Avatar():
                 result.append(food)
 
         return result
+
+    @property
+    def dead(self) -> bool:
+        return self.hp <= 0
 
 
 class Novice(Avatar):

@@ -25,13 +25,16 @@ class Food(Item):
         raise NotImplementedError
 
 
-class HP10Food(Food):
+class HPFood(Food):
+    def __init__(self, amount):
+        self.heal_amount = amount
+
     def execute(self, avatar):
-        avatar.hp = min(avatar.max_hp, avatar.hp + 10)
+        avatar.hp = min(avatar.max_hp, avatar.hp + self.heal_amount)
         return avatar, {
             'type': 'item_use',
             'item': self.ticker_name,
-            'status_change': 'HP +10'
+            'status_change': f'HP +{self.heal_amount}'
         }
 
 
@@ -45,44 +48,127 @@ class HPMaxFood(Food):
         }
 
 
-class MeatPlatter(Combined, HP10Food):
+class MeatPlatter(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'MPLT'
     recipe = {'MEAT', 'MEAT', 'MEAT'}
 
 
-class Oyakodong(Combined, HP10Food):
+class Oyakodong(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'OYKD'
     recipe = {'RICE', 'EGGS', 'CHKN'}
 
 
-class Carbonara(Combined, HP10Food):
+class Carbonara(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'CBNR'
     recipe = {'WHET', 'EGGS', 'MEAT'}
 
 
-class Steakdong(Combined, HP10Food):
+class Steakdong(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'STKD'
     recipe = {'RICE', 'RKST', 'MEAT'}
 
 
-class ChickenRice(Combined, HP10Food):
+class ChickenRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'CHKR'
     recipe = {'RICE', 'RKST', 'CHKN'}
 
 
-class Steak(Combined, HP10Food):
+class Steak(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
     ticker_name = 'STEK'
     recipe = {'MEAT', 'RKST', 'OLIV'}
 
 
+class FriedChicken(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'FCHK'
+    recipe = {'CHKN', 'RKST', 'OLIV'}
+
+
+class FriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'FRRC'
+    recipe = {'RKST', 'RICE', "OLIV"}
+
+
+class ChickenFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'CFRC'
+    recipe = {'FRRC', 'CHKN', 'CHKN'}
+
+
+class EggFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'EFRC'
+    recipe = {'FRRC', 'EGGS', 'EGGS'}
+
+
+class MeatFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'MFRC'
+    recipe = {'FRRC', 'MEAT', 'MEAT'}
+
+
+class Bread(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'BRED'
+    recipe = {'WHET', 'EGGS', 'OLIV'}
+
+
+class FriedEgg(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'FREG'
+    recipe = {'EGGS', 'OLIV', 'RKST'}
+
+
+class EggTart(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'FREG'
+    recipe = {'EGGS', 'OLIV', 'RKST'}
+
+
+# HP Max Foods
 class SteakCarbonara(Combined, HPMaxFood):
     ticker_name = 'STCB'
     recipe = {'STEK', 'WHET', 'EGGS'}
 
 
-class FriedChicken(Combined, HP10Food):
-    ticker_name = 'FCHK'
-    recipe = {'CHKN', 'RKST', 'OLIV'}
+class MasterFriedRice(Combined, HPFood):
+    ticker_name = 'MAFR'
+    recipe = {'CFRC', 'EFRC', 'MFRC'}
 
 
 class LongSword(Weapon):

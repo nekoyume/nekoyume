@@ -1,8 +1,8 @@
 import typing
 
 from coincurve import PrivateKey
+from flask.testing import FlaskClient
 from sqlalchemy.orm.session import Session
-from werkzeug.test import Client
 
 from nekoyume.models import Move, User, get_address
 from nekoyume.game import get_unconfirmed_move
@@ -81,7 +81,7 @@ def test_get_unconfirmed_move(fx_session, fx_user, fx_novice_status):
 
 
 def test_prevent_hack_and_slash_when_dead(
-        fx_test_client: Client, fx_session: Session, fx_user: User,
+        fx_test_client: FlaskClient, fx_session: Session, fx_user: User,
         fx_private_key: PrivateKey, fx_novice_status: typing.Dict[str, str],
 ):
     move = fx_user.create_novice(fx_novice_status)

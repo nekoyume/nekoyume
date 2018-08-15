@@ -72,7 +72,7 @@ if __name__ == '__main__':
             ],
         },
         package_data={
-            'nekoyume': ['data/*', 'templates/*.html'],
+            'nekoyume': ['data/*', 'templates/*.html', 'translations/*/LC_MESSAGES/*'],
         },
         entry_points={
             'console_scripts': [

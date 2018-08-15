@@ -73,8 +73,9 @@ def init(seed, sync):
         Block.sync(click=click)
 
     click.echo('Compiling translations...')
+    dir_path = os.path.abspath(os.path.dirname(__file__))
     compile_command = compile_catalog()
-    compile_command.directory = 'nekoyume/translations'
+    compile_command.directory = dir_path + '/translations'
     compile_command.finalize_options()
     compile_command.run()
 

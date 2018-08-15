@@ -48,6 +48,7 @@ class HPMaxFood(Food):
         }
 
 
+#Tier 1 Food (10HP)
 class MeatPlatter(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 10)
@@ -56,7 +57,7 @@ class MeatPlatter(Combined, HPFood):
     recipe = {'MEAT', 'MEAT', 'MEAT'}
 
 
-class Oyakodong(Combined, HPFood):
+class Oyakodon(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 10)
 
@@ -72,7 +73,7 @@ class Carbonara(Combined, HPFood):
     recipe = {'WHET', 'EGGS', 'MEAT'}
 
 
-class Steakdong(Combined, HPFood):
+class Steakdon(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 10)
 
@@ -112,30 +113,6 @@ class FriedRice(Combined, HPFood):
     recipe = {'RKST', 'RICE', "OLIV"}
 
 
-class ChickenFriedRice(Combined, HPFood):
-    def __init__(self):
-        HPFood.__init__(self, 20)
-
-    ticker_name = 'CFRC'
-    recipe = {'FRRC', 'CHKN', 'CHKN'}
-
-
-class EggFriedRice(Combined, HPFood):
-    def __init__(self):
-        HPFood.__init__(self, 20)
-
-    ticker_name = 'EFRC'
-    recipe = {'FRRC', 'EGGS', 'EGGS'}
-
-
-class MeatFriedRice(Combined, HPFood):
-    def __init__(self):
-        HPFood.__init__(self, 20)
-
-    ticker_name = 'MFRC'
-    recipe = {'FRRC', 'MEAT', 'MEAT'}
-
-
 class Bread(Combined, HPFood):
     def __init__(self):
         HPFood.__init__(self, 10)
@@ -160,15 +137,61 @@ class EggTart(Combined, HPFood):
     recipe = {'EGGS', 'OLIV', 'RKST'}
 
 
+class PoorMansPizza(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 10)
+
+    ticker_name = 'PMPZ'
+    recipe = {'MEAT', 'WHET', 'OLIV'}
+
+
+#Tier 2 (20HP)
+class ChickenFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'CFRC'
+    recipe = {'FRRC', 'CHKN', 'CHKN'}
+
+
+class EggFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'EFRC'
+    recipe = {'FRRC', 'EGGS', 'EGGS'}
+
+
+class MeatFriedRice(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'MFRC'
+    recipe = {'FRRC', 'MEAT', 'MEAT'}
+
+
+class SteakSandwich(Combined, HPFood):
+    def __init__(self):
+        HPFood.__init__(self, 20)
+
+    ticker_name = 'MFRC'
+    recipe = {'BRED', 'STEK'}
+
+
 # HP Max Foods
 class SteakCarbonara(Combined, HPMaxFood):
     ticker_name = 'STCB'
     recipe = {'STEK', 'WHET', 'EGGS'}
 
 
-class MasterFriedRice(Combined, HPFood):
+class MasterFriedRice(Combined, HPMaxFood):
     ticker_name = 'MAFR'
     recipe = {'CFRC', 'EFRC', 'MFRC'}
+
+
+class MeatLoversBurger(Combined, HPMaxFood): # 2 Fried chicken pieces replacing the bun and filled with meat.
+    ticker_name = 'MLBG'
+    recipe = {'FCHK', 'FCHK', 'MPLT'}
 
 
 class LongSword(Weapon):

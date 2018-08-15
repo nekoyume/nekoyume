@@ -105,15 +105,15 @@ msgstr "인근의 괴물과 조우하여 전투를 벌입니다."
 
 #: templates/dashboard.html:347
 msgid "Weapon"
-msgstr ""
+msgstr "무기"
 
 #: templates/dashboard.html:357
 msgid "Armor"
-msgstr ""
+msgstr "갑옷"
 
 #: templates/dashboard.html:367
 msgid "Food"
-msgstr ""
+msgstr "음식 "
 
 #: templates/dashboard.html:373
 msgid "Find monster"

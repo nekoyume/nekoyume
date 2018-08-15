@@ -1,0 +1,302 @@
+# Japanese translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-08-15 15:01+0900\n"
+"PO-Revision-Date: 2018-08-15 15:02+0900\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: nekoyume/templates/basic_info.html:1
+msgid ""
+"\n"
+"<ul>\n"
+"    <li>Nekoyume uses Dungeon World rules. <br> Familiarize yourself with"
+" the basic rules of Dungeon World so that you can play the game better "
+"fun.<br>\n"
+"        <a href=\"https://www.dungeonworldsrd.com/\" target=\"_blank\">→ "
+"Learn Dungeon World</a></li>\n"
+"\n"
+"    <li> Currently, only novice job is fixed without choosing a job in "
+"the preview network. <br> In future, the mainnet will be able to select "
+"all jobs offered by Dungeon World. </li>\n"
+"    <li> It takes about 15 seconds for the player activation. <br> But "
+"sometimes it takes longer, so please be patient. 🙏 </li>\n"
+"    <li> If you have Gold, you can become more powerful player. <br>\n"
+"        <a href=\"https://nekoyu.me/token.html\" target=\"_blank\">→ Buy "
+"Gold</a></li>\n"
+"</ul>\n"
+msgstr ""
+"<ul>    <li>猫夢はダンジョンワールドルールを使用しています。<br>ダンジョンワールドの基本的なルールを熟知していただければ、 "
+"ゲームにもっと早く慣れることができます。<br>        <a "
+"href=\"http://book.dwgazetteer.com/\" "
+"\"target=\"_blank\">→ ダンジョンワールド英語公開版を見に行く</a></li>    <li>現在プレビューネットでは、職業選択れ"
+"せずに初心者のみの仕事が固定さ<br>今後、メインネットでは、ダンジョンの世界で提供されるすべての職業と種族の選択が可能 "
+"予定です。</li>    <li>プレイヤーの行動が実際に実行されるのには、約15秒の時間がかかります。<br>しかし、時には "
+"さらに時間がかかるもので忍耐を持って待ってください。🙏/li>    <li>ゴールドを保有していれば、より簡単かつ強力な"
+"プレーヤーを育成することができます<br>        <a href=\"https://nekoyu.me/token.html\" "
+"target=\"_blank\">→ ゴールド入手の方法を見に行く</a></li></ul>"
+
+#: nekoyume/templates/dashboard.html:134
+msgid "Address"
+msgstr "住所"
+
+#: nekoyume/templates/dashboard.html:145
+msgid "Homepage"
+msgstr "ホームページ"
+
+#: nekoyume/templates/dashboard.html:146
+msgid "https://www.dungeonworldsrd.com/"
+msgstr "https://www.dungeonworldsrd.com/"
+
+#: nekoyume/templates/dashboard.html:146
+msgid "Learn Dungeon World"
+msgstr "ダンジョンの世界を調べる" 
+
+#: nekoyume/templates/dashboard.html:147
+msgid "Buy Gold"
+msgstr "ゴールドを購入する"
+
+#: nekoyume/templates/dashboard.html:149
+msgid "Logout"
+msgstr "ログアウト"
+
+#: nekoyume/templates/dashboard.html:196 nekoyume/templates/dashboard.html:211
+#: nekoyume/templates/dashboard.html:226 nekoyume/templates/dashboard.html:241
+#: nekoyume/templates/dashboard.html:256 nekoyume/templates/dashboard.html:271
+#, python-format
+msgid "Modifier when roll %(stat)s."
+msgstr "%(stat) 判定時に 補正値"
+
+#: nekoyume/templates/dashboard.html:330
+msgid "Hack &amp; Slash"
+msgstr "接近戦"
+
+#: nekoyume/templates/dashboard.html:331
+msgid "Sleep"
+msgstr "睡眠"
+
+#: nekoyume/templates/dashboard.html:332
+msgid "Say"
+msgstr "話す"
+
+#: nekoyume/templates/dashboard.html:333
+msgid "Send"
+msgstr "送信"
+
+#: nekoyume/templates/dashboard.html:334
+msgid "combine"
+msgstr "組合"
+
+#: nekoyume/templates/dashboard.html:339
+msgid "Encounter a nearby monster and battle it."
+msgstr "近くのモンスターと遭遇して戦闘を広げます。"
+
+#: nekoyume/templates/dashboard.html:347
+msgid "Weapon"
+msgstr "武器"
+
+#: nekoyume/templates/dashboard.html:357
+msgid "Armor"
+msgstr "鎧"
+
+#: nekoyume/templates/dashboard.html:367
+msgid "Food"
+msgstr "食べ物"
+
+#: nekoyume/templates/dashboard.html:373
+msgid "Find monster"
+msgstr "ンスターを探しに出かけます。"
+
+#: nekoyume/templates/dashboard.html:381
+msgid "Take your sleep and regain your HP."
+msgstr "睡眠をとり、体力を回復します。"
+
+#: nekoyume/templates/dashboard.html:386
+msgid "Lay down on the bed"
+msgstr "ベッドに横になります。"
+
+#: nekoyume/templates/dashboard.html:396
+msgid "Say something."
+msgstr "言葉を残します。"
+
+#: nekoyume/templates/dashboard.html:398 nekoyume/templates/dashboard.html:419
+#: nekoyume/templates/dashboard.html:455 nekoyume/templates/login.html:49
+msgid "OK"
+msgstr "確認"
+
+#: nekoyume/templates/dashboard.html:413
+msgid "Amount"
+msgstr "数量"
+
+#: nekoyume/templates/dashboard.html:417
+msgid "Address to send"
+msgstr "送信住所"
+
+#: nekoyume/templates/dashboard.html:425
+msgid "Combine three items to get a new item. (needs 1 GOLD)"
+msgstr "三つのアイテムを組み合わせて、新しいアイテムを取得します。（1 GOLD 必要）"
+
+#: nekoyume/templates/dashboard.html:464
+msgid "Currently in progress ..."
+msgstr "在進行中..."
+
+#: nekoyume/templates/dashboard.html:485
+msgid "Novice was born!"
+msgstr "初心者の生まれ！"
+
+#: nekoyume/templates/dashboard.html:488 nekoyume/templates/login.html:30
+msgid "Welcome!"
+msgstr "ようこそ!"
+
+#: nekoyume/templates/dashboard.html:501
+msgid "You won the battle!"
+msgstr "戦闘勝利！"
+
+#: nekoyume/templates/dashboard.html:505
+msgid "Battle was finished."
+msgstr "戦闘終了！"
+
+#: nekoyume/templates/dashboard.html:509
+msgid "You lost the battle."
+msgstr "戦闘敗北！"
+
+#: nekoyume/templates/dashboard.html:518
+#, python-format
+msgid ""
+"You attacked %(monster)s and wounded it for <strong>%(damage)s</strong> "
+"damage. <small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
+msgstr ""
+"%(monster)sに <strong>%(damage)s</strong> ダメージを与えた。"
+" <small>(HP %(monster_hp)s → "
+"%(monster_hp_after_damage)s)</small>"
+
+#: nekoyume/templates/dashboard.html:528
+#, python-format
+msgid ""
+"You are attacked by %(monster)s and take <strong>%(damage)s</strong> "
+"damage."
+msgstr "%(monster)sに攻撃されて <strong>%(damage)s</strong> ダメージを受けた。"
+
+#: nekoyume/templates/dashboard.html:536
+msgid "You learned from your previous mistake. <small>(XP +1)</small>"
+msgstr "私はさっきの間違いで学びを得た。 <small>(XP +1)</small>"
+
+#: nekoyume/templates/dashboard.html:543
+#, python-format
+msgid "You defeated %(monster)s!"
+msgstr "%(monster)sを 打ち負かした!"
+
+#: nekoyume/templates/dashboard.html:550
+#, python-format
+msgid "You are defeated by %(monster)s..."
+msgstr "%(monster)sに敗北した..."
+
+#: nekoyume/templates/dashboard.html:557
+#, python-format
+msgid "%(monster)s has run away..."
+msgstr "%(monster)sは 逃げてしまった..."
+
+#: nekoyume/templates/dashboard.html:564
+#, python-format
+msgid "You obtained %(item)s!"
+msgstr "%(item)sを得た！"
+
+#: nekoyume/templates/dashboard.html:571
+#, python-format
+msgid "You used %(item)s. <small>(%(status_change)s)</small>"
+msgstr "%(item)sを 使用した。<small>(%(status_change)s)</small>"
+
+#: nekoyume/templates/dashboard.html:578
+#, python-formats
+msgid "You tried to use %(item)s but it doesn't works."
+msgstr "%(item)sを使用したが、効果がなかった。"
+
+#: nekoyume/templates/dashboard.html:600
+#, python-format
+msgid "Level Up! Now, your level is %(lv)s."
+msgstr "레벨 업! 이제 레벨 %(lv)s입니다."
+msgstr "レベルアップ！ 今レベル%(lv)sです。"
+
+#: nekoyume/templates/dashboard.html:604
+msgid "Level up was failed"
+msgstr "レベルアップ！失敗"
+
+#: nekoyume/templates/dashboard.html:622
+msgid "HP was recovered by sleep."
+msgstr "睡眠を介して体力回復"
+
+#: nekoyume/templates/dashboard.html:648
+#, python-format
+msgid "You delievered %(amount)s of %(item)s."
+msgstr "%(item)s %(amount)sつを送った。"
+
+
+#: nekoyume/templates/dashboard.html:654
+msgid "Receiver:"
+msgstr "受けた人："
+
+#: nekoyume/templates/dashboard.html:668
+#, python-format
+msgid ""
+"\n"
+"                            You created %(result)s."
+msgstr ""
+"\n"
+"                            %(result)sの製作に成功しました"
+
+#: nekoyume/templates/dashboard.html:673
+msgid "Your combination was failed."
+msgstr "組み合わせは失敗でした。"
+
+#: nekoyume/templates/dashboard.html:680
+#, python-format
+msgid "Ingredients: %(item1)s, %(item2)s, and %(item3)s"
+msgstr "原料： %(item1)s, %(item2)s, %(item3)s"
+
+#: nekoyume/templates/login.html:37
+msgid ""
+"Hello! Welcome to the world of Nekoyume. Please set your own private key "
+"and input that in the form below so that you can start game right know. "
+"Private key is a password that identify you. Please make this unique."
+msgstr ""
+"こんにちは！猫夢の世界へようこそ。プライベートキーを決めて、次のフォームに入力していただければ、ゲームを開始することができます。"
+"プライベートキーは、自分自身を定義するパスワードです。他の人が分かりにくい独自のものにしてください。"
+
+#: nekoyume/templates/login.html:39
+msgid ""
+"Please enter a valid private key of 64 hexadecimal digits (it can be "
+"optionally prefixed with <tt>0x</tt>)."
+msgstr ""
+"64桁の16進数の有効な秘密鍵を入力してください（接頭辞は
+"オプションで<tt> 0x </ tt>）。"
+
+#: nekoyume/templates/login.html:47
+msgid "Enter your private key"
+msgstr "プライベートキーを入力してください"
+
+#: nekoyume/templates/new.html:33
+msgid "Currently creating a new character..."
+msgstr "新しいキャラクターを生成しています..."
+
+#: nekoyume/templates/new.html:38
+msgid ""
+"Hello! Welcome to the world of Nekoyume. We are currently creating a "
+"novice character. <br>This process will take about 15 seconds."
+"こんにちは！猫夢の世界へようこそ。現在初心者のキャラクターを作成しています。<br> このプロセスは、約15秒 "
+"かかります。"
+
+#: nekoyume/templates/new.html:39
+msgid "Know in advance!"
+msgstr "あらかじめ知ってください！"

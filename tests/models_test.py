@@ -316,3 +316,14 @@ def test_get_address():
     )
     pubkey = PublicKey(raw_key)
     assert '0x80e0b0a7cc8001086a37648f993b2bd855d0ab59' == get_address(pubkey)
+
+
+def test_hack_and_slash_execute(fx_user, fx_novice_status):
+    move = fx_user.create_novice(fx_novice_status)
+    fx_user.create_block([move])
+    avatar = fx_user.avatar()
+    avatar.hp = 0
+    move = fx_user.move(HackAndSlash())
+    fx_user.create_block([move])
+    with pytest.raises(InvalidMoveError):
+        move.execute(avatar)

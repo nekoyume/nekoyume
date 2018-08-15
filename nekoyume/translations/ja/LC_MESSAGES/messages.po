@@ -196,7 +196,7 @@ msgstr "私はさっきの間違いで学びを得た。 <small>(XP +1)</small>"
 #: nekoyume/templates/dashboard.html:543
 #, python-format
 msgid "You defeated %(monster)s!"
-msgstr "%(monster)sを 打ち負かした!"
+msgstr "%(monster)sを打ち負かした!"
 
 #: nekoyume/templates/dashboard.html:550
 #, python-format
@@ -226,7 +226,6 @@ msgstr "%(item)sを使用したが、効果がなかった。"
 #: nekoyume/templates/dashboard.html:600
 #, python-format
 msgid "Level Up! Now, your level is %(lv)s."
-msgstr "레벨 업! 이제 레벨 %(lv)s입니다."
 msgstr "レベルアップ！ 今レベル%(lv)sです。"
 
 #: nekoyume/templates/dashboard.html:604
@@ -241,7 +240,6 @@ msgstr "睡眠を介して体力回復"
 #, python-format
 msgid "You delievered %(amount)s of %(item)s."
 msgstr "%(item)s %(amount)sつを送った。"
-
 
 #: nekoyume/templates/dashboard.html:654
 msgid "Receiver:"

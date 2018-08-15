@@ -113,7 +113,7 @@ msgstr "갑옷"
 
 #: templates/dashboard.html:367
 msgid "Food"
-msgstr "음식 "
+msgstr "음식"
 
 #: templates/dashboard.html:373
 msgid "Find monster"

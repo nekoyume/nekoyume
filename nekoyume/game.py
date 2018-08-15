@@ -130,7 +130,7 @@ def post_move():
         return redirect(url_for('.get_dashboard'))
 
     if request.values.get('name') == 'hack_and_slash':
-        if g.user.avatar().is_dead:
+        if g.user.avatar().dead:
             return redirect(url_for('.get_dashboard'))
         move = g.user.hack_and_slash(request.values.get('weapon'),
                                      request.values.get('armor'),

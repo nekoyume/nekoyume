@@ -1354,7 +1354,7 @@ class Avatar():
         return result
 
     @property
-    def is_dead(self) -> bool:
+    def dead(self) -> bool:
         return self.hp <= 0
 
 

@@ -87,11 +87,11 @@ def test_prevent_hack_and_slash_when_dead(
     move = fx_user.create_novice(fx_novice_status)
     fx_user.create_block([move])
 
-    assert fx_user.avatar().is_dead is False
+    assert fx_user.avatar().dead is False
     while fx_user.avatar().hp > 0:
         move = fx_user.hack_and_slash()
         fx_user.create_block([move])
-    assert fx_user.avatar().is_dead is True
+    assert fx_user.avatar().dead is True
 
     response = fx_test_client.post('/session_moves', data={
         'name': 'hack_and_slash'

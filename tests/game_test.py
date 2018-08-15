@@ -84,7 +84,6 @@ def test_prevent_hack_and_slash_when_dead(
         fx_test_client: Client, fx_session: Session, fx_user: User,
         fx_private_key: PrivateKey, fx_novice_status: typing.Dict[str, str],
 ):
-    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
     move = fx_user.create_novice(fx_novice_status)
     fx_user.create_block([move])
 

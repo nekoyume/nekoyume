@@ -8,7 +8,6 @@
       "postdeploy": "nekoyume init"
   },
   "addons": [
-      "heroku-redis",
       "heroku-postgresql:hobby-basic"
   ],
   "formation": {

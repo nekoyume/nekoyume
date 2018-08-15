@@ -28,7 +28,6 @@ install_requires = [
     'gunicorn >= 19.9.0',
     'psycopg2 >= 2.7.5, < 2.8.0',
     'ptpython == 0.41',
-    'pycrypto == 2.6',
     'pytz >= 2018.3',
     'raven==6.9.0',
     'redis >= 2.10.6, < 2.11.0',

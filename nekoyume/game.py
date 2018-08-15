@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import (Blueprint, g, request, redirect, render_template,
+from flask import (Blueprint, Response, g, request, redirect, render_template,
                    session, url_for)
 from flask_babel import Babel
 from coincurve import PrivateKey
@@ -153,3 +153,17 @@ def post_move():
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))
     return redirect(url_for('.get_dashboard'))
+
+
+@game.route('/export/', methods=['GET'])
+@login_required
+def export_private_key():
+    key = session['private_key']
+    file_name = f'{g.user.address}.csv'
+    return Response(
+        key,
+        headers={
+            'Content-Disposition': f'attachment;filename={file_name}',
+            'Content-Type': 'text/csv',
+        }
+    )

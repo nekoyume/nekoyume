@@ -97,3 +97,17 @@ def test_prevent_hack_and_slash_when_dead(
         'name': 'hack_and_slash'
     })
     assert response.status_code == 302
+
+
+def test_export_private_key(
+        fx_test_client: FlaskClient, fx_session: Session, fx_user: User,
+        fx_private_key: PrivateKey
+):
+    fx_test_client.post('/login', data={
+        'private_key': fx_private_key.to_hex(),
+    }, follow_redirects=True)
+    response = fx_test_client.get('/export/')
+    assert response.headers['Content-Disposition'] == \
+        f'attachment;filename={fx_user.address}.csv'
+    assert response.headers['Content-Type'] == 'text/csv'
+    assert response.data == fx_private_key.to_hex().encode()

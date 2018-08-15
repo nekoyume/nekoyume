@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-04-16 13:07+0900\n"
+"POT-Creation-Date: 2018-08-15 17:19+0900\n"
 "PO-Revision-Date: 2018-04-04 09:14+0900\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -16,9 +16,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.6.0\n"
 
-#: templates/basic_info.html:1
+#: nekoyume/templates/basic_info.html:1
 msgid ""
 "\n"
 "<ul>\n"
@@ -48,204 +48,207 @@ msgstr ""
 " 수 있습니다.<br>        <a href=\"https://nekoyu.me/token.html\" "
 "target=\"_blank\">→ 골드 입수 방법보러가기</a></li></ul>"
 
-#: templates/dashboard.html:134
+#: nekoyume/templates/dashboard.html:134
 msgid "Address"
 msgstr "주소"
 
-#: templates/dashboard.html:145
+#: nekoyume/templates/dashboard.html:145
 msgid "Homepage"
 msgstr "홈페이지"
 
-#: templates/dashboard.html:146
+#: nekoyume/templates/dashboard.html:146
 msgid "https://www.dungeonworldsrd.com/"
 msgstr "https://sites.google.com/site/dungeonworldkr/home"
 
-#: templates/dashboard.html:146
+#: nekoyume/templates/dashboard.html:146
 msgid "Learn Dungeon World"
 msgstr "던전월드 알아보기"
 
-#: templates/dashboard.html:147
+#: nekoyume/templates/dashboard.html:147
 msgid "Buy Gold"
 msgstr "골드 구매하기"
 
-#: templates/dashboard.html:149
+#: nekoyume/templates/dashboard.html:149
+msgid "Export Private Key"
+msgstr "프라이빗키 받기"
+
+#: nekoyume/templates/dashboard.html:150
 msgid "Logout"
 msgstr "로그아웃"
 
-#: templates/dashboard.html:196 templates/dashboard.html:211
-#: templates/dashboard.html:226 templates/dashboard.html:241
-#: templates/dashboard.html:256 templates/dashboard.html:271
+#: nekoyume/templates/dashboard.html:197 nekoyume/templates/dashboard.html:212
+#: nekoyume/templates/dashboard.html:227 nekoyume/templates/dashboard.html:242
+#: nekoyume/templates/dashboard.html:257 nekoyume/templates/dashboard.html:272
 #, python-format
 msgid "Modifier when roll %(stat)s."
 msgstr "%(stat)s 판정시 보정치"
 
-#: templates/dashboard.html:330
+#: nekoyume/templates/dashboard.html:331
 msgid "Hack &amp; Slash"
 msgstr "접근전"
 
-#: templates/dashboard.html:331
+#: nekoyume/templates/dashboard.html:332
 msgid "Sleep"
 msgstr "수면"
 
-#: templates/dashboard.html:332
+#: nekoyume/templates/dashboard.html:333
 msgid "Say"
 msgstr "말하기"
 
-#: templates/dashboard.html:333
+#: nekoyume/templates/dashboard.html:334
 msgid "Send"
 msgstr "보내기"
 
-#: templates/dashboard.html:334
+#: nekoyume/templates/dashboard.html:335
 msgid "combine"
 msgstr "조합"
 
-#: templates/dashboard.html:339
+#: nekoyume/templates/dashboard.html:340
 msgid "Encounter a nearby monster and battle it."
 msgstr "인근의 괴물과 조우하여 전투를 벌입니다."
 
-#: templates/dashboard.html:347
+#: nekoyume/templates/dashboard.html:348
 msgid "Weapon"
 msgstr ""
 
-#: templates/dashboard.html:357
+#: nekoyume/templates/dashboard.html:358
 msgid "Armor"
 msgstr ""
 
-#: templates/dashboard.html:367
+#: nekoyume/templates/dashboard.html:368
 msgid "Food"
 msgstr ""
 
-#: templates/dashboard.html:373
+#: nekoyume/templates/dashboard.html:374
 msgid "Find monster"
 msgstr "괴물을 찾아 나섭니다."
 
-#: templates/dashboard.html:381
+#: nekoyume/templates/dashboard.html:382
 msgid "Take your sleep and regain your HP."
 msgstr "수면을 취하여 체력을 회복합니다."
 
-#: templates/dashboard.html:386
+#: nekoyume/templates/dashboard.html:387
 msgid "Lay down on the bed"
 msgstr "침대에 눕습니다."
 
-#: templates/dashboard.html:396
+#: nekoyume/templates/dashboard.html:397
 msgid "Say something."
 msgstr "할 말을 남깁니다."
 
-#: templates/dashboard.html:398 templates/dashboard.html:419
-#: templates/dashboard.html:455 templates/login.html:46
+#: nekoyume/templates/dashboard.html:399 nekoyume/templates/dashboard.html:420
+#: nekoyume/templates/dashboard.html:456 nekoyume/templates/login.html:49
 msgid "OK"
 msgstr "확인"
 
-#: templates/dashboard.html:413
+#: nekoyume/templates/dashboard.html:414
 msgid "Amount"
 msgstr "수량"
 
-#: templates/dashboard.html:417
+#: nekoyume/templates/dashboard.html:418
 msgid "Address to send"
 msgstr "보낼 주소"
 
-#: templates/dashboard.html:425
+#: nekoyume/templates/dashboard.html:426
 msgid "Combine three items to get a new item. (needs 1 GOLD)"
 msgstr "세개의 아이템을 조합하여 새로운 아이템을 얻습니다. (1 GOLD 필요)"
 
-#: templates/dashboard.html:464
+#: nekoyume/templates/dashboard.html:465
 msgid "Currently in progress ..."
 msgstr "현재 진행중..."
 
-#: templates/dashboard.html:485
+#: nekoyume/templates/dashboard.html:486
 msgid "Novice was born!"
 msgstr "초심자 탄생!"
 
-#: templates/dashboard.html:488 templates/login.html:30
+#: nekoyume/templates/dashboard.html:489 nekoyume/templates/login.html:30
 msgid "Welcome!"
 msgstr "환영합니다!"
 
-#: templates/dashboard.html:501
+#: nekoyume/templates/dashboard.html:502
 msgid "You won the battle!"
 msgstr "전투 승리!"
 
-#: templates/dashboard.html:505
+#: nekoyume/templates/dashboard.html:506
 msgid "Battle was finished."
 msgstr "전투 종료!"
 
-#: templates/dashboard.html:509
+#: nekoyume/templates/dashboard.html:510
 msgid "You lost the battle."
 msgstr "전투 패배!"
 
-#: templates/dashboard.html:518
+#: nekoyume/templates/dashboard.html:519
 #, python-format
 msgid ""
 "You attacked %(monster)s and wounded it for <strong>%(damage)s</strong> "
 "damage. <small>(HP %(monster_hp)s → %(monster_hp_after_damage)s)</small>"
 msgstr ""
-"%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다."
-" <small>(HP %(monster_hp)s → "
-"%(monster_hp_after_damage)s)</small>"
+"%(monster)s에게 <strong>%(damage)s</strong> 데미지를 입혔다. <small>(HP "
+"%(monster_hp)s → %(monster_hp_after_damage)s)</small>"
 
-#: templates/dashboard.html:528
+#: nekoyume/templates/dashboard.html:529
 #, python-format
 msgid ""
 "You are attacked by %(monster)s and take <strong>%(damage)s</strong> "
 "damage."
 msgstr "%(monster)s에게 공격받아 <strong>%(damage)s</strong> 데미지를 입었다."
 
-#: templates/dashboard.html:536
+#: nekoyume/templates/dashboard.html:537
 msgid "You learned from your previous mistake. <small>(XP +1)</small>"
 msgstr "나는 아까의 과오에서 배움을 얻었다. <small>(XP +1)</small>"
 
-#: templates/dashboard.html:543
+#: nekoyume/templates/dashboard.html:544
 #, python-format
 msgid "You defeated %(monster)s!"
 msgstr "%(monster)s를(을) 해치웠다!"
 
-#: templates/dashboard.html:550
+#: nekoyume/templates/dashboard.html:551
 #, python-format
 msgid "You are defeated by %(monster)s..."
 msgstr "%(monster)s에게 패배했다..."
 
-#: templates/dashboard.html:557
+#: nekoyume/templates/dashboard.html:558
 #, python-format
 msgid "%(monster)s has run away..."
 msgstr "%(monster)s는(은) 도망가버렸다..."
 
-#: templates/dashboard.html:564
+#: nekoyume/templates/dashboard.html:565
 #, python-format
 msgid "You obtained %(item)s!"
 msgstr "%(item)s을(를) 얻었다!"
 
-#: templates/dashboard.html:571
+#: nekoyume/templates/dashboard.html:572
 #, python-format
 msgid "You used %(item)s. <small>(%(status_change)s)</small>"
 msgstr "%(item)s 을(를) 사용했다. <small>(%(status_change)s)</small>"
 
-#: templates/dashboard.html:578
+#: nekoyume/templates/dashboard.html:579
 #, python-format
 msgid "You tried to use %(item)s but it doesn't works."
 msgstr "%(item)s를 사용했으나 효과가 없었다."
 
-#: templates/dashboard.html:600
+#: nekoyume/templates/dashboard.html:601
 #, python-format
 msgid "Level Up! Now, your level is %(lv)s."
 msgstr "레벨 업! 이제 레벨 %(lv)s입니다."
 
-#: templates/dashboard.html:604
+#: nekoyume/templates/dashboard.html:605
 msgid "Level up was failed"
 msgstr "레벨 업 실패"
 
-#: templates/dashboard.html:622
+#: nekoyume/templates/dashboard.html:623
 msgid "HP was recovered by sleep."
 msgstr "수면을 통해 체력 회복"
 
-#: templates/dashboard.html:648
+#: nekoyume/templates/dashboard.html:649
 #, python-format
 msgid "You delievered %(amount)s of %(item)s."
 msgstr "%(item)s %(amount)s개를 전달했습니다."
 
-#: templates/dashboard.html:654
+#: nekoyume/templates/dashboard.html:655
 msgid "Receiver:"
 msgstr "받은 사람:"
 
-#: templates/dashboard.html:668
+#: nekoyume/templates/dashboard.html:669
 #, python-format
 msgid ""
 "\n"
@@ -254,16 +257,16 @@ msgstr ""
 "\n"
 "                            %(result)s 제작에 성공했습니다."
 
-#: templates/dashboard.html:673
+#: nekoyume/templates/dashboard.html:674
 msgid "Your combination was failed."
 msgstr "조합은 실패였습니다."
 
-#: templates/dashboard.html:680
+#: nekoyume/templates/dashboard.html:681
 #, python-format
 msgid "Ingredients: %(item1)s, %(item2)s, and %(item3)s"
 msgstr "재료: %(item1)s, %(item2)s, %(item3)s"
 
-#: templates/login.html:37
+#: nekoyume/templates/login.html:37
 msgid ""
 "Hello! Welcome to the world of Nekoyume. Please set your own private key "
 "and input that in the form below so that you can start game right know. "
@@ -272,15 +275,21 @@ msgstr ""
 "안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 프라이빗 키를 정해서 아래 양식에 입력해주시면 게임을 시작하실 수 있습니다. "
 "프라이빗 키는 자신을 정의하는 암호입니다. 다른 사람이 알기 어려운 고유한 것으로 만들어주세요."
 
-#: templates/login.html:44
+#: nekoyume/templates/login.html:39
+msgid ""
+"Please enter a valid private key of 64 hexadecimal digits (it can be "
+"optionally prefixed with <tt>0x</tt>)."
+msgstr ""
+
+#: nekoyume/templates/login.html:47
 msgid "Enter your private key"
 msgstr "프라이빗 키를 입력해주세요."
 
-#: templates/new.html:33
+#: nekoyume/templates/new.html:33
 msgid "Currently creating a new character..."
 msgstr "새 캐릭터를 생성중입니다..."
 
-#: templates/new.html:38
+#: nekoyume/templates/new.html:38
 msgid ""
 "Hello! Welcome to the world of Nekoyume. We are currently creating a "
 "novice character. <br>This process will take about 15 seconds."
@@ -288,6 +297,7 @@ msgstr ""
 "안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 현재 초심자 캐릭터를 생성중입니다.<br> 이 과정은 약 15초 정도 "
 "소요됩니다."
 
-#: templates/new.html:39
+#: nekoyume/templates/new.html:39
 msgid "Know in advance!"
 msgstr "미리 알아두세요!"
+

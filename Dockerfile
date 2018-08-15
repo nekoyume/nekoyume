@@ -5,6 +5,8 @@ FROM python:3.6-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		build-essential \
 		libgmp-dev \
+        pkg-config \
+        dh-autoreconf \
         wget \
 	&& rm -rf /var/lib/apt/lists/*
 RUN wget https://github.com/eficode/wait-for/raw/master/wait-for

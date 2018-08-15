@@ -55,18 +55,30 @@ def create_app():
 
     app.config.update(
         CELERY_BROKER_URL=os.environ.get(
-            'REDIS_URL', 'redis://localhost:6379'),
+            'CELERY_BROKER_URL', 'sqla+sqlite:///yume_broker.db'),
         CELERY_RESULT_BACKEND=os.environ.get(
-            'REDIS_URL', 'redis://localhost:6379'))
+            'CELERY_RESULT_BACKEND', 'db+sqlite:///yume_reuslt.db'))
     return app
 
 
 app = create_app()
 cel = make_celery(app)
-cache.init_app(app, config={'CACHE_TYPE': 'redis',
-                            'CACHE_REDIS_URL': os.environ.get(
-                                'REDIS_URL', 'redis://localhost:6379'
-                            )})
+
+cache_type = os.environ.get('CACHE_TYPE', 'filesystem')
+if cache_type == 'redis':
+    cache_config = {
+        'CACHE_TYPE': cache_type,
+        'CACHE_REDIS_URL': os.environ.get(
+            'REDIS_URL', 'redis://localhost:6379'
+        ),
+    }
+else:
+    cache_config = {
+        'CACHE_TYPE': cache_type,
+        'CACHE_DIR': os.environ.get('CACHE_DIR', '.yumecache'),
+    }
+
+cache.init_app(app, cache_config)
 sentry = Sentry(app)
 
 

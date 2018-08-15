@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from secp256k1 import PrivateKey, PublicKey
+from coincurve import PrivateKey, PublicKey
 
 from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
@@ -244,7 +244,8 @@ def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
     assert fx_session.query(Move).count() == 1
 
 
-def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_novice_status):
+def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session,
+                                     fx_novice_status):
     # 1. block validation failure scenario
     # syncing without flushing can cause block validation failure
     move = fx_user.create_novice(fx_novice_status)
@@ -252,26 +253,32 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
     fx_session.delete(invalid_block)
 
     # syncing valid blocks from another node
-    new_blocks = [{"created_at": "2018-04-13 11:36:17.920869",
-                   "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
-                   "difficulty": 0,
-                   "hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
-                   "id": 1,
-                   "version": 2,
-                   "moves": [],
-                   "prev_hash": None,
-                   "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "00"},
-                  {"created_at": "2018-04-13 11:36:17.935392",
-                   "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
-                   "difficulty": 1,
-                   "hash": "014c44b9382a45c2a70d817c090e6b78af22b8f34b57fd7edb474344f25c439c",
-                   "id": 2,
-                   "version": 2,
-                   "moves": [],
-                   "prev_hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8",
-                   "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                   "suffix": "0b"}]
+    new_blocks = [
+        {
+            "created_at": "2018-04-13 11:36:17.920869",
+            "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
+            "difficulty": 0,
+            "hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8", # noqa
+            "id": 1,
+            "version": 2,
+            "moves": [],
+            "prev_hash": None,
+            "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", # noqa
+            "suffix": "00"
+        },
+        {
+            "created_at": "2018-04-13 11:36:17.935392",
+            "creator": "ET8ngv45qwhkDiJS1ZrUxndcGTzHxjPZDs",
+            "difficulty": 1,
+            "hash": "014c44b9382a45c2a70d817c090e6b78af22b8f34b57fd7edb474344f25c439c", # noqa
+            "id": 2,
+            "version": 2,
+            "moves": [],
+            "prev_hash": "da0182c494660af0d9dd288839ceb86498708f38c800363cd46ed1730013a4d8", # noqa
+            "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", # noqa
+            "suffix": "0b"
+        }
+    ]
 
     def add_block(new_block):
         block = Block.deserialize(new_block)
@@ -281,7 +288,8 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
     valid_block1 = add_block(new_blocks[0])
     valid_block2 = add_block(new_blocks[1])
 
-    assert invalid_block.hash == fx_session.query(Block).get(valid_block2.id - 1).hash
+    assert invalid_block.hash == \
+        fx_session.query(Block).get(valid_block2.id - 1).hash
     assert valid_block2.valid is False
 
     fx_session.query(Block).delete()
@@ -296,7 +304,8 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session, fx_n
     valid_block1 = add_block(new_blocks[0])
     valid_block2 = add_block(new_blocks[1])
 
-    assert valid_block1.hash == fx_session.query(Block).get(valid_block2.id - 1).hash
+    assert valid_block1.hash == \
+        fx_session.query(Block).get(valid_block2.id - 1).hash
     assert valid_block2.valid
 
 
@@ -305,5 +314,5 @@ def test_get_address():
         '04fb0af727d1839557ea5214a7b7dd799c05dab9da63329a6c6d9836fd19a29ce'
         'bc34f7ba31877b22f6767bb1d9f376a33fc0f28f37ada368611b011c01dbef90f'
     )
-    pubkey = PublicKey(raw_key, raw=True)
+    pubkey = PublicKey(raw_key)
     assert '0x80e0b0a7cc8001086a37648f993b2bd855d0ab59' == get_address(pubkey)

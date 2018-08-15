@@ -3,7 +3,7 @@ from functools import wraps
 from flask import (Blueprint, g, request, redirect, render_template,
                    session, url_for)
 from flask_babel import Babel
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 from sqlalchemy import func
 
 from nekoyume.models import cache, db, LevelUp, Move, Node, User

@@ -1,4 +1,4 @@
-from secp256k1 import PrivateKey
+from coincurve import PrivateKey
 
 from nekoyume.models import Move, get_address
 from nekoyume.game import get_unconfirmed_move
@@ -15,19 +15,19 @@ def test_login(fx_test_client):
 def test_new_character_creation(fx_test_client, fx_session):
     privkey = PrivateKey()
     fx_test_client.post('/login', data={
-        'private_key': privkey.serialize(),
+        'private_key': privkey.to_hex(),
     }, follow_redirects=True)
 
     assert fx_session.query(Move).filter_by(
-        user_address=get_address(privkey.pubkey),
-        user_public_key=privkey.pubkey.serialize(compressed=True),
+        user_address=get_address(privkey.public_key),
+        user_public_key=privkey.public_key.format(compressed=True),
         name='create_novice'
     ).first()
 
 
 def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
     rv = fx_test_client.post('/login', data={
-        'private_key': fx_private_key.serialize(),
+        'private_key': fx_private_key.to_hex(),
     }, follow_redirects=True)
     rv = fx_test_client.post('/new')
     fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))

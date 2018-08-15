@@ -146,6 +146,7 @@
           <a class="mdl-navigation__link" href="{% trans -%}https://www.dungeonworldsrd.com/{%- endtrans %}">{% trans -%}Learn Dungeon World{%- endtrans %}</a>
           <a class="mdl-navigation__link" href="https://nekoyu.me/token">{% trans -%}Buy Gold{%- endtrans %}</a>
           <a class="mdl-navigation__link" href="https://github.com/nekoyume">Github</a>
+          <a class="mdl-navigation__link" href="{{ url_for('game.export_private_key') }}">{% trans -%}Export Private Key{%- endtrans %}</a>
           <a class="mdl-navigation__link" href="{{ url_for('game.get_logout') }}">{% trans -%}Logout{%- endtrans %}</a>
         </nav>
       </div>

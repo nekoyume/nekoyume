@@ -2,7 +2,7 @@
 Nekoyume
 ========
 
-|build| |coverage| |pypi| |chat|
+|build| |coverage| |pypi| |chat| |gitter|
 
 Nekoyume is the first `MMORPG <https://en.wikipedia.org/wiki/Massively_multiplayer_online_role-playing_game>`_ based on `blockchain <https://en.wikipedia.org/wiki/Blockchain>`_.
 
@@ -78,3 +78,6 @@ Mining
 
 .. |deploy| image:: https://www.herokucdn.com/deploy/button.svg
   :target: https://heroku.com/deploy
+
+.. |gitter| image:: https://badges.gitter.im/gitterHQ/gitter.png
+  :target: https://gitter.im/nekoyume-dev

@@ -1,6 +1,10 @@
-from coincurve import PrivateKey
+import typing
 
-from nekoyume.models import Move, get_address
+from coincurve import PrivateKey
+from sqlalchemy.orm.session import Session
+from werkzeug.test import Client
+
+from nekoyume.models import Move, User, get_address
 from nekoyume.game import get_unconfirmed_move
 
 
@@ -74,3 +78,23 @@ def test_get_unconfirmed_move(fx_session, fx_user, fx_novice_status):
     move.id = ('00000000000000000000000000000000'
                '00000000000000000000000000000000')
     assert not get_unconfirmed_move(fx_user.address)
+
+
+def test_prevent_hack_and_slash_when_dead(
+        fx_test_client: Client, fx_session: Session, fx_user: User,
+        fx_private_key: PrivateKey, fx_novice_status: typing.Dict[str, str],
+):
+    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+    move = fx_user.create_novice(fx_novice_status)
+    fx_user.create_block([move])
+
+    assert fx_user.avatar().is_dead is False
+    while fx_user.avatar().hp > 0:
+        move = fx_user.hack_and_slash()
+        fx_user.create_block([move])
+    assert fx_user.avatar().is_dead is True
+
+    response = fx_test_client.post('/session_moves', data={
+        'name': 'hack_and_slash'
+    })
+    assert response.status_code == 302

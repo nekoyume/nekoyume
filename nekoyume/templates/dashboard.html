@@ -327,14 +327,14 @@
                   <div class="move-bar-normal mdl-tabs mdl-js-tabs mdl-js-ripple-effect
                               {% if unconfirmed_move %} hidden {% endif %}">
                     <div class="mdl-tabs__tab-bar">
-                        <a href="#hack-and-slash-panel" class="mdl-tabs__tab is-active">⚔️ {% trans -%} Hack &amp; Slash {%- endtrans %}</a>
-                        <a href="#sleep-panel" class="mdl-tabs__tab">💤 {% trans -%} Sleep {%- endtrans %}</a>
+                        <a href="#hack-and-slash-panel" class="mdl-tabs__tab {% if not avatar.is_dead -%} is-active {%- endif -%}">⚔️ {% trans -%} Hack &amp; Slash {%- endtrans %}</a>
+                        <a href="#sleep-panel" class="mdl-tabs__tab  {% if avatar.is_dead -%} is-active {%- endif -%}">💤 {% trans -%} Sleep {%- endtrans %}</a>
                         <a href="#say-panel" class="mdl-tabs__tab">🗣 {% trans -%} Say {%- endtrans %}</a>
                         <a href="#send-panel" class="mdl-tabs__tab">➡️ {% trans -%} Send {%- endtrans %}</a>
                         <a href="#combine-panel" class="mdl-tabs__tab">🙌 {% trans -%} combine {%- endtrans %}</a>
                     </div>
 
-                    <div class="mdl-tabs__panel is-active" id="hack-and-slash-panel">
+                    <div class="mdl-tabs__panel {% if not avatar.is_dead -%} is-active {%- endif -%}" id="hack-and-slash-panel">
                         <div class="mdl-card__supporting-text" style="width: auto;">
                             <center>{% trans -%}Encounter a nearby monster and battle it.{%- endtrans %}</center>
                         </div>
@@ -370,13 +370,13 @@
                                       {% endfor %}
                                     </select>
                                   </p>
-                                  <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans -%}Find monster{%- endtrans %}">
+                                  <input type="submit" {% if avatar.is_dead %} disabled {% endif %} class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans -%}Find monster{%- endtrans %}">
 
                                 </center>
                             </form>
                         </div>
                     </div>
-                    <div class="mdl-tabs__panel" id="sleep-panel">
+                    <div class="mdl-tabs__panel {% if avatar.is_dead -%} is-active {%- endif -%}" id="sleep-panel">
                         <div class="mdl-card__supporting-text" style="width: auto;">
                             <center>{% trans -%}Take your sleep and regain your HP.{%- endtrans %}</center>
                         </div>

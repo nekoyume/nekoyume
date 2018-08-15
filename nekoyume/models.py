@@ -1353,6 +1353,10 @@ class Avatar():
 
         return result
 
+    @property
+    def is_dead(self) -> bool:
+        return bool(self.hp <= 0)
+
 
 class Novice(Avatar):
     @property

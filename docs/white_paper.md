@@ -175,10 +175,10 @@ Adventurers can use gold to enjoy a more pleasant and fast gaming experience. Ty
 
 #### 5.3.2.1. Gold generation event
 
-In May 2018, Nekoyume Gold (NYG), which is available on the mainnet, will be issued in the form of the Ethereum ERC20 token. We will issue 21% of the total volume. In this minting, we achieve two objectives.
+In May 2018, Nekoyume Gold (NYG), which is available on the Mainnet, will be issued in the form of the Ethereum ERC20 token. We will issue 21% of the total volume. In this minting, we achieve two objectives.
 
-1. Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributers.
-2. Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delievered to early stage players.
+1. Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributors.
+2. Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delivered to early stage players.
 
 #### 5.3.2.2. Participate in the core team
 
@@ -186,7 +186,7 @@ During the intensive development period over the next year, 9% of the gold reser
 
 #### 5.3.2.3. Participate in the network
 
-After launching the mainnet, you can obtain gold by providing a client based on the published code or creating a block by executing $ neko. It will be the largest of all rewards portions and will be the only way to earn Gold from 2019 on. The planned amounts over four years are as follows.
+After launching the Mainnet, you can obtain gold by providing a client based on the published code or creating a block by executing $ neko. It will be the largest of all rewards portions and will be the only way to earn Gold from 2019 on. The planned amounts over four years are as follows.
 
 
 ## 6. Limitations

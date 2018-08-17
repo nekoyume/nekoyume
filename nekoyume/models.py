@@ -1191,8 +1191,11 @@ class User():
             raise InvalidBlockError
 
         if commit:
-            self.session.add(block)
-            self.session.commit()
+            try:
+                self.session.add(block)
+                self.session.commit()
+            except IntegrityError:
+                return None
 
         return block
 

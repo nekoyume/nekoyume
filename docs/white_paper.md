@@ -8,7 +8,7 @@
 Bitcoin, proposed by Satoshi Nakamoto, introduced the concept of blockchain, which applied techniques such as digital signature, hashing, and proof of work, to create a public ledger. Blockchain has demonstrated that the decentralized main net is stable for nine years and that anyone can participate in the creation of a trustworthy virtual currency. [<sup>1</sup>] The vision of this trusted technology has also inspired several software projects.
 At present, blockchain technology is being implemented in applications that go beyond cryptocurrency. Vitalik Buterin further developed the bitcoin script to propose Ethereum, which is a decentralized application platform based on Turing complete Smart Contract. [<sup>2</sup>]
 
-In the efforts to create a wide variety of applications for blockchain, several researches attempted to  develop games. For example, CryptoKitties, is an online game where users can send and receive randomly generated cats. The enthusiastic response received almost paralyzed the Ethereum network temporarily [<sup>3</sup>]. However, since the use of random consensus on the blockchain is limited, there are several  limitations to the games that can be implemented at present. If a more general-purpose random number generation approach is developed, users will be able to create and develop several different types of gaming applications using blockchain technology.
+In the efforts to create a wide variety of applications for blockchain, several researches attempted to  develop games. For example, CryptoKitties is an online game where users can send and receive randomly generated cats. The enthusiastic response received almost paralyzed the Ethereum network temporarily [<sup>3</sup>]. However, since the use of random consensus on the blockchain is limited, there are several  limitations to the games that can be implemented at present. If a more general-purpose random number generation approach is developed, users will be able to create and develop several different types of gaming applications using blockchain technology.
 
 
 ## 2. Pseudo-random number generation (PRNG)
@@ -109,7 +109,7 @@ Player sleeps to regain physical strength.
 
 Raises the player level, thus improving player skill and ability.
 
-When the player moves, the behavior information is passed to the network, and the move is actually performed after the creation of the next block. The block creation cycle is takes approximately 15 seconds; moreover, one block cannot contain more than two actions per user, therefore the minimum action cycle is also approximately 15 seconds.
+When the player moves, the behavior information is passed to the network, and the move is actually performed after the creation of the next block. The block creation cycle takes approximately 15 seconds; moreover, one block cannot contain more than two actions per user, therefore the minimum action cycle is also approximately 15 seconds.
 
 After the creation of a new block, the behavior contained in that block is evaluated. In the evaluation, the random value determined by the Hash random is reflected in the behavior result. The process of creating the random value by using the Hash random is as follows.
 
@@ -127,7 +127,7 @@ After the creation of a new block, the behavior contained in that block is evalu
 [1, 82, 91, 93, ... 3, 10]
 ```
 
-Players can acquire various in-game items through the adventure. However, since gold is only available through transactions, the players are required undertake adventures and obtain items through battles against stronger monsters, enabling the players to receive a lot of gold in the market.
+Players can acquire various in-game items through the adventure. However, since gold is only available through transactions, the players are required to undertake adventures and obtain items through battles against stronger monsters, enabling the players to receive a lot of gold in the market.
 
 The life cycle of the adventurer has been adopted from the [Dungeon World] rule. Dungeon World is a fantasy tabletop role-playing game (TRPG) based on Apocalypse World Engine and Dungeons & Dragons by Sage LaTorra and Adam Koebel. Since Dungeon World inherits the characteristics of TRPG, where player interactions are very important, it is suitable for the application of blockchain involving multiple users. Moreover, since all of the user's actions are designed to be judged by rolling a hexahedral dice twice, it is suitable to use random element.
 
@@ -137,7 +137,7 @@ The function of a Cat in Nekoyume is identical to that of a miner in Bitcoin. Af
 
 #### 5.2.1. Block generation consensus
 
-Nekoyume adopted the hashcash as a key consensus because it uses the Hash random with proof-of-work requirement. Since the block generation cycle is limited to 15 seconds, if the average of the recent block generation time is lower than 15 seconds, the demanding difficulty increases. Conversely, the average of the recent block generation time is higher than 15 seconds, the hard difficulty becomes lower.
+Nekoyume adopted the hashcash as a key consensus because it uses the Hash random with a proof-of-work requirement. Since the block generation cycle is limited to 15 seconds, if the average of the recent block generation time is lower than 15 seconds, the demanding difficulty increases. Conversely, the average of the recent block generation time is higher than 15 seconds, the hard difficulty becomes lower.
 
 #### 5.2.2. Compensation system
 

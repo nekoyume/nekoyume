@@ -2,7 +2,7 @@
 
 ## v0: Preview Network - Q2, 2018
 
-We will release the preview network before ICO starts. The preview wetwork will provide a level of gaming experience that will allow you to experience key fun elements before you buy your tokens so that you can preview the vision of the game to be released in the future. Novice is the only job available, and provides some basic information about Dungeon World's MVP combat with some monster information.
+We will release the preview network before ICO starts. The preview network will provide a level of gaming experience that will allow you to experience key fun elements before you buy your tokens so that you can preview the vision of the game to be released in the future. Novice is the only job available, and provides some basic information about Dungeon World's MVP combat with some monster information.
 
 The preview network will release the code under the MIT license prior to ICO. Implementations of key consensus are included in the code, but some consensus may be below the level published in the white paper, which will be complemented at the test network season.
 

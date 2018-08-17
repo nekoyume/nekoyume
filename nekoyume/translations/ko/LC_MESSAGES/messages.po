@@ -42,11 +42,11 @@ msgstr ""
 "익숙해지실 수 있습니다.<br>        <a "
 "href=\"https://sites.google.com/site/dungeonworldkr/home\"\" "
 "\"target=\"_blank\">→ 던전월드 한국어 공개판 보러가기</a></li>    <li>현재 프리뷰넷에서는 직업 선택이"
-" 없이 초심자로만 직업이 고정됩니다.<br>추후 메인넷에서는던전월드에서 제공하는 모든 직업과 종족 선택이 가능할 "
+" 없이 초심자로만 직업이 고정됩니다.<br>추후 메인넷에서는 던전월드에서 제공하는 모든 직업과 종족 선택이 가능할 "
 "예정입니다.</li>    <li>플레이어의 행동이 실제 수행되는데는 약 15초의 시간이 걸립니다.<br>하지만 가끔은 "
-"더오래걸리기도 하니 인내심을 가지고 기다려주세요. 🙏</li>    <li>골드를 보유하고 있으면 더 쉽고 강력한 플레이어를 육성할"
+"더 오래 걸리기도 하니 인내심을 가지고 기다려주세요. 🙏</li>    <li>골드를 보유하고 있으면 더 쉽고 강력한 플레이어를 육성할"
 " 수 있습니다.<br>        <a href=\"https://nekoyu.me/token.html\" "
-"target=\"_blank\">→ 골드 입수 방법보러가기</a></li></ul>"
+"target=\"_blank\">→ 골드 입수 방법 보러가기</a></li></ul>"
 
 #: nekoyume/templates/dashboard.html:134
 msgid "Address"
@@ -150,11 +150,11 @@ msgstr "보낼 주소"
 
 #: nekoyume/templates/dashboard.html:426
 msgid "Combine three items to get a new item. (needs 1 GOLD)"
-msgstr "세개의 아이템을 조합하여 새로운 아이템을 얻습니다. (1 GOLD 필요)"
+msgstr "세 개의 아이템을 조합하여 새로운 아이템을 얻습니다. (1 GOLD 필요)"
 
 #: nekoyume/templates/dashboard.html:465
 msgid "Currently in progress ..."
-msgstr "현재 진행중..."
+msgstr "현재 진행 중..."
 
 #: nekoyume/templates/dashboard.html:486
 msgid "Novice was born!"
@@ -194,7 +194,7 @@ msgstr "%(monster)s에게 공격받아 <strong>%(damage)s</strong> 데미지를 
 
 #: nekoyume/templates/dashboard.html:537
 msgid "You learned from your previous mistake. <small>(XP +1)</small>"
-msgstr "나는 아까의 과오에서 배움을 얻었다. <small>(XP +1)</small>"
+msgstr "나는 과거의 실수로부터 배움을 얻었다. <small>(XP +1)</small>"
 
 #: nekoyume/templates/dashboard.html:544
 #, python-format
@@ -255,11 +255,11 @@ msgid ""
 "                            You created %(result)s."
 msgstr ""
 "\n"
-"                            %(result)s 제작에 성공했습니다."
+"                            %(result)s 조합에 성공했습니다."
 
 #: nekoyume/templates/dashboard.html:674
 msgid "Your combination was failed."
-msgstr "조합은 실패였습니다."
+msgstr "조합에 실패하였습니다."
 
 #: nekoyume/templates/dashboard.html:681
 #, python-format
@@ -294,7 +294,7 @@ msgid ""
 "Hello! Welcome to the world of Nekoyume. We are currently creating a "
 "novice character. <br>This process will take about 15 seconds."
 msgstr ""
-"안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 현재 초심자 캐릭터를 생성중입니다.<br> 이 과정은 약 15초 정도 "
+"안녕하세요! 네코유메의 세계에 오신 것을 환영합니다. 현재 초심자 캐릭터를 생성중입니다.<br>이 과정은 약 15초 정도 "
 "소요됩니다."
 
 #: nekoyume/templates/new.html:39

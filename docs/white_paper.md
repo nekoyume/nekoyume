@@ -177,8 +177,8 @@ Adventurers can use gold to enjoy a more pleasant and fast gaming experience. Ty
 
 In May 2018, Nekoyume Gold (NYG), which is available on the Mainnet, will be issued in the form of the Ethereum ERC20 token. We will issue 21% of the total volume. In this minting, we achieve two objectives.
 
-1. Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributers.
-2. Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delievered to early stage players.
+1. Crowdsale: 99% (20.79%) of golds will be for sale, it will be used to reward early stage core contributors.
+2. Airdrop: 1% (0.21%) of golds will be used for marketing. it will be delivered to early stage players.
 
 #### 5.3.2.2. Participate in the core team
 

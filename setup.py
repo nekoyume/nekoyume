@@ -40,7 +40,7 @@ install_requires = [
 if __name__ == '__main__':
     setup(
         name='nekoyume',
-        version='0.0.3',
+        version='0.1.1',
         description='Decentralized MMORPG based on Dungeon World',
         long_description=long_description(),
         url='https://github.com/nekoyume/nekoyume',

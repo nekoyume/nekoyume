@@ -44,8 +44,8 @@ msgstr ""
 "\"target=\"_blank\">→ ダンジョンワールド英語公開版を見に行く</a></li>    <li>現在プレビューネットでは、職業選択れ"
 "せずに初心者のみの仕事が固定さ<br>今後、メインネットでは、ダンジョンの世界で提供されるすべての職業と種族の選択が可能 "
 "予定です。</li>    <li>プレイヤーの行動が実際に実行されるのには、約15秒の時間がかかります。<br>しかし、時には "
-"さらに時間がかかるもので忍耐を持って待ってください。🙏/li>    <li>ゴールドを保有していれば、より簡単かつ強力な"
-"プレーヤーを育成することができます<br>        <a href=\"https://nekoyu.me/token.html\" "
+"さらに時間がかかるもので忍耐を持って待ってください。🙏/li>    <li>ゴールドを保有していれば、より強力な"
+"プレーヤーを簡単に育成することができます。<br>        <a href=\"https://nekoyu.me/token.html\" "
 "target=\"_blank\">→ ゴールド入手の方法を見に行く</a></li></ul>"
 
 #: nekoyume/templates/dashboard.html:134
@@ -77,7 +77,7 @@ msgstr "ログアウト"
 #: nekoyume/templates/dashboard.html:256 nekoyume/templates/dashboard.html:271
 #, python-format
 msgid "Modifier when roll %(stat)s."
-msgstr "%(stat) 判定時に 補正値"
+msgstr "%(stat)判定時に補正値""
 
 #: nekoyume/templates/dashboard.html:330
 msgid "Hack &amp; Slash"
@@ -150,7 +150,7 @@ msgstr "三つのアイテムを組み合わせて、新しいアイテムを取
 
 #: nekoyume/templates/dashboard.html:464
 msgid "Currently in progress ..."
-msgstr "在進行中..."
+msgstr "現在進行中..."
 
 #: nekoyume/templates/dashboard.html:485
 msgid "Novice was born!"
@@ -206,7 +206,7 @@ msgstr "%(monster)sに敗北した..."
 #: nekoyume/templates/dashboard.html:557
 #, python-format
 msgid "%(monster)s has run away..."
-msgstr "%(monster)sは 逃げてしまった..."
+msgstr "%(monster)sは逃げてしまった..."
 
 #: nekoyume/templates/dashboard.html:564
 #, python-format
@@ -226,11 +226,11 @@ msgstr "%(item)sを使用したが、効果がなかった。"
 #: nekoyume/templates/dashboard.html:600
 #, python-format
 msgid "Level Up! Now, your level is %(lv)s."
-msgstr "レベルアップ！ 今レベル%(lv)sです。"
+msgstr "レベルアップ！自分の今のレベルは%(lv)s。"
 
 #: nekoyume/templates/dashboard.html:604
 msgid "Level up was failed"
-msgstr "レベルアップ！失敗"
+msgstr "レベルアップ失敗"
 
 #: nekoyume/templates/dashboard.html:622
 msgid "HP was recovered by sleep."
@@ -243,7 +243,7 @@ msgstr "%(item)s %(amount)sつを送った。"
 
 #: nekoyume/templates/dashboard.html:654
 msgid "Receiver:"
-msgstr "受けた人："
+msgstr "受ける人："
 
 #: nekoyume/templates/dashboard.html:668
 #, python-format

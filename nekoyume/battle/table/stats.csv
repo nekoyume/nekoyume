@@ -1,0 +1,5 @@
+id,strength,dexterity,intelligence,constitution,wisdom
+novice,10,9,6,8,7
+swordman,18,10,9,14,9
+mage,10,8,18,10,14
+archer,12,18,10,10,10

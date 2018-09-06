@@ -36,4 +36,5 @@ EXPOSE 8080
 ENV PORT 8080
 
 # Run app.py when the container launches
-CMD ["bash", "-c", "nekoyume init && honcho start"]
+ENTRYPOINT ["bash", "-c"]
+CMD ["nekoyume init && honcho start"]

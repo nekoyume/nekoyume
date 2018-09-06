@@ -1,9 +1,8 @@
 #import time
 
-from players import Warrior, Mage, Monk, DummyPlayer
-from monsters import Griffin, Slime
+from characters import Player, Monster
 from components import Stats
-from enums import CharacterType, ClassType
+from enums import CharacterType
 from logger import Logger
 from rand import Random
 
@@ -30,11 +29,11 @@ class Simulator:
             is_win = True
             is_lose = True
             for character in self.characters:
-                if character.get_type() == CharacterType.MONSTER:
+                if character.type_ == CharacterType.MONSTER:
                     stats = character.get_component(Stats)
                     if stats != None and not stats.is_dead():
                         is_win = False
-                if character.get_type() == CharacterType.PLAYER:
+                if character.type_ == CharacterType.PLAYER:
                     stats = character.get_component(Stats)
                     if stats != None and not stats.is_dead():
                         is_lose = False
@@ -62,10 +61,13 @@ class Simulator:
 class NormalBattle(Simulator):
     def __init__(self, seed):
         super().__init__(seed)
-        self.characters.append(DummyPlayer('swordman', ClassType.SWORDMAN, [('Attack', 2)]))
-        #self.characters.append(Warrior())
-        self.characters.append(Mage())
-        self.characters.append(Monk())
-        self.characters.append(Slime())
-        self.characters.append(Griffin())
+        self.characters.append(Player('dummy_swordman', 1, 'swordman', ['Attack']))
+        self.characters.append(Player('dummy_mage', 1, 'mage', ['Firewall', 'Attack']))
+        self.characters.append(Player('dummy_acolyte', 1, 'acolyte', ['Heal', 'Attack']))
+        self.characters.append(Player('dummy_archer', 1, 'archer', ['RangedAttack']))
+        self.characters.append(Monster('slime'))
+        self.characters.append(Monster('slime'))
+        self.characters.append(Monster('slime'))
+        self.characters.append(Monster('slime'))
+        self.characters.append(Monster('griffin'))
         

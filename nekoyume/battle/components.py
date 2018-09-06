@@ -1,4 +1,6 @@
+import math
 from utils import itersubclasses
+
 
 class ComponentContainer:
     def __init__(self):
@@ -42,35 +44,38 @@ class Component:
 
 
 class Stats(Component):
-    def __init__(self, level, stats):
+    def __init__(self, level, data):
+        self.set_data(level, data)
+
+    def set_data(self, level, data, hp_recovery=True):
         self.level = level
-        self.strength = int(stats['strength'])
-        self.dexterity = int(stats['dexterity'])
-        self.intelligence = int(stats['intelligence'])
-        self.constitution = int(stats['constitution'])
-        self.wisdom = int(stats['wisdom'])
-        self.luck = 0
-        self.hp = self.hp_max = self.constitution * 10
+        self.strength = int(data['strength'])
+        self.dexterity = int(data['dexterity'])
+        self.intelligence = int(data['intelligence'])
+        self.constitution = int(data['constitution'])
+        self.luck = int(data['luck'])
+        self.defense = int(data['defense']) if 'defense' in data else 0
+        self.hp_max = self.constitution
+        if hp_recovery:
+            self.hp = self.hp_max
 
     def calc_melee_atk(self):
-        return self.strength
+        return self.strength + math.floor(self.dexterity * 0.2)
 
-    def calc_range_atk(self):
-        return self.dexterity
+    def calc_ranged_atk(self):
+        return self.dexterity + math.floor(self.strength * 0.2)
 
     def calc_magic_atk(self):
         return self.intelligence
 
-    def clac_max_hp(self):
-        return self.constitution
+    def calc_atk_cooltime(self):
+        return 5
 
     def current_hp(self):
         return self.hp
 
-    def calc_atk_cooltime(self):
-        return 5
-
     def damaged(self, damage):
+        damage -= self.defense
         self.hp = max(self.hp - damage, 0)
 
     def heal(self, amount):

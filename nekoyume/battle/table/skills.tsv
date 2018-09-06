@@ -1,0 +1,4 @@
+id	cast_time	cooltime	target_count	power
+attack	0	2	1	100
+fire_wall	4	3	4	75
+heal	3	2	1	100

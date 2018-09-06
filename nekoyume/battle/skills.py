@@ -25,7 +25,7 @@ class Skill(Component):
         weightedlist = WeightedList()
         for target in targets:
             stats = target.get_component(Stats)
-            if filter_type == target.get_type()\
+            if filter_type == target.type_\
                and not stats.is_dead():
                 weightedlist.add(target, 1)
         if len(weightedlist) == 0:
@@ -46,17 +46,17 @@ class CastSkill(Skill):
 
 
 class Attack(Skill):
-    def __init__(self, cooltime):
+    def __init__(self):
         super().__init__()
         self.name = 'Attack'
-        self.cooltime = cooltime
+        self.cooltime = 3
 
     def tick(self, simulator):
         if self.nexttime > simulator.time:
             return BehaviorTreeStatus.FAILURE
         my_stats = self.owner.get_component(Stats)
         self.nexttime = self.nexttime + my_stats.calc_atk_cooltime()
-        enemy_type = CharacterType.MONSTER if self.owner.get_type() == CharacterType.PLAYER else CharacterType.PLAYER
+        enemy_type = CharacterType.MONSTER if self.owner.type_ == CharacterType.PLAYER else CharacterType.PLAYER
         targets = self.find_targets(simulator.characters, enemy_type)
         for target in targets:
             target_stats = target.get_component(Stats)
@@ -74,27 +74,56 @@ class Attack(Skill):
                 simulator.log(target.name + ' is dead..')
         return BehaviorTreeStatus.SUCCESS
 
+class RangedAttack(Skill):
+    def __init__(self):
+        super().__init__()
+        self.name = 'RangedAttack'
+        self.cooltime = 4
+
+    def tick(self, simulator):
+        if self.nexttime > simulator.time:
+            return BehaviorTreeStatus.FAILURE
+        my_stats = self.owner.get_component(Stats)
+        self.nexttime = self.nexttime + my_stats.calc_atk_cooltime()
+        enemy_type = CharacterType.MONSTER if self.owner.type_ == CharacterType.PLAYER else CharacterType.PLAYER
+        targets = self.find_targets(simulator.characters, enemy_type)
+        for target in targets:
+            target_stats = target.get_component(Stats)
+            if not target_stats:
+                return BehaviorTreeStatus.FAILURE
+            my_stats = self.owner.get_component(Stats)
+            atk = my_stats.calc_ranged_atk()
+            target_stats.damaged(atk)
+            simulator.log(
+                '[' + self.name + '] ' + self.owner.name + 
+                ' -> ' + target.name + 
+                ' damaged ' + str(atk) + 
+                '(hp ' + str(target_stats.hp) + ')')
+            if target_stats.is_dead():
+                simulator.log(target.name + ' is dead..')
+        return BehaviorTreeStatus.SUCCESS
+
 
 class Firewall(Attack):
-    def __init__(self, cooltime):
-        super().__init__(cooltime)
+    def __init__(self):
+        super().__init__()
         self.name = 'Firewall'
-        self.cooltime = cooltime
+        self.cooltime = 5
         self.casttime = 5
         self.target_count = 5
 
 
 class Heal(Skill):
-    def __init__(self, cooltime):
+    def __init__(self):
         super().__init__()
         self.name = 'Heal'
-        self.cooltime = cooltime
+        self.cooltime = 4
 
     def tick(self, simulator):
         if self.nexttime > simulator.time:
             return BehaviorTreeStatus.FAILURE
         self.nexttime = self.nexttime + self.cooltime
-        my_type = self.owner.get_type()
+        my_type = self.owner.type_
         targets = self.find_targets(simulator.characters, my_type)
         for target in targets:
             target_stats = target.get_component(Stats)

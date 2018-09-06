@@ -1,25 +1,24 @@
 import os
-import tablib
 
-class Table:
+class TableData(dict):
+    def __init__(self, header, data):
+        for i in range(len(header)):
+            self[header[i]] = data[i]
+
+class Table(dict):
+    separator = '\t'
     def __init__(self, filename):
-        dirname = os.path.join('battle', 'table') 
-        d = tablib.Dataset().load(
-            open(os.path.join(dirname, filename)).read()
-        ).dict
-        print(d)
-        self.data = {}
-        for i in d:
-            self.data[i['id']] = i
-        print(self.data)
-    
-    def get(self, id):
-        return self.data[id]
+        dirname = os.path.join('battle', 'table')
+        f = open(os.path.join(dirname, filename), 'r')
+        text = f.read()
+        f.close()
+        lines = text.split('\n')
+        header = lines[0].split(Table.separator)
+        for line in lines[1:]:
+            data = line.split(Table.separator)
+            self[data[0]] = TableData(header, data)
 
 class Tables:
-    def __init__(self):
-        self.stats = Table('stats.csv')
-        self.monsters = Table('monsters.csv')
-
-
-tables = Tables()
+    stats = Table('stats.tsv')
+    monsters = Table('monsters.tsv')
+    skills = Table('skills.tsv')

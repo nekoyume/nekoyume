@@ -4,8 +4,8 @@ from coincurve import PrivateKey
 from flask.testing import FlaskClient
 from sqlalchemy.orm.session import Session
 
-from nekoyume.models import Move, User, get_address
 from nekoyume.game import get_unconfirmed_move
+from nekoyume.models import Move, User, get_address
 
 
 def test_login(fx_test_client):

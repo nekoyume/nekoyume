@@ -1,6 +1,6 @@
 from celery import Celery
 
-from nekoyume.models import Block, db, Move, Node
+from nekoyume.models import Block, Move, Node, db
 
 
 celery = Celery()

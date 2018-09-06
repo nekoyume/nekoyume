@@ -1,7 +1,7 @@
 import datetime
 
-import pytest
 from coincurve import PrivateKey, PublicKey
+from pytest import fixture, raises
 
 from nekoyume.exc import InvalidMoveError
 from nekoyume.models import (Block,
@@ -17,14 +17,14 @@ from nekoyume.models import (Block,
                              get_address)
 
 
-@pytest.fixture
+@fixture
 def fx_user2(fx_session):
     user = User(PrivateKey())
     user.session = fx_session
     return user
 
 
-@pytest.fixture
+@fixture
 def fx_other_user(fx_other_session):
     user = User(PrivateKey())
     user.session = fx_other_session
@@ -97,13 +97,13 @@ def test_send_validation(fx_user, fx_user2, fx_novice_status):
 
     assert fx_user.avatar(block.id).items['GOLD'] == 8
 
-    with pytest.raises(InvalidMoveError):
+    with raises(InvalidMoveError):
         fx_user.send('GOLD', 100, fx_user2.address)
 
-    with pytest.raises(InvalidMoveError):
+    with raises(InvalidMoveError):
         fx_user.send('GOLD', -1, fx_user2.address)
 
-    with pytest.raises(InvalidMoveError):
+    with raises(InvalidMoveError):
         fx_user.send('GOLD', 0, fx_user2.address)
 
     # Even if a move object is created somehow,
@@ -325,5 +325,5 @@ def test_hack_and_slash_execute(fx_user, fx_novice_status):
     avatar.hp = 0
     move = fx_user.move(HackAndSlash())
     fx_user.create_block([move])
-    with pytest.raises(InvalidMoveError):
+    with raises(InvalidMoveError):
         move.execute(avatar)

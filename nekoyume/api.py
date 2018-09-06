@@ -1,11 +1,12 @@
 import datetime
 
 from flask import Blueprint, jsonify, request
-import requests
+from requests import get
+from requests.exceptions import ConnectionError
 from sqlalchemy.exc import IntegrityError
 
+from nekoyume.models import Block, Move, Node, db, get_my_public_url
 from nekoyume.tasks import block_broadcast, move_broadcast
-from nekoyume.models import db, Block, Node, Move, get_my_public_url
 
 
 api = Blueprint('api', __name__, template_folder='templates')
@@ -55,8 +56,8 @@ def post_node():
         node = Node(url=url)
         db.session.add(node)
     try:
-        response = requests.get(f'{node.url}/ping')
-    except requests.exceptions.ConnectionError:
+        response = get(f'{node.url}/ping')
+    except ConnectionError:
         return jsonify(
             result='failed',
             message=f'Connection to node {node.url} was failed.'

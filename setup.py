@@ -1,14 +1,16 @@
-from setuptools import setup, find_packages
-from codecs import open
-from os import path
+import codecs
+import os
+
+from setuptools import find_packages, setup
 
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
 
 
 def long_description():
     try:
-        with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+        with codecs.open(os.path.join(here, 'README.rst'),
+                         encoding='utf-8') as f:
             return f.read()
     except IOError:
         pass
@@ -61,18 +63,21 @@ if __name__ == '__main__':
         extras_require={
             'dev': [
                 'flake8 >= 3.5.0, < 3.6.0',
+                'flake8-import-order-spoqa >= 1.5.0, < 1.6.0',
                 'recommonmark==0.4.0',
                 'Sphinx >= 1.7.1, < 1.8.0',
                 'sphinx-rtd-theme==0.2.4',
             ],
             'test': [
-                'pytest >= 3.4.2, < 3.5.0',
+                'pytest >= 3.8.0, < 3.9.0',
+                'pytest-flake8 >= 1.0.2, < 1.1.0',
                 'pytest-localserver >= 0.4.1, < 0.5',
                 'codecov >= 2.0.15, < 2.1.0',
             ],
         },
         package_data={
-            'nekoyume': ['data/*', 'templates/*.html', 'translations/*/LC_MESSAGES/*'],
+            'nekoyume': ['data/*', 'templates/*.html',
+                         'translations/*/LC_MESSAGES/*'],
         },
         entry_points={
             'console_scripts': [

@@ -7,34 +7,35 @@ game moves.
 """
 
 import datetime
-from hashlib import sha256 as h
+import hashlib
 import os
 import re
 
 from bencode import bencode
+from coincurve import PrivateKey, PublicKey
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
 from keccak import sha3_256
-import requests
-from coincurve import PrivateKey, PublicKey
+from requests import get, post
+from requests.exceptions import ConnectionError, Timeout
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.sql.functions import char_length
-import tablib
+from tablib import Dataset
 
-from nekoyume.exc import (InvalidBlockError,
-                          InvalidMoveError,
-                          InvalidNameError,
-                          OutOfRandomError)
-from nekoyume.items import (Armor,
-                            Combined,
-                            get_related_items,
-                            Item,
-                            Weapon,
-                            Food)
-from nekoyume import hashcash
+from . import hashcash
+from .exc import (InvalidBlockError,
+                  InvalidMoveError,
+                  InvalidNameError,
+                  OutOfRandomError)
+from .items import (Armor,
+                    Combined,
+                    Food,
+                    Item,
+                    Weapon,
+                    get_related_items)
 
 
 PROTOCOL_VERSION: int = 2
@@ -50,13 +51,13 @@ def get_my_public_url():
             port = ':' + os.environ.get('PORT', '80')
         else:
             port = ''
-        ip = requests.get('http://ip.42.pl/raw').text
-        has_public_address = requests.get(
+        ip = get('http://ip.42.pl/raw').text
+        has_public_address = get(
             f'http://{ip}{port}/ping'
         ).text == 'pong'
-    except requests.exceptions.ConnectionError:
+    except ConnectionError:
         return None
-    except requests.exceptions.Timeout:
+    except Timeout:
         return None
     if has_public_address:
         return f'http://{ip}{port}'
@@ -80,18 +81,18 @@ class Node(db.Model):
 
     @classmethod
     def get(cls, url, session=db.session):
-        get = Node.query.filter_by(url=url).first
-        node = get()
+        get_node = Node.query.filter_by(url=url).first
+        node = get_node()
         if node:
             return node
-        elif requests.get(f'{url}/ping').text == 'pong':
+        elif get(f'{url}/ping').text == 'pong':
             node = Node(url=url, last_connected_at=datetime.datetime.utcnow())
             if session:
                 session.add(node)
                 try:
                     session.commit()
                 except IntegrityError:
-                    node = get()
+                    node = get_node()
                     if node is None:
                         raise
                     return node
@@ -116,17 +117,17 @@ class Node(db.Model):
 
         for n in recent_nodes:
             try:
-                response = requests.get(f"{n.url}{Node.get_nodes_endpoint}")
-            except requests.exceptions.ConnectionError:
+                response = get(f"{n.url}{Node.get_nodes_endpoint}")
+            except ConnectionError:
                 continue
-            except requests.exceptions.Timeout:
+            except Timeout:
                 continue
             for url in response.json()['nodes']:
                 try:
                     Node.get(url)
-                except requests.exceptions.ConnectionError:
+                except ConnectionError:
                     continue
-                except requests.exceptions.Timeout:
+                except Timeout:
                     continue
             else:
                 continue
@@ -136,13 +137,13 @@ class Node(db.Model):
 
     def ping(self):
         try:
-            result = requests.get(f'{self.url}/ping').text == 'pong'
+            result = get(f'{self.url}/ping').text == 'pong'
             if result:
                 self.last_connected_at = datetime.datetime.utcnow()
             return result
-        except requests.exceptions.ConnectionError:
+        except ConnectionError:
             return False
-        except requests.exceptions.Timeout:
+        except Timeout:
             return False
 
     @classmethod
@@ -170,13 +171,13 @@ class Node(db.Model):
             try:
                 if my_node:
                     serialized_obj['sent_node'] = my_node.url
-                requests.post(node.url + endpoint, json=serialized_obj,
-                              timeout=3)
+                post(node.url + endpoint, json=serialized_obj,
+                     timeout=3)
                 node.last_connected_at = datetime.datetime.utcnow()
                 session.add(node)
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 continue
-            except requests.exceptions.Timeout:
+            except Timeout:
                 continue
 
         session.commit()
@@ -238,7 +239,7 @@ class Block(db.Model):
     def valid(self) -> bool:
         """Check if this object is valid or not"""
         stamp = self.serialize() + self.suffix
-        valid = (self.hash == h(stamp).hexdigest())
+        valid = (self.hash == hashlib.sha256(stamp).hexdigest())
         valid = valid and hashcash.check(stamp, self.suffix, self.difficulty)
 
         valid = valid and (
@@ -269,7 +270,7 @@ class Block(db.Model):
             valid = valid and self.prev_hash is None
             valid = valid and self.difficulty == 0
 
-        valid = valid and self.root_hash == h(
+        valid = valid and self.root_hash == hashlib.sha256(
             ''.join(sorted((m.id for m in self.moves))).encode('utf-8')
         ).hexdigest()
 
@@ -357,7 +358,7 @@ class Block(db.Model):
         node_last_block = None
         for n in nodes:
             try:
-                response = requests.get(
+                response = get(
                     f"{n.url}{Node.get_blocks_endpoint}/last",
                     timeout=3
                 )
@@ -365,9 +366,9 @@ class Block(db.Model):
                    node_last_block['id'] < response.json()['block']['id']):
                     node_last_block = response.json()['block']
                     node = n
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 continue
-            except requests.exceptions.Timeout:
+            except Timeout:
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()
@@ -381,8 +382,8 @@ class Block(db.Model):
 
         def find_branch_point(value: int, high: int):
             mid = int((value + high) / 2)
-            response = requests.get((f"{node.url}{Node.get_blocks_endpoint}/"
-                                     f"{mid}"))
+            response = get((f"{node.url}{Node.get_blocks_endpoint}/"
+                            f"{mid}"))
             block = session.query(Block).get(mid)
             if value > high:
                 return 0
@@ -419,9 +420,9 @@ class Block(db.Model):
         while True:
             if click:
                 click.echo(f'Syncing blocks...(from: {from_})')
-            response = requests.get(f"{node.url}{Node.get_blocks_endpoint}",
-                                    params={'from': from_,
-                                            'to': from_ + limit - 1})
+            response = get(f"{node.url}{Node.get_blocks_endpoint}",
+                           params={'from': from_,
+                                   'to': from_ + limit - 1})
             if len(response.json()['blocks']) == 0:
                 break
             for new_block in response.json()['blocks']:
@@ -611,7 +612,9 @@ class Move(db.Model):
     @property
     def hash(self) -> str:
         """ Get move hash """
-        return h(self.serialize(include_signature=True)).hexdigest()
+        return hashlib.sha256(
+            self.serialize(include_signature=True)
+        ).hexdigest()
 
     def get_randoms(self) -> list:
         """ get random numbers by :doc:`Hash random <white_paper>` """
@@ -682,7 +685,7 @@ class HackAndSlash(Move):
             raise InvalidMoveError
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, 'data/monsters.csv')
-        monsters = tablib.Dataset().load(
+        monsters = Dataset().load(
             open(filename).read()
         ).dict
         randoms = self.get_randoms()
@@ -1145,7 +1148,7 @@ class User():
             if not move.valid:
                 raise InvalidMoveError(move)
         block = Block(version=PROTOCOL_VERSION)
-        block.root_hash = h(
+        block.root_hash = hashlib.sha256(
             ''.join(sorted((m.id for m in moves))).encode('utf-8')
         ).hexdigest()
         block.creator = self.address
@@ -1182,7 +1185,9 @@ class User():
         block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty)
         if self.session.query(Block).get(block.id):
             return None
-        block.hash = h(block.serialize() + block.suffix).hexdigest()
+        block.hash = hashlib.sha256(
+            block.serialize() + block.suffix
+        ).hexdigest()
 
         for move in moves:
             move.block = block

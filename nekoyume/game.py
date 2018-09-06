@@ -1,12 +1,12 @@
-from functools import wraps
+import functools
 
-from flask import (Blueprint, Response, g, request, redirect, render_template,
+from coincurve import PrivateKey
+from flask import (Blueprint, Response, g, redirect, render_template, request,
                    session, url_for)
 from flask_babel import Babel
-from coincurve import PrivateKey
 from sqlalchemy import func
 
-from nekoyume.models import cache, db, LevelUp, Move, Node, User
+from nekoyume.models import LevelUp, Move, Node, User, cache, db
 
 
 game = Blueprint('game', __name__, template_folder='templates')
@@ -19,7 +19,7 @@ def get_locale():
 
 
 def login_required(f):
-    @wraps(f)
+    @functools.wraps(f)
     def decorated_function(*args, **kwargs):
         private_key_hex = session.get('private_key')
         error = None

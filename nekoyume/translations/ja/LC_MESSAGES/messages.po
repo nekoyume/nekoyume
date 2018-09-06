@@ -292,6 +292,7 @@ msgstr "新しいキャラクターを生成しています..."
 msgid ""
 "Hello! Welcome to the world of Nekoyume. We are currently creating a "
 "novice character. <br>This process will take about 15 seconds."
+msgstr ""
 "こんにちは！猫夢の世界へようこそ。現在初心者のキャラクターを作成しています。<br> このプロセスは、約15秒 "
 "かかります。"
 

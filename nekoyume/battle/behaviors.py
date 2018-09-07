@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class BehaviorTreeBuilder:
     def __init__(self):
         self.node = None
@@ -79,6 +80,7 @@ class SequenceNode(Node):
                 return status
         return BehaviorTreeStatus.SUCCESS
 
+
 class SelectorNode(Node):
     def __init__(self, name):
         super().__init__(name)
@@ -93,4 +95,3 @@ class SelectorNode(Node):
             if status != BehaviorTreeStatus.FAILURE:
                 return status
         return BehaviorTreeStatus.FAILURE
-

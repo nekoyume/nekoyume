@@ -1,7 +1,7 @@
 #import time
 
-from characters import Player, Monster
-from components import Stats
+from characters import Factory
+from components.stats import Stats
 from enums import CharacterType
 from logger import Logger
 from rand import Random
@@ -16,8 +16,11 @@ class Simulator:
 
     def simulate(self):
         # todo: sorting by dex
-        self.random.shuffle(self.characters)
+        # self.random.shuffle(self.characters)
         while True:
+            self.characters = sorted(self.characters, 
+                key=lambda c: c.get_component(Stats).calc_atk_spd(), 
+                reverse=True)
             #time.sleep(1)
             self.log('time .. ' + str(self.time))
             for character in self.characters:
@@ -49,7 +52,7 @@ class Simulator:
         self.logger.log(txt)
 
     def log_result(self):
-        self.characters = sorted(self.characters, key=lambda c: c.group)
+        self.characters = sorted(self.characters, key=lambda c: c.type_)
         for character in self.characters:
             stats = character.get_component(Stats)
             if not stats.is_dead():
@@ -61,13 +64,12 @@ class Simulator:
 class NormalBattle(Simulator):
     def __init__(self, seed):
         super().__init__(seed)
-        self.characters.append(Player('dummy_swordman', 1, 'swordman', ['Attack']))
-        self.characters.append(Player('dummy_mage', 1, 'mage', ['Firewall', 'Attack']))
-        self.characters.append(Player('dummy_acolyte', 1, 'acolyte', ['Heal', 'Attack']))
-        self.characters.append(Player('dummy_archer', 1, 'archer', ['RangedAttack']))
-        self.characters.append(Monster('slime'))
-        self.characters.append(Monster('slime'))
-        self.characters.append(Monster('slime'))
-        self.characters.append(Monster('slime'))
-        self.characters.append(Monster('griffin'))
         
+        self.characters.append(Factory.create_player('dummy_swordman', 1, 'swordman', ['taunt', 'attack'], ['sword']))
+        self.characters.append(Factory.create_player('dummy_mage', 1, 'mage', ['firewall', 'attack'], ['wand']))
+        self.characters.append(Factory.create_player('dummy_acolyte', 1, 'acolyte', ['heal', 'attack'], ['bow']))
+        self.characters.append(Factory.create_player('dummy_archer', 1, 'archer', ['attack'], ['bow']))
+        self.characters.append(Factory.create_monster('slime'))
+        self.characters.append(Factory.create_monster('slime'))
+        self.characters.append(Factory.create_monster('slime'))
+        self.characters.append(Factory.create_monster('slime'))

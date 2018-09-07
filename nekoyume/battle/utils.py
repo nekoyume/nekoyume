@@ -38,3 +38,8 @@ def itersubclasses(cls, _seen=None):
             yield sub
             for sub in itersubclasses(sub, _seen):
                 yield sub
+
+#https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
+def camel2snake(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()

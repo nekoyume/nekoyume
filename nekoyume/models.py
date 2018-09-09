@@ -22,7 +22,6 @@ from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.sql.functions import char_length
 from tablib import Dataset
 
 from . import hashcash
@@ -308,11 +307,11 @@ class Block(db.Model):
         """
         It broadcast this block to every nodes you know.
 
-       :param       sent_node: sent :class:`nekoyume.models.Node`.
-                               this node ignore sent node.
-       :param         my_node: my :class:`nekoyume.models.Node`.
-                               received node ignore my node when they
-                               broadcast received object.
+        :param       sent_node: sent :class:`nekoyume.models.Node`.
+                                this node ignore sent node.
+        :param         my_node: my :class:`nekoyume.models.Node`.
+                                received node ignore my node when they
+                                broadcast received object.
         """
         return Node.broadcast(Node.post_block_endpoint,
                               self.serialize(False, True, True, True),
@@ -476,13 +475,13 @@ class Move(db.Model):
     __table_args__ = (
         db.CheckConstraint(
             db.func.lower(user_address).like('0x%') &
-            (char_length(user_address) == 42)
+            (db.func.length(user_address) == 42)
             # TODO: it should has proper test if 40-hex string
         ),
-        db.CheckConstraint(char_length(user_public_key) == 33),
+        db.CheckConstraint(db.func.length(user_public_key) == 33),
         db.CheckConstraint(
-            (char_length(signature) >= 68) &
-            (char_length(signature) <= 71)
+            (db.func.length(signature) >= 68) &
+            (db.func.length(signature) <= 71)
         ),
     )
     __mapper_args__ = {

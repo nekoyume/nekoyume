@@ -52,6 +52,22 @@ jobs:
             coverage run -m pytest --doctest-modules
             codecov --token=382fccb2-35b2-4861-ba06-56db19f2c36d
 
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+
+      - setup_remote_docker
+
+      - run:
+          name: Run Docker Compose
+          command: |
+            docker-compose build
+            docker-compose up -d
+            docker-compose down
+
       - store_artifacts:
           path: test-reports
           destination: test-reports

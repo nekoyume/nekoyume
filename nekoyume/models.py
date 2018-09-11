@@ -323,8 +323,7 @@ class Block(db.Model):
     def broadcast(self,
                   sent_node: bool=None,
                   my_node: bool=None,
-                  session=db.session,
-                  click=None) -> bool:
+                  session=db.session) -> bool:
         """
         It broadcast this block to every nodes you know.
 
@@ -339,7 +338,7 @@ class Block(db.Model):
                               sent_node, my_node, session)
 
     @classmethod
-    def sync(cls, node: Node=None, session=db.session, click=None) -> bool:
+    def sync(cls, node: Node=None, session=db.session, echo=None) -> bool:
         """
         Sync blockchain with other node.
 
@@ -418,8 +417,8 @@ class Block(db.Model):
         from_ = branch_point + 1
         limit = 1000
         while True:
-            if click:
-                click.echo(f'Syncing blocks...(from: {from_})')
+            if echo:
+                echo(f'Syncing blocks...(from: {from_})')
             response = get(f"{node.url}{Node.get_blocks_endpoint}",
                            params={'from': from_,
                                    'to': from_ + limit - 1})
@@ -1142,7 +1141,7 @@ class User():
                                           'item2': item2,
                                           'item3': item3}))
 
-    def create_block(self, moves, commit=True, click=None):
+    def create_block(self, moves, commit=True, echo=None):
         """ Create a block. """
         for move in moves:
             if not move.valid:
@@ -1168,8 +1167,8 @@ class User():
                 (block.created_at - difficulty_check_block.created_at) /
                 (block.id - difficulty_check_block.id)
             )
-            if click:
-                click.echo(
+            if echo:
+                echo(
                     f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
                 )
             if avg_timedelta <= datetime.timedelta(0, 5):

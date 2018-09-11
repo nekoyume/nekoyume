@@ -2,7 +2,7 @@ import os
 import time
 
 from babel.messages.frontend import compile_catalog
-from click import IntRange, ParamType, argument, click, echo, group, option
+from click import IntRange, ParamType, argument, echo, group, option
 from coincurve import PrivateKey
 from ptpython.repl import embed
 from raven import Client
@@ -40,7 +40,7 @@ def neko(private_key: PrivateKey):
             [m
              for m in Move.query.filter_by(block=None).limit(20).all()
              if m.valid],
-            click=click,
+            echo=echo,
         )
         if block:
             block.broadcast()
@@ -70,7 +70,7 @@ def init(seed, sync):
         Node.update()
     if sync:
         echo('Syncing blocks...')
-        Block.sync(click=click)
+        Block.sync(echo=echo)
 
     echo('Compiling translations...')
     dir_path = os.path.abspath(os.path.dirname(__file__))
@@ -97,7 +97,7 @@ def sync():
             prev_id = Block.query.order_by(Block.id.desc()).first().id
         except AttributeError:
             prev_id = 0
-        Block.sync(click=click)
+        Block.sync(echo=echo)
         try:
             if prev_id == Block.query.order_by(Block.id.desc()).first().id:
                 echo("The blockchain is up to date.")

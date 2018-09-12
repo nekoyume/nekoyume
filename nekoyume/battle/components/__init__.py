@@ -1,4 +1,4 @@
-from utils import itersubclasses
+from nekoyume.battle.utils import itersubclasses
 
 
 class ComponentContainer:
@@ -13,11 +13,16 @@ class ComponentContainer:
     def remove_component(self, comp):
         comp.owner = None
         self.components.remove(comp)
-    
+
     def get_component(self, cls):
         for comp in self.components:
             if comp.__class__ == cls:
                 return comp
+        subclasses = itersubclasses(cls)
+        for subcls in subclasses:
+            for comp in self.components:
+                    if comp.__class__ == subcls:
+                        return comp
 
     def get_components(self, cls):
         ret = []
@@ -32,7 +37,7 @@ class ComponentContainer:
 class Component:
     def __init__(self):
         self.owner = None
-    
+
     def send_message(self, msg):
         for comp in self.owner.components:
             if not comp == self:

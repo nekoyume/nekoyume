@@ -1,13 +1,14 @@
 import sys
+import random
 
-from simul import NormalBattle
+from nekoyume.battle.simul import DummyBattle
 
 
 def main():
     seed = 1
     if len(sys.argv) >= 2:
         seed = int(sys.argv[1])
-    simulator = NormalBattle(seed)
+    simulator = DummyBattle(random.Random(seed))
     simulator.simulate()
 
 

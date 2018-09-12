@@ -1,75 +1,83 @@
-#import time
+import random
 
-from characters import Factory
-from components.stats import Stats
-from enums import CharacterType
-from logger import Logger
-from rand import Random
+from nekoyume.battle import WeightedList
+from nekoyume.battle.characters import Factory
+from nekoyume.battle.components.bag import Bag
+from nekoyume.battle.components.stats import Stats
+from nekoyume.battle.enums import CharacterType
+from nekoyume.battle.items import Item
+from nekoyume.battle.items.weapons import Weapon
+from nekoyume.battle.logger import Logger
+from nekoyume.battle.tables import Tables
 
 
 class Simulator:
-    def __init__(self, seed):
+    def __init__(self, random: random.Random):
         self.time = 0
         self.characters = []
         self.logger = Logger()
-        self.random = Random(seed)
+        self.random = random
+        self.result = ''  # win, lose, finish
 
     def simulate(self):
-        # todo: sorting by dex
-        # self.random.shuffle(self.characters)
         while True:
-            self.characters = sorted(self.characters, 
-                key=lambda c: c.get_component(Stats).calc_atk_spd(), 
+            self.characters = sorted(
+                self.characters,
+                key=lambda c: c.get_component(Stats).calc_atk_spd(),
                 reverse=True)
-            #time.sleep(1)
-            self.log('time .. ' + str(self.time))
             for character in self.characters:
                 character.tick(self)
             self.time = self.time + 1
             if self.time >= 100:
-                self.log('stop.')
+                self.result = 'finish'
                 break
             is_win = True
             is_lose = True
             for character in self.characters:
                 if character.type_ == CharacterType.MONSTER:
                     stats = character.get_component(Stats)
-                    if stats != None and not stats.is_dead():
+                    if stats is not None and not stats.is_dead():
                         is_win = False
                 if character.type_ == CharacterType.PLAYER:
                     stats = character.get_component(Stats)
-                    if stats != None and not stats.is_dead():
+                    if stats is not None and not stats.is_dead():
                         is_lose = False
             if is_win:
-                self.log('win!')
+                self.result = 'win'
+                drop_items = WeightedList()
+                for drop_id in Tables.drop:
+                    drop = Tables.drop[drop_id]
+                    drop_items.add(drop.item_id, drop.weight)
+                for character in self.characters:
+                    if character.type_ == CharacterType.PLAYER:
+                        bag = character.get_component(Bag)
+                        drop_item = drop_items.select(self.random)
+                        if drop_item:
+                            item_data = Tables.items[drop_item]
+                            item = Item.subclasses[item_data.cls](drop_item)
+                            item.option = self.random.randint(1, 5)
+                            bag.add(item)
+                            self.logger.log_item(item.name)
                 break
             if is_lose:
-                self.log('lose..')
+                self.result = 'lose'
                 break
-        self.log_result()
-
-    def log(self, txt):
-        self.logger.log(txt)
-
-    def log_result(self):
-        self.characters = sorted(self.characters, key=lambda c: c.type_)
-        for character in self.characters:
-            stats = character.get_component(Stats)
-            if not stats.is_dead():
-                self.log(character.name + ' is alive.. hp ' + str(stats.hp))
-            else:
-                self.log(character.name + ' is dead.. hp ' + str(stats.hp))
 
 
-class NormalBattle(Simulator):
+class DummyBattle(Simulator):
     def __init__(self, seed):
         super().__init__(seed)
-        
-        self.characters.append(Factory.create_player('dummy_swordman', 1, 'swordman', ['taunt', 'attack'], ['sword']))
-        self.characters.append(Factory.create_player('dummy_mage', 1, 'mage', ['firewall', 'attack'], ['wand']))
-        self.characters.append(Factory.create_player('dummy_acolyte', 1, 'acolyte', ['heal', 'attack'], ['bow']))
-        self.characters.append(Factory.create_player('dummy_archer', 1, 'archer', ['attack'], ['bow']))
+        self.characters.append(Factory.create_player(
+            'dummy_swordman', 'swordman', 1, ['taunt', 'attack'], 
+            [Weapon('sword')]))
+        self.characters.append(Factory.create_player(
+            'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))
+        self.characters.append(Factory.create_player(
+            'dummy_acolyte', 'acolyte', 1, ['heal', 'attack'], []))
+        self.characters.append(Factory.create_player(
+            'dummy_archer', 'archer', 1, ['attack'], []))
         self.characters.append(Factory.create_monster('slime'))
         self.characters.append(Factory.create_monster('slime'))
         self.characters.append(Factory.create_monster('slime'))
         self.characters.append(Factory.create_monster('slime'))
+        self.characters.append(Factory.create_monster('griffin'))

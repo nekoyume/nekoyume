@@ -1,0 +1,4 @@
+id	cls	param_0	param_1	param_2
+sword	Weapon	1	0	0
+bow	RangedWeapon	1	0	0
+wand	Weapon	1	0	0

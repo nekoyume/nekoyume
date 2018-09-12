@@ -5,11 +5,13 @@ Models
 `models.py` contains every relations regarding nekoyume blockchain and
 game moves.
 """
-
+from dataclasses import dataclass, field
 import datetime
 import hashlib
 import os
+import random
 import re
+from typing import List
 
 from bencode import bencode
 from coincurve import PrivateKey, PublicKey
@@ -22,22 +24,23 @@ from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from tablib import Dataset
 
 from . import hashcash
+from .battle.characters import Factory as CharacterFactory
+from .battle.enums import ItemType
+from .battle.items import Item
+from .battle.simul import Simulator
+from .battle.tables import Tables
 from .exc import (InvalidBlockError,
                   InvalidMoveError,
                   InvalidNameError,
                   OutOfRandomError)
-from .items import (Armor,
-                    Combined,
-                    Food,
-                    Item,
-                    Weapon,
-                    get_related_items)
 
 
 PROTOCOL_VERSION: int = 2
+MIN_BLOCK_INTERVAL = datetime.timedelta(0, 1)
+MAX_BLOCK_INTERVAL = datetime.timedelta(0, 2)
+
 db = SQLAlchemy()
 cache = Cache()
 
@@ -240,9 +243,9 @@ class Block(db.Model):
                 (self.created_at - difficulty_check_block.created_at) /
                 (self.id - difficulty_check_block.id)
             )
-            if avg_timedelta <= datetime.timedelta(0, 5):
+            if avg_timedelta <= MIN_BLOCK_INTERVAL:
                 valid = valid and self.difficulty == max(0, difficulty + 1)
-            elif avg_timedelta > datetime.timedelta(0, 15):
+            elif avg_timedelta > MAX_BLOCK_INTERVAL:
                 valid = valid and self.difficulty == max(0, difficulty - 1)
             else:
                 valid = valid and self.difficulty == difficulty
@@ -600,8 +603,17 @@ class Move(db.Model):
         if not (self.block and self.block.hash and self.id):
             return []
         result = [ord(a) ^ ord(b) for a, b in zip(self.block.hash, self.id)]
-        result = result[int(self.block.difficulty / 4):]
+        result = result[self.block.difficulty // 4:]
         return result
+
+    def make_random_generator(self) -> random.Random:
+        if self.block and self.block.hash and self.id:
+            bh = bytes.fromhex(self.block.hash)
+            mi = bytes.fromhex(self.id)
+            seed = bytes(a ^ b for a, b in zip(bh, mi))
+        else:
+            seed = 0
+        return random.Random(seed)
 
     def roll(self, randoms: list, dice: str, combine=True):
         """
@@ -662,131 +674,21 @@ class HackAndSlash(Move):
             avatar = Avatar.get(self.user_address, self.block_id - 1)
         if avatar.dead:
             raise InvalidMoveError
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'data/monsters.csv')
-        monsters = Dataset().load(
-            open(filename).read()
-        ).dict
-        randoms = self.get_randoms()
-        monster = monsters[randoms.pop() % len(monsters)]
-        battle_status = []
+        # TODO 다른 유저의 아바타도 가져올 수 있어야한다.
+        battle = Simulator(self.make_random_generator())
+        # TODO 아바타 아직 다 가져오진 못했음
+        my_character = CharacterFactory.create_from_avatar(
+            avatar, self.details)
+        battle.characters.append(my_character)
+        battle.characters.append(CharacterFactory.create_monster('slime'))
+        battle.simulate()
 
-        for key in ('hp', 'piercing', 'armor'):
-            monster[key] = int(monster[key])
+        my_character.to_avatar(avatar)
 
-        def get_item(ticker_name):
-            items = get_related_items(Item)
-            for item in items:
-                if item.ticker_name == ticker_name:
-                    return item
-            return None
-
-        weapon = armor = food = None
-        if 'weapon' in self.details:
-            weapon = get_item(self.details['weapon'])
-        if 'armor' in self.details:
-            armor = get_item(self.details['armor'])
-        if 'food' in self.details:
-            food = get_item(self.details['food'])
-
-        while True:
-            try:
-                if (avatar.hp <= avatar.max_hp * 0.5
-                   and food and food.ticker_name in avatar.items
-                   and avatar.items[food.ticker_name] > 0):
-                    avatar, status = food().execute(avatar)
-                    battle_status.append(status)
-                    avatar.items[food.ticker_name] -= 1
-                    food = None
-
-                if (avatar.hp <= avatar.max_hp * 0.2
-                   and 'BNDG' in avatar.items and avatar.items['BNDG'] > 0):
-                    rolled = self.roll(randoms, '2d6')
-                    if rolled >= 7:
-                        avatar.hp += 4
-                        avatar.items['BNDG'] -= 1
-                        battle_status.append({
-                            'type': 'item_use',
-                            'item': 'BNDG',
-                            'status_change': 'HP +4'
-                        })
-                    else:
-                        avatar.items['BNDG'] -= 1
-                        battle_status.append({
-                            'type': 'item_use_fail',
-                            'item': 'BNDG',
-                            'status_change': ''
-                        })
-
-                rolled = (self.roll(randoms, '2d6')
-                          + avatar.modifier('strength'))
-                if rolled >= 7:
-                    damage = max(
-                        self.roll(randoms, avatar.damage) - monster['armor'], 0
-                    )
-                    if weapon:
-                        damage += weapon.attack_modifier(avatar, monster)
-                    battle_status.append({
-                        'type': 'attack_monster',
-                        'damage': damage,
-                        'monster': monster.copy(),
-                    })
-                    monster['hp'] = monster['hp'] - damage
-
-                elif rolled in (2, 3, 4, 5, 6, 7, 8, 9):
-                    monster_damage = self.roll(randoms, monster['damage'])
-                    if armor:
-                        monster_damage -= armor.armor_modifier(avatar, monster)
-                    battle_status.append({
-                        'type': 'attacked_by_monster',
-                        'damage': monster_damage,
-                        'monster': monster.copy(),
-                    })
-                    avatar.hp -= monster_damage
-                    if rolled <= 6:
-                        battle_status.append({
-                            'type': 'get_xp',
-                        })
-                        avatar.xp += 1
-
-                if monster['hp'] <= 0:
-                    battle_status.append({
-                        'type': 'kill_monster',
-                        'monster': monster.copy(),
-                    })
-                    reward_code = self.roll(randoms, '1d10')
-                    if len(monster[f'reward{reward_code}']):
-                        avatar.get_item(monster[f'reward{reward_code}'])
-                        battle_status.append({
-                            'type': 'get_item',
-                            'item': monster[f'reward{reward_code}'],
-                        })
-                    return (avatar, dict(
-                        type='hack_and_slash',
-                        result='win',
-                        battle_status=battle_status,
-                    ))
-
-                if avatar.hp <= 0:
-                    battle_status.append({
-                        'type': 'killed_by_monster',
-                        'monster': monster.copy(),
-                    })
-                    return (avatar, dict(
-                        type='hack_and_slash',
-                        result='lose',
-                        battle_status=battle_status,
-                    ))
-
-            except OutOfRandomError:
-                battle_status.append({
-                    'type': 'run',
-                    'monster': monster.copy(),
-                })
-                return (avatar, dict(
+        return (avatar, dict(
                     type='hack_and_slash',
-                    result='finish',
-                    battle_status=battle_status,
+                    result=battle.result,
+                    battle_status=battle.logger.logs,
                 ))
 
 
@@ -798,7 +700,7 @@ class Sleep(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user_address, self.block_id - 1)
-        avatar.hp = avatar.max_hp
+        avatar.hp = avatar.hp_max
         return avatar, dict(
             type='sleep',
             result='success',
@@ -811,47 +713,20 @@ class CreateNovice(Move):
     }
 
     def execute(self, avatar=None):
-        if avatar:
-            #: Keep the information that should not be removed.
-            gold = avatar.items['GOLD']
-        else:
-            gold = 0
-        avatar = Novice()
+        gold = getattr(avatar, 'gold', 0)
 
-        avatar.strength = int(self.details['strength'])
-        avatar.dexterity = int(self.details['dexterity'])
-        avatar.constitution = int(self.details['constitution'])
-        avatar.intelligence = int(self.details['intelligence'])
-        avatar.wisdom = int(self.details['wisdom'])
-        avatar.charisma = int(self.details['charisma'])
-
-        if (avatar.strength + avatar.dexterity + avatar.constitution +
-           avatar.intelligence + avatar.wisdom + avatar.charisma) > 64:
-            avatar.strength = 9
-            avatar.dexterity = 9
-            avatar.constitution = 9
-            avatar.intelligence = 9
-            avatar.wisdom = 9
-            avatar.charisma = 9
-
-        if 'name' in self.details:
-            avatar.name = self.details['name']
-        else:
-            avatar.name = self.user_address[:6]
-
-        if 'gravatar_hash' in self.details:
-            avatar.gravatar_hash = self.details['gravatar_hash']
-        else:
-            avatar.gravatar_hash = 'HASH'
-
-        avatar.user = self.user_address
-        avatar.current_block = self.block
-        avatar.hp = avatar.max_hp
-        avatar.xp = 0
-        avatar.lv = 1
-        avatar.items = dict(
-            GOLD=gold
+        avatar = Avatar(
+            name=self.details.get('name', self.user_address[:6]),
+            user=self.user_address,
+            current_block=self.block,
+            gold=gold,
+            class_='novice',
+            level=1,
+            gravatar_hash=self.details.get('gravatar_hash', 'HASH'),
         )
+
+        character = CharacterFactory.create_from_avatar(avatar, self.details)
+        character.to_avatar(avatar, hp_max=True)
 
         return (avatar, dict(
             type='create_novice',
@@ -867,19 +742,23 @@ class LevelUp(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user_address, self.block_id - 1)
-        if avatar.xp < avatar.lv + 7:
+        exp_max = Tables.get_exp_max(avatar.level)
+        if exp_max == 0:
             return avatar, dict(
                 type='level_up',
                 result='failed',
-                message="You don't have enough xp.",
+                message="Max level.",
             )
-
-        avatar.xp -= avatar.lv + 7
-        avatar.lv += 1
+        if avatar.exp < exp_max:
+            return avatar, dict(
+                type='level_up',
+                result='failed',
+                message="You don't have enough exp.",
+            )
+        avatar.exp -= exp_max
+        avatar.level += 1
         setattr(avatar, self.details['new_status'],
                 getattr(avatar, self.details['new_status']) + 1)
-        if self.details['new_status'] == 'constitution':
-            avatar.hp += 1
         return avatar, dict(
             type='level_up',
             result='success',
@@ -917,8 +796,8 @@ class Send(Move):
                 message="You can't send items with a negative or zero amount."
             )
 
-        if (self.details['item_name'] not in avatar.items or
-           avatar.items[self.details['item_name']]
+        if (self.details['item_index'] not in avatar.items or
+           avatar.items[self.details['item_index']]
            - int(self.details['amount']) < 0):
             return avatar, dict(
                 type='send',
@@ -926,7 +805,7 @@ class Send(Move):
                 message="You don't have enough items to send."
             )
 
-        avatar.items[self.details['item_name']] -= int(self.details['amount'])
+        avatar.items[self.details['item_index']] -= int(self.details['amount'])
         return avatar, dict(
             type='send',
             result='success',
@@ -953,47 +832,12 @@ class Combine(Move):
     def execute(self, avatar=None):
         if not avatar:
             avatar = Avatar.get(self.user_address, self.block_id - 1)
-        if avatar.items['GOLD'] <= 0:
+        if avatar.gold <= 0:
             return avatar, dict(
                 type='combine',
                 result='failure',
                 reason='insufficient_gold'
             )
-        for i in ('item1', 'item2', 'item3'):
-            if (self.details[i] not in avatar.items or
-               avatar.items[self.details[i]] <= 0):
-                return avatar, dict(
-                    type='combine',
-                    result='failure',
-                    reason='insufficient_item'
-                )
-        randoms = self.get_randoms()
-        recipes = {scls.ticker_name: scls.recipe
-                   for scls in Combined.__subclasses__()}
-        dices = {scls.ticker_name: scls.dice
-                 for scls in Combined.__subclasses__()}
-        for result, recipe in recipes.items():
-            if recipe == {self.details['item1'],
-                          self.details['item2'],
-                          self.details['item3']}:
-                avatar.items[self.details['item1']] -= 1
-                avatar.items[self.details['item2']] -= 1
-                avatar.items[self.details['item3']] -= 1
-                avatar.items['GOLD'] -= 1
-                if self.roll(randoms, dices[result]) == 1:
-                    avatar.get_item(result)
-                    return avatar, dict(
-                        type='combine',
-                        result='success',
-                        result_item=result,
-                    )
-                else:
-                    return avatar, dict(
-                        type='combine',
-                        result='failure',
-                        reason='bad_luck'
-                    )
-
         return avatar, dict(
             type='combine',
             result='failure',
@@ -1088,18 +932,19 @@ class User():
     def sleep(self, spot=''):
         return self.move(Sleep())
 
-    def send(self, item_name, amount, receiver):
-        if self.avatar().items[item_name] < int(amount) or int(amount) <= 0:
+    def send(self, item_index, amount, receiver):
+        item = self.avatar.items[item_index]
+        if item.amount < int(amount) or int(amount) <= 0:
             raise InvalidMoveError
 
         return self.move(Send(details={
-            'item_name': item_name,
+            'item_index': item_index,
             'amount': amount,
             'receiver': receiver,
         }))
 
-    def sell(self, item_name, price):
-        return self.move(Sell(details={'item_name': item_name,
+    def sell(self, item_index, price):
+        return self.move(Sell(details={'item_index': item_index,
                                        'price': price}))
 
     def buy(self, move_id):
@@ -1151,9 +996,9 @@ class User():
                 echo(
                     f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
                 )
-            if avg_timedelta <= datetime.timedelta(0, 5):
+            if avg_timedelta <= MIN_BLOCK_INTERVAL:
                 block.difficulty = max(0, block.difficulty + 1)
-            elif avg_timedelta > datetime.timedelta(0, 15):
+            elif avg_timedelta > MAX_BLOCK_INTERVAL:
                 block.difficulty = max(0, block.difficulty - 1)
         else:
             #: Genesis block
@@ -1199,7 +1044,26 @@ class User():
         return Avatar.get(self.address, block_id)
 
 
-class Avatar():
+@dataclass
+class Avatar:
+    name: str
+    user: str
+    current_block: Block
+    class_: str  # noqa
+    level: int = 1
+    gold: int = 0
+    exp: int = 0
+    exp_max: int = 0
+    hp: int = 0
+    hp_max: int = 0
+    strength: int = 0
+    dexterity: int = 0
+    intelligence: int = 0
+    constitution: int = 0
+    luck: int = 0
+    items: List[Item] = field(default_factory=list)
+    gravatar_hash: str = 'HASH'
+
     @classmethod
     @cache.memoize(timeout=0)
     def get(cls, user_addr, block_id, session=db.session):
@@ -1229,9 +1093,10 @@ class Avatar():
             Move.block_id <= block_id
         ).order_by(Move.block_id.asc())
         avatar, result = create_move.execute(None)
-        avatar.items['GOLD'] += session.query(Block).filter_by(
+        gold_added = session.query(Block).filter_by(
             creator=user_addr
         ).filter(Block.id <= block_id).count() * 8
+        avatar.gold += gold_added
 
         for move in moves:
             if move.user_address == user_addr:
@@ -1245,6 +1110,7 @@ class Avatar():
     def modifier(self, status):
         """ Return modifier of the status. """
         status = getattr(self, status)
+        # FIXME: it should be extracted to data files
         if status in (1, 2, 3):
             return -3
         elif status in (4, 5):
@@ -1273,85 +1139,57 @@ class Avatar():
             self.items[item] += 1
 
     @property
-    def damage(self):
-        raise NotImplementedError
-
-    @property
-    def max_hp(self):
-        raise NotImplementedError
-
-    @property
     def profile_image_url(self):
         return f'https://www.gravatar.com/avatar/{self.gravatar_hash}?d=mm'
 
     @property
     def weapons(self) -> list:
         result = []
-        for weapon in get_related_items(Weapon):
-            if (weapon.ticker_name in self.items.keys() and
-               self.items[weapon.ticker_name] > 0):
-                result.append(weapon)
-
+        for item in self.items:
+            if item.type_ == ItemType.WEAPON:
+                result.append(item)
         return result
 
     @property
-    def last_weapon(self) -> Weapon:
+    def last_weapon(self):
         last_has = HackAndSlash.query.filter_by(
-            user_address=self.user_address
+            user_address=self.user
         ).order_by(HackAndSlash.block_id.desc()).first()
 
         if last_has:
-            try:
-                return last_has.details['weapon']
-            except KeyError:
-                return None
-        else:
-            return None
-
-    @property
-    def last_armor(self) -> Armor:
-        last_has = HackAndSlash.query.filter_by(
-            user_address=self.user_address
-        ).order_by(HackAndSlash.block_id.desc()).first()
-
-        if last_has:
-            try:
-                return last_has.details['armor']
-            except KeyError:
-                return None
-        else:
-            return None
+            weapon = last_has.details.get('weapon')
+            if weapon:
+                return int(weapon)
+        return None
 
     @property
     def armors(self) -> list:
         result = []
-        for armor in get_related_items(Armor):
-            if (armor.ticker_name in self.items.keys() and
-               self.items[armor.ticker_name] > 0):
-                result.append(armor)
-
+        for item in self.items:
+            if item.type_ == ItemType.ARMOR:
+                result.append(item)
         return result
+
+    @property
+    def last_armor(self):
+        last_has = HackAndSlash.query.filter_by(
+            user_address=self.user
+        ).order_by(HackAndSlash.block_id.desc()).first()
+
+        if last_has:
+            armor = last_has.details.get('armor')
+            if armor:
+                return int(armor)
+        return None
 
     @property
     def foods(self) -> list:
         result = []
-        for food in get_related_items(Food):
-            if (food.ticker_name in self.items.keys() and
-               self.items[food.ticker_name] > 0):
-                result.append(food)
-
+        for item in self.items:
+            if item.type_ == ItemType.FOOD:
+                result.append(item)
         return result
 
     @property
     def dead(self) -> bool:
         return self.hp <= 0
-
-
-class Novice(Avatar):
-    @property
-    def damage(self):
-        return '1d6'
-
-    @property
-    def max_hp(self):
-        return self.constitution + 6

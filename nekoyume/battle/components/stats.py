@@ -1,60 +1,77 @@
 import math
 
-from components.component import Component
-from enums import CharacterType, AttackType
+from nekoyume.battle.components import Component
+from nekoyume.battle.enums import CharacterType
+from nekoyume.battle.tables import Tables
+
 
 class Stats(Component):
-    def __init__(self, level, data):
-        self.set_data(level, data)
-
-    def set_data(self, level, data, hp_recovery=True):
-        self.level = level
-        self.strength = int(data['strength'])
-        self.dexterity = int(data['dexterity'])
-        self.intelligence = int(data['intelligence'])
-        self.constitution = int(data['constitution'])
-        self.luck = int(data['luck'])
-        self.defense = int(data['defense']) if 'defense' in data else 0
-        self.hp_max = self.constitution * 10
-        if hp_recovery:
-            self.hp = self.hp_max
+    def __init__(self):
         self.is_damaged = False
-        self.skill = None
 
     def get_target_type(self):
-        return CharacterType.MONSTER if self.owner.type_ == CharacterType.PLAYER else CharacterType.PLAYER
+        player = self.owner.type_ == CharacterType.PLAYER
+        return CharacterType.MONSTER if player else CharacterType.PLAYER
 
     def calc_melee_atk(self):
-        return self.strength + math.floor(self.dexterity * 0.2)
+        return self.data.strength + math.floor(self.data.dexterity * 0.2)
 
     def calc_ranged_atk(self):
-        return self.dexterity + math.floor(self.strength * 0.2)
+        return self.data.dexterity + math.floor(self.data.strength * 0.2)
 
     def calc_magic_atk(self):
-        return self.intelligence
+        return self.data.intelligence
 
     def calc_atk_spd(self):
-        return self.dexterity
+        return self.data.dexterity
 
     def calc_cooltime(self, cooltime):
         return cooltime
 
-    def current_hp(self):
-        return self.hp
+    def calc_defense(self):
+        return self.data.get('defense', 0)
+
+    def calc_hp_max(self):
+        return self.data.constitution * 10
 
     def damaged(self, damage):
-        damage -= self.defense
+        damage -= self.calc_defense()
         self.hp = max(self.hp - damage, 0)
         self.is_damaged = True
         return damage
 
     def check_damaged(self):
-        ret = self.is_damaged
+        damaged = self.is_damaged
         self.is_damaged = False
-        return ret
+        return damaged
 
     def heal(self, amount):
-        self.hp = min(self.hp + amount, self.hp_max)
+        self.hp = min(self.hp + amount, self.calc_hp_max())
 
     def is_dead(self):
         return self.hp <= 0
+
+
+class PlayerStats(Stats):
+    def __init__(self, class_, level, hp, exp):
+        self.data = Tables.stats.get(class_)
+        super().__init__()
+        self.level = level
+        self.hp = hp
+        self.exp = exp
+        self.exp_max = Tables.get_exp_max(level)
+
+    def get_exp(self, exp):
+        self.exp += exp
+        while self.exp >= self.exp_max:
+            self.exp -= self.exp_max
+            self.level += 1
+        self.exp_max = Tables.get_exp_max(self.level)
+
+
+class MonsterStats(Stats):
+    def __init__(self, name):
+        self.data = Tables.monsters.get(name)
+        super().__init__()
+        self.name = name
+        self.hp = self.calc_hp_max()

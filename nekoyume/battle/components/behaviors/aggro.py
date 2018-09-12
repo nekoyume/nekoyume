@@ -1,12 +1,11 @@
-from behaviors import BehaviorTreeStatus
-from components.component import Component
+from nekoyume.battle.components.behaviors import Behavior, BehaviorTreeStatus
 
 
-class Aggro(Component):
+class Aggro(Behavior):
     def __init__(self):
-        self.value = 1 # my global aggro
-        self.targets = {} # target aggro
-    
+        self.value = 1  # my global aggro
+        self.targets = {}  # target aggro
+
     def tick(self, simulator):
         self.value = max(1, self.value - 1)
         for v in self.targets:

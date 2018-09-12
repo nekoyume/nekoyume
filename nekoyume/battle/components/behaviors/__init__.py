@@ -1,22 +1,29 @@
 from enum import Enum
 
+from nekoyume.battle.components import Component
+
+
+# for behavior_tree components
+class Behavior(Component):
+    pass
+
 
 class BehaviorTreeBuilder:
     def __init__(self):
         self.node = None
         self.parents = []
-    
+
     def do(self, name, fn):
-        try:
-            if len(self.parents) == 0:
-                raise Exception
-        except Exception:
-            print("Can't create an unnested ActionNode, it must be a leaf node")
+        if len(self.parents) == 0:
+            raise RuntimeError(
+                "Can't create an unnested ActionNode, it must be a leaf node"
+            )
         self.parents[-1].add_child(ActionNode(name, fn))
         return self
-    
+
     def condition(self, name, fn):
-        return self.do(name, lambda b: BehaviorTreeStatus.SUCCESS if fn(b) else BehaviorTreeStatus.FAILURE)
+        BTS = BehaviorTreeStatus
+        return self.do(name, lambda b: BTS.SUCCESS if fn(b) else BTS.FAILURE)
 
     def sequence(self, name):
         node = SequenceNode(name)
@@ -31,7 +38,7 @@ class BehaviorTreeBuilder:
             self.parents[-1].add_child(node)
         self.parents.append(node)
         return self
-    
+
     def end(self):
         self.node = self.parents.pop()
         return self

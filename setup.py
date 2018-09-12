@@ -22,6 +22,7 @@ install_requires = [
     'celery >= 4.1.0, < 4.2.0',
     'click >= 6.7, < 7.0',
     'cykeccak >= 0.13.2.2, < 0.14.0.0',
+    'dataclasses >= 0.6, < 1.0',
     'Flask >= 0.12.2, < 0.13.0',
     'Flask-Babel >= 0.11.2, < 0.12.0',
     'Flask-Caching >= 1.4.0, < 1.5.0',
@@ -78,6 +79,7 @@ if __name__ == '__main__':
         package_data={
             'nekoyume': ['data/*', 'templates/*.html',
                          'translations/*/LC_MESSAGES/*'],
+            'nekoyume.battle': ['tables/*.tsv'],
         },
         entry_points={
             'console_scripts': [

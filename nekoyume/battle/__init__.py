@@ -1,20 +1,6 @@
-import random
-
-class Random:
-    def __init__(self, seed):
-        self.seed(seed)
-
-    def seed(self, value):
-        random.seed(value)
-
-    def randint(self, min, max):
-        return random.randint(min, max)
-
-    def shuffle(self, l):
-        return random.shuffle(l)
-
 class WeightedList:
     length = 0
+
     def __init__(self):
         self.values_ = []
         self.weights_ = []
@@ -29,8 +15,8 @@ class WeightedList:
         self.values_.append(value)
         self.weights_.append(weight)
         self.length = len(self.values_)
-    
-    def select(self, pop=False):
+
+    def select(self, random, pop=False):
         if len(self.values_) == 0:
             return None
         weight_sum = 0
@@ -51,5 +37,5 @@ class WeightedList:
             del self.weights_[i]
         return ret
 
-    def pop(self):
-        return self.select(True)
+    def pop(self, random):
+        return self.select(random, True)

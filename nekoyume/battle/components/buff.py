@@ -1,6 +1,5 @@
-from components import Component
+from nekoyume.battle.components import Component
+
 
 class Buff(Component):
-    def __init__(self):
-        super().__init__()
-        
+    pass

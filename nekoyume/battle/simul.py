@@ -63,7 +63,7 @@ class Simulator:
 
 class DummyBattle(Simulator):
     def __init__(self, seed):
-        super().__init__(seed)
+        super().__init__(seed, 'zone_0')
         self.characters.append(Factory.create_player(
             'dummy_swordman', 'swordman', 1, ['taunt', 'attack'],
             [Weapon('sword_1')]))

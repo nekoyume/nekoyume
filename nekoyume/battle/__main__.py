@@ -8,7 +8,7 @@ def main():
     seed = 1
     if len(sys.argv) >= 2:
         seed = int(sys.argv[1])
-    simulator = DummyBattle(random.Random(seed), 'zone_0')
+    simulator = DummyBattle(random.Random(seed))
     simulator.logger.print = True
     simulator.simulate()
 

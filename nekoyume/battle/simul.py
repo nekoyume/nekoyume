@@ -69,7 +69,7 @@ class DummyBattle(Simulator):
         super().__init__(seed)
         self.characters.append(Factory.create_player(
             'dummy_swordman', 'swordman', 1, ['taunt', 'attack'],
-            [Weapon('sword')]))
+            [Weapon('sword_1')]))
         self.characters.append(Factory.create_player(
             'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))
         self.characters.append(Factory.create_player(

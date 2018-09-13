@@ -677,11 +677,13 @@ class HackAndSlash(Move):
         # TODO 다른 유저의 아바타도 가져올 수 있어야한다.
         battle = Simulator(self.make_random_generator())
         # TODO 아바타 아직 다 가져오진 못했음
+        # TODO Load other users avatar
+        simul = Simulator(self.make_random_generator())
         my_character = CharacterFactory.create_from_avatar(
             avatar, self.details)
-        battle.characters.append(my_character)
-        battle.characters.append(CharacterFactory.create_monster('slime'))
-        battle.simulate()
+        simul.characters.append(my_character)
+        simul.characters.append(CharacterFactory.create_monster('slime'))
+        simul.simulate()
 
         my_character.to_avatar(avatar)
 

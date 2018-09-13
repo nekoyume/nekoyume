@@ -12,17 +12,6 @@ class TableData(dict):
 
 
 @dataclass
-class DropData(TableData):
-    id: str = ''
-    zone_id: str = ''
-    item_id: str = ''
-    weight: int = 0
-
-    def __init__(self, header, data):
-        super().__init__(header, data)
-
-
-@dataclass
 class ExpData(TableData):
     id: str = ''
     exp_max: int = 0
@@ -38,6 +27,28 @@ class ItemData(TableData):
     param_0: int = 0
     param_1: int = 0
     param_2: int = 0
+
+    def __init__(self, header, data):
+        super().__init__(header, data)
+
+
+@dataclass
+class ItemDropData(TableData):
+    id: str = ''
+    zone_id: str = ''
+    item_id: str = ''
+    weight: int = 0
+
+    def __init__(self, header, data):
+        super().__init__(header, data)
+
+
+@dataclass
+class MonsterAppearData(TableData):
+    id: str = ''
+    zone_id: str = ''
+    monster_id: str = ''
+    weight: int = 0
 
     def __init__(self, header, data):
         super().__init__(header, data)
@@ -88,6 +99,15 @@ class StatsData(TableData):
         super().__init__(header, data)
 
 
+@dataclass
+class ZoneData(TableData):
+    id: str = ''
+    unlock_level: int = 0
+
+    def __init__(self, header, data):
+        super().__init__(header, data)
+
+
 class Table(dict):
     separator = '\t'
 
@@ -115,12 +135,14 @@ class Table(dict):
 
 
 class Tables:
-    drop = Table('drop.tsv', DropData)
     exp = Table('exp.tsv', ExpData)
-    stats = Table('stats.tsv', StatsData)
+    item_drop = Table('item_drop.tsv', ItemDropData)
+    items = Table(['items.tsv', 'item_equips.tsv'], ItemData)
+    monster_appear = Table('monster_appear.tsv', MonsterAppearData)
     monsters = Table('monsters.tsv', MonsterData)
     skills = Table(['skills.tsv', 'monster_skills.tsv'], SkillData)
-    items = Table(['items.tsv', 'item_equips.tsv'], ItemData)
+    stats = Table('stats.tsv', StatsData)
+    zone = Table('zone.tsv', ZoneData)
 
     @classmethod
     def get_exp_max(cls, level: int) -> int:

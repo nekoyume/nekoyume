@@ -1,3 +1,11 @@
 id	strength	dexterity	intelligence	constitution	luck	defense	skill_0	skill_1	skill_2	skill_3	reward_exp
-slime	3	1	0	5	0	1	slime_attack	slime_slow			3
-griffin	20	15	9	30	10	2	griffin_attack				10
+slime	3	1	0	4	0	1	slime_slow	monster_attack			4
+goblin	4	2	1	6	0	2	monster_attack				6
+skeleton	5	2	1	8	0	3	monster_attack				8
+kentauross	6	5	4	12	0	5	monster_attack				13
+orc	8	6	2	20	0	6	monster_heavy_attack	monster_attack			18
+wyvern	6	16	3	16	0	6	monster_attack				20
+wraith	9	10	5	18	0	4	monster_attack	monster_light_attack			21
+gargoyle	10	20	6	22	0	7	monster_attack				29
+griffin	16	30	12	30	0	8	monster_multi_attack	monster_attack			44
+golem	20	16	10	50	0	10	monster_heavy_attack	monster_attack			48

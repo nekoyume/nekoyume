@@ -127,8 +127,9 @@ class Table(dict):
         lines = text.split('\n')
         header = lines[0].split(Table.separator)
         for line in lines[1:]:
-            data = line.split(Table.separator)
-            self[data[0]] = datacls(header, data)
+            if line:
+                data = line.split(Table.separator)
+                self[data[0]] = datacls(header, data)
 
     def get(self, id):
         if type(id) is int:

@@ -14,7 +14,7 @@ class BehaviorTreeBuilder:
         self.parents = []
 
     def do(self, name, fn):
-        if len(self.parents) == 0:
+        if not self.parents:
             raise RuntimeError(
                 "Can't create an unnested ActionNode, it must be a leaf node"
             )
@@ -27,14 +27,14 @@ class BehaviorTreeBuilder:
 
     def sequence(self, name):
         node = SequenceNode(name)
-        if len(self.parents) > 0:
+        if self.parents:
             self.parents[-1].add_child(node)
         self.parents.append(node)
         return self
 
     def selector(self, name):
         node = SelectorNode(name)
-        if len(self.parents) > 0:
+        if self.parents:
             self.parents[-1].add_child(node)
         self.parents.append(node)
         return self
@@ -44,11 +44,10 @@ class BehaviorTreeBuilder:
         return self
 
     def build(self):
-        try:
-            if not self.node:
-                raise Exception
-        except Exception:
-            print('Zero node')
+        if not self.node:
+            raise RuntimeError(
+                "Zero node."
+            )
         return self.node
 
 

@@ -44,4 +44,5 @@ class Component:
                 comp.on_message(msg)
 
     def on_message(self, msg):
+        # override me if need
         pass

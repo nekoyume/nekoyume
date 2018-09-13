@@ -11,7 +11,7 @@ from nekoyume.tables import Tables
 
 
 class Simulator:
-    def __init__(self, random: random.Random, zone):
+    def __init__(self, random: random.Random, zone: str):
         self.time = 0
         self.characters = []
         self.logger = Logger()
@@ -52,6 +52,7 @@ class Simulator:
                         if drop_item:
                             item_data = Tables.items[drop_item]
                             item = Item.subclasses[item_data.cls](drop_item)
+                            # TODO item option
                             item.option = self.random.randint(1, 5)
                             bag.add(item)
                             self.logger.log_item(item.name)

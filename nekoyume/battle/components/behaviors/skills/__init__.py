@@ -29,7 +29,7 @@ class Skill(Behavior):
 
     # todo: is_dead check to filter
     def find_targets(self, simulator, filter_type):
-        if self.data.target_count <= 0:
+        if not self.data.target_count:
             return []
         weightedlist = WeightedList()
         for target in simulator.characters:
@@ -190,6 +190,7 @@ class Heal(Skill):
 
 class Slow(Skill):
     def tick(self, simulator):
+        # TODO
         return BehaviorTreeStatus.FAILURE
 
 

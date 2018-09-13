@@ -1,6 +1,4 @@
 class WeightedList:
-    length = 0
-
     def __init__(self):
         self.values_ = []
         self.weights_ = []
@@ -14,10 +12,9 @@ class WeightedList:
     def add(self, value, weight):
         self.values_.append(value)
         self.weights_.append(weight)
-        self.length = len(self.values_)
 
     def select(self, random, pop=False):
-        if len(self.values_) == 0:
+        if not self.values_:
             return None
         weight_sum = 0
         for i in self.weights_:

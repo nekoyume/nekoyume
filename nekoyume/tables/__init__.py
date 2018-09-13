@@ -8,9 +8,9 @@ from nekoyume.battle import WeightedList
 
 class TableData(dict):
     def __init__(self, header, data):
-        for i in range(len(header)):
-            t = type(getattr(self, header[i]))
-            setattr(self, header[i], t(data[i]))
+        for key in header:
+            data_type = type(getattr(self, key))
+            setattr(self, key, data_type(data[header.index(key)]))
 
 
 @dataclass

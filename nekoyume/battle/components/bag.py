@@ -3,13 +3,16 @@ from nekoyume.battle.enums import ItemType
 
 
 class Bag(Component):
-    def __init__(self, items=[], weapon_index=0, armor_index=0):
+    def __init__(self, items=None, weapon_index=0, armor_index=0):
+        if items is None:
+            items = []
         self.items = items
 
     def get(self, index):
-        if 0 > index or len(self.items) <= index:
+        try:
+            return self.items[index]
+        except IndexError:
             return None
-        return self.items[index]
 
     def find(self, name):
         for item in self.items:

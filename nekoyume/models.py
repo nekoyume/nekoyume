@@ -38,8 +38,9 @@ from .exc import (InvalidBlockError,
 
 
 PROTOCOL_VERSION: int = 2
-MIN_BLOCK_INTERVAL = datetime.timedelta(0, 1)
-MAX_BLOCK_INTERVAL = datetime.timedelta(0, 2)
+MIN_BLOCK_INTERVAL = datetime.timedelta(0, 5)
+MAX_BLOCK_INTERVAL = datetime.timedelta(0, 15)
+NUM_HACK_AND_SLASH_MONSTERS: int = 3
 
 db = SQLAlchemy()
 cache = Cache()
@@ -683,7 +684,7 @@ class HackAndSlash(Move):
             avatar, self.details)
         simul.characters.append(my_character)
         appear_monsters = Tables.get_monster_appear_list(avatar.zone)
-        for i in range(3):
+        for i in range(NUM_HACK_AND_SLASH_MONSTERS):
             simul.characters.append(
                 CharacterFactory.create_monster(appear_monsters.select(rand)))
         simul.simulate()
@@ -1151,11 +1152,7 @@ class Avatar:
 
     @property
     def weapons(self) -> list:
-        result = []
-        for item in self.items:
-            if item.type_ == ItemType.WEAPON:
-                result.append(item)
-        return result
+        return [item for item in self.items if item.type_ == ItemType.WEAPON]
 
     @property
     def last_weapon(self):
@@ -1171,11 +1168,7 @@ class Avatar:
 
     @property
     def armors(self) -> list:
-        result = []
-        for item in self.items:
-            if item.type_ == ItemType.ARMOR:
-                result.append(item)
-        return result
+        return [item for item in self.items if item.type_ == ItemType.ARMOR]
 
     @property
     def last_armor(self):
@@ -1191,11 +1184,7 @@ class Avatar:
 
     @property
     def foods(self) -> list:
-        result = []
-        for item in self.items:
-            if item.type_ == ItemType.FOOD:
-                result.append(item)
-        return result
+        return [item for item in self.items if item.type_ == ItemType.FOOD]
 
     @property
     def dead(self) -> bool:

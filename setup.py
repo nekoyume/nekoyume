@@ -32,7 +32,7 @@ install_requires = [
     'raven==6.9.0',
     'redis >= 2.10.6, < 2.11.0',
     'requests >= 2.18.4, < 2.19.0',
-    'coincurve >= 8.0.2, < 8.1.0',
+    'coincurve >= 9.0.0',
     'SQLAlchemy >= 1.2.2, < 1.3.0',
     'tablib >= 0.12.1, < 0.13.0',
 ]

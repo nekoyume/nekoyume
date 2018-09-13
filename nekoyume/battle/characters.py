@@ -5,7 +5,7 @@ from nekoyume.battle.components.behaviors.aggro import Aggro
 from nekoyume.battle.components.behaviors.skills import Skill
 from nekoyume.battle.components.stats import Stats, PlayerStats, MonsterStats
 from nekoyume.battle.enums import CharacterType
-from nekoyume.battle.tables import Tables
+from nekoyume.tables import Tables
 
 
 class Character(ComponentContainer):

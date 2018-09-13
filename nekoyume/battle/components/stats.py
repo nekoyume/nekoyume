@@ -2,7 +2,7 @@ import math
 
 from nekoyume.battle.components import Component
 from nekoyume.battle.enums import CharacterType
-from nekoyume.battle.tables import Tables
+from nekoyume.tables import Tables
 
 
 class Stats(Component):

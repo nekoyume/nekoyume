@@ -10,8 +10,9 @@ class CharacterType(IntEnum):
 class ItemType(IntEnum):
     ITEM = 0,
     FOOD = 1,
-    ARMOR = 2,
-    WEAPON = 3,
+    HEAD = 2,
+    ARMOR = 3,
+    WEAPON = 4,
 
 
 class AttackType(IntEnum):

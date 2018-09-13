@@ -5,10 +5,10 @@ from nekoyume.battle.characters import Factory
 from nekoyume.battle.components.bag import Bag
 from nekoyume.battle.components.stats import Stats
 from nekoyume.battle.enums import CharacterType
-from nekoyume.battle.items import Item
-from nekoyume.battle.items.weapons import Weapon
+from nekoyume.items import Item
+from nekoyume.items.weapons import Weapon
 from nekoyume.battle.logger import Logger
-from nekoyume.battle.tables import Tables
+from nekoyume.tables import Tables
 
 
 class Simulator:
@@ -68,7 +68,7 @@ class DummyBattle(Simulator):
     def __init__(self, seed):
         super().__init__(seed)
         self.characters.append(Factory.create_player(
-            'dummy_swordman', 'swordman', 1, ['taunt', 'attack'], 
+            'dummy_swordman', 'swordman', 1, ['taunt', 'attack'],
             [Weapon('sword')]))
         self.characters.append(Factory.create_player(
             'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))

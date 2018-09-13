@@ -1,5 +1,5 @@
-from nekoyume.battle.tables import Tables
 from nekoyume.battle.enums import ItemType
+from nekoyume.tables import Tables
 
 
 class Item:
@@ -16,6 +16,15 @@ class Item:
         self.data = Tables.items[name]
 
 
+class UseItem:
+    def __init__(self, name):
+        super().__init__(name)
+
+    def use(self):
+        # TODO
+        pass
+
+
 class Equipment(Item):
     def __init__(self, name):
         super().__init__(name)
@@ -26,9 +35,3 @@ class Equipment(Item):
 
     def unequip(self):
         self.is_equipped = False
-
-
-class Armor(Item):
-    def __init__(self, name):
-        super().__init__(name)
-        self.type_ = ItemType.ARMOR

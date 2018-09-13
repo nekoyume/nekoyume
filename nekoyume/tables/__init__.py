@@ -100,8 +100,7 @@ class Table(dict):
 
     def load(self, filename, datacls):
         text = resource_string(
-            'nekoyume.battle',
-            os.path.join('tables', filename)
+            'nekoyume', os.path.join('tables', filename)
         ).decode('utf-8')
         lines = text.split('\n')
         header = lines[0].split(Table.separator)

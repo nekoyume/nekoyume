@@ -7,7 +7,7 @@ from nekoyume.battle.components.behaviors import BehaviorTreeStatus
 from nekoyume.battle.components.behaviors.aggro import Aggro
 from nekoyume.battle.components.stats import Stats
 from nekoyume.battle.enums import AttackType, CharacterType, ItemType
-from nekoyume.battle.tables import Tables
+from nekoyume.tables import Tables
 
 
 class Skill(Behavior):

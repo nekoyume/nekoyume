@@ -1,5 +1,5 @@
 from nekoyume.battle.enums import AttackType, ItemType
-from nekoyume.battle.items.item import Equipment
+from nekoyume.items.base import Equipment
 
 
 class Weapon(Equipment):

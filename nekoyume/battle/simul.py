@@ -1,6 +1,5 @@
 import random
 
-from nekoyume.battle import WeightedList
 from nekoyume.battle.characters import Factory
 from nekoyume.battle.components.bag import Bag
 from nekoyume.battle.components.stats import Stats
@@ -12,10 +11,11 @@ from nekoyume.tables import Tables
 
 
 class Simulator:
-    def __init__(self, random: random.Random):
+    def __init__(self, random: random.Random, zone):
         self.time = 0
         self.characters = []
         self.logger = Logger()
+        self.zone = zone
         self.random = random
         self.result = ''  # win, lose, finish
 
@@ -44,10 +44,7 @@ class Simulator:
                         is_lose = False
             if is_win:
                 self.result = 'win'
-                drop_items = WeightedList()
-                for drop_id in Tables.drop:
-                    drop = Tables.drop[drop_id]
-                    drop_items.add(drop.item_id, drop.weight)
+                drop_items = Tables.get_item_drop_list(self.zone)
                 for character in self.characters:
                     if character.type_ == CharacterType.PLAYER:
                         bag = character.get_component(Bag)

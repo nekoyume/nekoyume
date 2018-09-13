@@ -34,7 +34,8 @@ class Bag(Component):
 
     def equip(self, item_index):
         item = self.get(item_index)
-        equipped = self.get_equipped(item.type_)
-        if equipped:
-            equipped.unequip()
-        item.equip()
+        if item:
+            equipped = self.get_equipped(item.type_)
+            if equipped:
+                equipped.unequip()
+            item.equip()

@@ -189,7 +189,8 @@ class Heal(Skill):
 
 
 class Slow(Skill):
-    pass
+    def tick(self, simulator):
+        return BehaviorTreeStatus.FAILURE
 
 
 class Taunt(Skill):

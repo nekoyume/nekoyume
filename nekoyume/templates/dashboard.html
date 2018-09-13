@@ -263,11 +263,17 @@
                       </td>
                     </tr>
                     <tr>
-                        <td class="mdl-data-table__cell--non-numeric">GOLD</td>
-                        <td>
-                        {{ avatar.gold }}
-                        </td>
-                      </tr>
+                      <td class="mdl-data-table__cell--non-numeric">GOLD</td>
+                      <td>
+                      {{ avatar.gold }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="mdl-data-table__cell--non-numeric">ZONE</td>
+                      <td>
+                      {{ avatar.zone }}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
@@ -282,7 +288,7 @@
                   {% for item in avatar.items %}
                     <tr>
                       <td class="mdl-data-table__cell--non-numeric">
-                        {{ item.name }} {{ item.option }}
+                        {{ item.name }} ({{ item.option }})
                       </td>
                       <td>{{ item.amount }}</td>
                     </tr>

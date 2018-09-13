@@ -675,22 +675,25 @@ class HackAndSlash(Move):
         if avatar.dead:
             raise InvalidMoveError
         # TODO 다른 유저의 아바타도 가져올 수 있어야한다.
-        battle = Simulator(self.make_random_generator())
         # TODO 아바타 아직 다 가져오진 못했음
         # TODO Load other users avatar
-        simul = Simulator(self.make_random_generator())
+        rand = self.make_random_generator()
+        simul = Simulator(rand, avatar.zone)
         my_character = CharacterFactory.create_from_avatar(
             avatar, self.details)
         simul.characters.append(my_character)
-        simul.characters.append(CharacterFactory.create_monster('slime'))
+        appear_monsters = Tables.get_monster_appear_list(avatar.zone)
+        for i in range(3):
+            simul.characters.append(
+                CharacterFactory.create_monster(appear_monsters.select(rand)))
         simul.simulate()
 
         my_character.to_avatar(avatar)
 
         return (avatar, dict(
                     type='hack_and_slash',
-                    result=battle.result,
-                    battle_status=battle.logger.logs,
+                    result=simul.result,
+                    battle_status=simul.logger.logs,
                 ))
 
 
@@ -724,6 +727,7 @@ class CreateNovice(Move):
             gold=gold,
             class_='novice',
             level=1,
+            zone=list(Tables.zone.keys())[0],
             gravatar_hash=self.details.get('gravatar_hash', 'HASH'),
         )
 
@@ -1064,6 +1068,7 @@ class Avatar:
     constitution: int = 0
     luck: int = 0
     items: List[Item] = field(default_factory=list)
+    zone: str = ''
     gravatar_hash: str = 'HASH'
 
     @classmethod

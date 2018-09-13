@@ -3,6 +3,8 @@ import os
 from dataclasses import dataclass
 from pkg_resources import resource_string
 
+from nekoyume.battle import WeightedList
+
 
 class TableData(dict):
     def __init__(self, header, data):
@@ -150,3 +152,21 @@ class Tables:
             return cls.exp[str(level)].exp_max
         except KeyError:
             return 0
+
+    @classmethod
+    def get_item_drop_list(cls, zone: str) -> WeightedList:
+        drop_items = WeightedList()
+        for id_ in Tables.item_drop:
+            data = Tables.item_drop[id_]
+            if data.zone_id == zone:
+                drop_items.add(data.item_id, data.weight)
+        return drop_items
+
+    @classmethod
+    def get_monster_appear_list(cls, zone: str) -> WeightedList:
+        appear_monsters = WeightedList()
+        for id_ in Tables.monster_appear:
+            data = Tables.monster_appear[id_]
+            if data.zone_id == zone:
+                appear_monsters.add(data.monster_id, data.weight)
+        return appear_monsters

@@ -23,17 +23,6 @@ Dependencies
 Installation
 ------------
 
-Installation to local environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. code-block:: console
-
-   $ pip install nekoyume
-   $ nekoyume init
-
-Installation to Heroku
-^^^^^^^^^^^^^^^^^^^^^^^
-|deploy|
-
 Installation for development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

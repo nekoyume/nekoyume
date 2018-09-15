@@ -15,7 +15,9 @@ babel = Babel()
 
 @babel.localeselector
 def get_locale():
-    return request.accept_languages.best_match(['ko', 'en', 'ja'])
+    langs = {babel.default_locale}
+    langs.update(babel.list_translations())
+    return request.accept_languages.best_match([l.language for l in langs])
 
 
 def login_required(f):

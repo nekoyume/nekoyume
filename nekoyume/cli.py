@@ -1,17 +1,17 @@
-import click
-import time
 import os
+import time
 
 from babel.messages.frontend import compile_catalog
+from click import IntRange, ParamType, argument, echo, group, option
+from coincurve import PrivateKey
 from ptpython.repl import embed
 from raven import Client
-from coincurve import PrivateKey
 
-from nekoyume.models import Node, Block, Move, User, get_my_public_url
 from nekoyume.app import app, db
+from nekoyume.models import Block, Move, Node, User, get_my_public_url
 
 
-class PrivateKeyType(click.ParamType):
+class PrivateKeyType(ParamType):
     name = 'private key'
 
     def convert(self, value, param, ctx) -> PrivateKey:
@@ -23,13 +23,13 @@ class PrivateKeyType(click.ParamType):
             self.fail('%s is not a valid private key of 64 hexadecimal digits')
 
 
-@click.group()
+@group()
 def cli():
     pass
 
 
 @cli.command()
-@click.argument('private_key', type=PrivateKeyType())
+@argument('private_key', type=PrivateKeyType())
 def neko(private_key: PrivateKey):
     app.app_context().push()
     Client(os.environ.get('SENTRY_DSN'))
@@ -40,11 +40,11 @@ def neko(private_key: PrivateKey):
             [m
              for m in Move.query.filter_by(block=None).limit(20).all()
              if m.valid],
-            click=click,
+            echo=echo,
         )
         if block:
             block.broadcast()
-            click.echo(block)
+            echo(block)
 
 
 @cli.command()
@@ -54,25 +54,25 @@ def shell():
 
 
 @cli.command()
-@click.option('--seed',
-              default=None,
-              help='Seed node URL to connect')
-@click.option('--sync/--skip-sync',
-              default=False,
-              help='Synchronize after initialization or skip it')
+@option('--seed',
+        default=None,
+        help='Seed node URL to connect')
+@option('--sync/--skip-sync',
+        default=False,
+        help='Synchronize after initialization or skip it')
 def init(seed, sync):
-    click.echo('Creating database...')
+    echo('Creating database...')
     db.create_all()
-    click.echo(f'Updating node... (seed: {seed})')
+    echo(f'Updating node... (seed: {seed})')
     if seed:
         Node.update(Node.get(url=seed))
     else:
         Node.update()
     if sync:
-        click.echo('Syncing blocks...')
-        Block.sync(click=click)
+        echo('Syncing blocks...')
+        Block.sync(echo=echo)
 
-    click.echo('Compiling translations...')
+    echo('Compiling translations...')
     dir_path = os.path.abspath(os.path.dirname(__file__))
     compile_command = compile_catalog()
     compile_command.directory = dir_path + '/translations'
@@ -85,26 +85,26 @@ def sync():
     Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
     if public_url:
-        click.echo(f"You have a public node url. ({public_url})")
+        echo(f"You have a public node url. ({public_url})")
         Node.broadcast(Node.post_node_endpoint, {'url': public_url})
     Node.update()
     engine = db.engine
     if not engine.dialect.has_table(engine.connect(), Block.__tablename__):
-        click.echo("You need to initialize. try `nekoyume init`.")
+        echo("You need to initialize. try `nekoyume init`.")
         return False
     while True:
         try:
             prev_id = Block.query.order_by(Block.id.desc()).first().id
         except AttributeError:
             prev_id = 0
-        Block.sync(click=click)
+        Block.sync(echo=echo)
         try:
             if prev_id == Block.query.order_by(Block.id.desc()).first().id:
-                click.echo("The blockchain is up to date.")
+                echo("The blockchain is up to date.")
                 time.sleep(15)
         except AttributeError:
-            click.echo(("There is no well-connected node. "
-                        "please check you network."))
+            echo(("There is no well-connected node. "
+                  "please check you network."))
             break
 
 
@@ -113,10 +113,10 @@ def doctor():
     id = 1
     for block in Block.query.order_by(Block.id.asc()):
         if block.id != id:
-            click.echo(f'Block {id}: is empty.')
+            echo(f'Block {id}: is empty.')
             id = block.id
         if not block.valid:
-            click.echo(f'Block {id}: is invalid.')
+            echo(f'Block {id}: is invalid.')
         id += 1
 
 
@@ -128,7 +128,7 @@ def repair():
             Block.query.filter(Block.id >= block.id).delete(
                 synchronize_session='fetch'
             )
-            click.echo(f'Block {id}+ was removed.')
+            echo(f'Block {id}+ was removed.')
             break
         id += 1
 
@@ -139,22 +139,22 @@ def repair():
             deleted_move_ids.append(move.id)
 
     if deleted_move_ids:
-        click.echo(f'Following moves were removed.')
+        echo(f'Following moves were removed.')
         for deleted_move_id in deleted_move_ids:
-            click.echo(f'   {deleted_move_id}')
+            echo(f'   {deleted_move_id}')
 
     db.session.commit()
 
 
 @cli.command()
-@click.option('--host',
-              default='127.0.0.1',
-              help='Host to listen')
-@click.option('--port',
-              type=click.IntRange(0, 65535),
-              metavar='PORT',
-              default=5000,
-              help='Port number to listen')
+@option('--host',
+        default='127.0.0.1',
+        help='Host to listen')
+@option('--port',
+        type=IntRange(0, 65535),
+        metavar='PORT',
+        default=5000,
+        help='Port number to listen')
 def dev(host: str, port: int) -> None:
     app.run(debug=True, host=host, port=port)
 

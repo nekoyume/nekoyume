@@ -1,6 +1,5 @@
 class Item():
     ticker_name = 'XXX'
-    pass
 
 
 class Combined():

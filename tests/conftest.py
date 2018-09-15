@@ -1,15 +1,15 @@
 import os
 
-import pytest
-from pytest_localserver.http import WSGIServer
 from coincurve import PrivateKey
+from pytest import fixture
+from pytest_localserver.http import WSGIServer
 from sqlalchemy.orm import sessionmaker
 
 from nekoyume.app import create_app
-from nekoyume.models import db, User
+from nekoyume.models import User, db
 
 
-@pytest.fixture
+@fixture
 def fx_app():
     app = create_app()
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -23,7 +23,7 @@ def fx_app():
     return app
 
 
-@pytest.fixture
+@fixture
 def fx_session(fx_app):
     fx_db = db
     fx_db.init_app(fx_app)
@@ -34,19 +34,19 @@ def fx_session(fx_app):
     return fx_db.session
 
 
-@pytest.fixture
+@fixture
 def fx_private_key() -> PrivateKey:
     return PrivateKey()
 
 
-@pytest.fixture
+@fixture
 def fx_user(fx_session, fx_private_key: PrivateKey):
     user = User(fx_private_key)
     user.session = fx_session
     return user
 
 
-@pytest.fixture
+@fixture
 def fx_server(request, fx_app):
     server = WSGIServer(application=fx_app.wsgi_app)
     server.start()
@@ -54,19 +54,19 @@ def fx_server(request, fx_app):
     return server
 
 
-@pytest.fixture
+@fixture
 def fx_test_client(fx_app):
     fx_app.testing = True
     return fx_app.test_client()
 
 
-@pytest.fixture
+@fixture
 def fx_other_test_client(fx_other_app):
     fx_other_app.testing = True
     return fx_other_app.test_client()
 
 
-@pytest.fixture
+@fixture
 def fx_other_app():
     app = create_app()
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -76,7 +76,7 @@ def fx_other_app():
     return app
 
 
-@pytest.fixture
+@fixture
 def fx_other_session(fx_app, fx_other_app):
     fx_db = db
     fx_db.init_app(fx_other_app)
@@ -89,7 +89,7 @@ def fx_other_session(fx_app, fx_other_app):
     return session
 
 
-@pytest.fixture
+@fixture
 def fx_novice_status():
     return {
         'strength': '13',

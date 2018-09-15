@@ -44,7 +44,7 @@ Installation for development
    $ python3 -m venv .env
    $ source .env/bin/activate
    $ pip install -e .[dev,test]
-   $ git config core.hooksPath deploy/hooks
+   $ git config core.hooksPath hooks
    $ nekoyume init
 
 

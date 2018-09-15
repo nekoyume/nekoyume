@@ -77,7 +77,7 @@ msgstr "ログアウト"
 #: nekoyume/templates/dashboard.html:256 nekoyume/templates/dashboard.html:271
 #, python-format
 msgid "Modifier when roll %(stat)s."
-msgstr "%(stat)判定時に補正値""
+msgstr "%(stat)s判定時に補正値""
 
 #: nekoyume/templates/dashboard.html:330
 msgid "Hack &amp; Slash"

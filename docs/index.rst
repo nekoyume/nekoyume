@@ -21,6 +21,12 @@ Documentation
    백서 <white_paper_ko>
    로드맵 <roadmap_ko>
 
+.. toctree::
+   :maxdepth: 2
+   :caption: 日本語:
+
+   ホワイトペーパー <white_paper_ja>
+
 
 Indices and tables
 ==================

@@ -500,7 +500,7 @@ class Move(db.Model):
         ),
         db.CheckConstraint(char_length(user_public_key) == 33),
         db.CheckConstraint(
-            (char_length(signature) >= 70) &
+            (char_length(signature) >= 68) &
             (char_length(signature) <= 71)
         ),
     )

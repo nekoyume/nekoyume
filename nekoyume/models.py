@@ -534,7 +534,7 @@ class Move(db.Model):
             return False
 
         assert isinstance(self.signature, bytes)
-        assert 70 <= len(self.signature) <= 71
+        assert 68 <= len(self.signature) <= 71
         assert isinstance(self.user_public_key, bytes)
         assert len(self.user_public_key) == 33
         assert isinstance(self.user_address, str)

@@ -11,6 +11,12 @@ from nekoyume.app import app, db
 from nekoyume.models import Block, Move, Node, User, get_my_public_url
 
 
+DEFAULT_SEED_NODE_URL = os.environ.get(
+    'SEED_NODE_URL',
+    'http://seed.nekoyu.me'
+)
+
+
 class PrivateKeyType(ParamType):
     name = 'private key'
 
@@ -55,7 +61,7 @@ def shell():
 
 @cli.command()
 @option('--seed',
-        default=None,
+        default=DEFAULT_SEED_NODE_URL,
         help='Seed node URL to connect')
 @option('--sync/--skip-sync',
         default=False,
@@ -64,11 +70,8 @@ def init(seed, sync):
     echo('Creating database...')
     db.create_all()
     echo(f'Updating node... (seed: {seed})')
-    if seed:
-        Node.update(Node.get(url=seed))
-    else:
-        Node.update()
     if sync:
+        Node.update(Node.get(url=seed))
         echo('Syncing blocks...')
         Block.sync(echo=echo)
 
@@ -81,13 +84,16 @@ def init(seed, sync):
 
 
 @cli.command()
-def sync():
+@option('--seed',
+        default=DEFAULT_SEED_NODE_URL,
+        help='Seed node URL to connect')
+def sync(seed: str):
     Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")
         Node.broadcast(Node.post_node_endpoint, {'url': public_url})
-    Node.update()
+    Node.update(Node.get(url=seed))
     engine = db.engine
     if not engine.dialect.has_table(engine.connect(), Block.__tablename__):
         echo("You need to initialize. try `nekoyume init`.")

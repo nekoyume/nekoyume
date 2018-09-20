@@ -101,38 +101,19 @@ class Node(db.Model):
             return None
 
     @classmethod
-    def update(cls, node=None):
+    def update(cls, node):
         """
         Update recent node list by scrapping other nodes' information.
         """
-        if not node or not node.url:
-            recent_nodes = Node.query.filter(
-                Node.last_connected_at >= datetime.datetime.utcnow() -
-                datetime.timedelta(minutes=60 * 3)
-            ).order_by(Node.last_connected_at.desc()).limit(2500)
-            if Node.query.count() == 0:
-                recent_nodes = [cls(url='http://seed.nekoyu.me')]
-        else:
-            recent_nodes = [node]
-
-        for n in recent_nodes:
+        try:
+            response = get(f"{node.url}{Node.get_nodes_endpoint}")
+        except (ConnectionError, Timeout):
+            return
+        for url in response.json()['nodes']:
             try:
-                response = get(f"{n.url}{Node.get_nodes_endpoint}")
-            except ConnectionError:
+                Node.get(url)
+            except (ConnectionError, Timeout):
                 continue
-            except Timeout:
-                continue
-            for url in response.json()['nodes']:
-                try:
-                    Node.get(url)
-                except ConnectionError:
-                    continue
-                except Timeout:
-                    continue
-            else:
-                continue
-            break
-
         db.session.commit()
 
     def ping(self):

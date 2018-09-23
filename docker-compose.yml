@@ -34,10 +34,14 @@ services:
         -w 3
         -k gevent
         --log-level debug
+        --reload
         nekoyume.app:app;
+    volumes:
+    - '.:/app'
     depends_on: [sync]
     ports:
     - "4000:8080"
+    restart: always
   worker:
     <<: *app
     command:

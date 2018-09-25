@@ -22,6 +22,7 @@ services:
       CELERY_BROKER_URL: redis://redis:6379
       CELERY_RESULT_BACKEND: redis://redis:6379
       REDIS_URL: redis://redis:6379
+      SEED_NODE_URL: http://web:8080
     depends_on: [postgres, redis]
     networks: [nekoyume-net]
   web:
@@ -55,5 +56,12 @@ services:
     environment:
       <<: *app_environments
       C_FORCE_ROOT: "true"
+  miner:
+    <<: *app
+    command:
+      -
+        nekoyume init --skip-sync &&
+        nekoyume neko ${MINER_KEY}
+    depends_on: [sync]
 networks:
   nekoyume-net:

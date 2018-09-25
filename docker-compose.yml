@@ -19,6 +19,8 @@ services:
     environment: &app_environments
       CACHE_TYPE: redis
       DATABASE_URL: postgresql://postgres:nekoyume@postgres/nekoyume
+      CELERY_BROKER_URL: redis://redis:6379
+      CELERY_RESULT_BACKEND: redis://redis:6379
       REDIS_URL: redis://redis:6379
     depends_on: [postgres, redis]
     networks: [nekoyume-net]

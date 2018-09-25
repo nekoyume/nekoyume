@@ -19,6 +19,7 @@ Dependencies
 * `gmp <https://gmplib.org/>`_
 * (Recommended) `PostgreSQL <https://www.postgresql.org/>`_ >= 9.5
 * (Recommended) `Redis <https://redis.io/>`_
+* (Recommended) `Docker Compose <https://docs.docker.com/compose/install/>`_
 
 Installation
 ------------
@@ -53,7 +54,16 @@ Mining
 
 .. code-block:: console
 
-   $ nekoyume neko
+   $ nekoyume neko "user private key"
+
+
+Running single node for development
+-----------------------------------
+
+.. code-block:: console
+
+   $ docker-compose build
+   $ MINER_KEY="user private key" docker-compose up
 
 
 .. |build| image:: https://circleci.com/gh/nekoyume/nekoyume.svg?style=shield&circle-token=fb83e926d78b99e4cda9788f3f3dce9e281270e3

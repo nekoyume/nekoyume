@@ -1,0 +1,5 @@
+id	cls	cast_time	cooltime	target_count	power
+attack	Attack	0	2	1	100
+firewall	Spell	4	3	4	75
+heal	Heal	3	2	1	100
+taunt	Taunt	0	6	10	10

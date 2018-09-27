@@ -11,7 +11,6 @@ from nekoyume.models import (Block,
                              Move,
                              Node,
                              Say,
-                             Send,
                              Sleep,
                              User,
                              get_address)
@@ -57,7 +56,7 @@ def test_level_up(fx_user, fx_novice_status):
     fx_user.create_block([move])
 
     while True:
-        if fx_user.avatar().xp >= 8:
+        if fx_user.avatar().exp >= 8:
             break
         move = fx_user.hack_and_slash()
         fx_user.create_block([move])
@@ -66,56 +65,7 @@ def test_level_up(fx_user, fx_novice_status):
             move = fx_user.sleep()
             fx_user.create_block([move])
 
-    prev_strength = fx_user.avatar().strength
-    prev_xp = fx_user.avatar().xp
-    move = fx_user.level_up('strength')
-    fx_user.create_block([move])
-
-    assert fx_user.avatar().lv == 2
-    assert fx_user.avatar().xp == prev_xp - 8
-    assert fx_user.avatar().strength == prev_strength + 1
-
-
-def test_send(fx_user, fx_user2, fx_novice_status):
-    move = fx_user.create_novice(fx_novice_status)
-    move2 = fx_user2.create_novice(fx_novice_status)
-    block = fx_user.create_block([move, move2])
-
-    assert fx_user.avatar(block.id).items['GOLD'] == 8
-
-    move = fx_user.send('GOLD', 1, fx_user2.address)
-    block = fx_user.create_block([move])
-
-    assert fx_user.avatar(block.id).items['GOLD'] == 15
-    assert fx_user2.avatar(block.id).items['GOLD'] == 1
-
-
-def test_send_validation(fx_user, fx_user2, fx_novice_status):
-    move = fx_user.create_novice(fx_novice_status)
-    move2 = fx_user2.create_novice(fx_novice_status)
-    block = fx_user.create_block([move, move2])
-
-    assert fx_user.avatar(block.id).items['GOLD'] == 8
-
-    with raises(InvalidMoveError):
-        fx_user.send('GOLD', 100, fx_user2.address)
-
-    with raises(InvalidMoveError):
-        fx_user.send('GOLD', -1, fx_user2.address)
-
-    with raises(InvalidMoveError):
-        fx_user.send('GOLD', 0, fx_user2.address)
-
-    # Even if a move object is created somehow,
-    # sending items with a negative amount must be prevented.
-    move = fx_user.move(Send(details={
-        'item_name': 'GOLD',
-        'amount': -1,
-        'receiver': fx_user2.address}))
-    block = fx_user.create_block([move])
-
-    assert fx_user.avatar(block.id).items['GOLD'] == 16
-    assert fx_user2.avatar(block.id).items['GOLD'] == 0
+    assert fx_user.avatar().level >= 2
 
 
 def test_block_validation(fx_user, fx_novice_status):
@@ -125,15 +75,6 @@ def test_block_validation(fx_user, fx_novice_status):
     move.id = ('00000000000000000000000000000000'
                '00000000000000000000000000000000')
     assert not block.valid
-
-
-def test_avatar_modifier(fx_user, fx_novice_status):
-    move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
-    assert fx_user.avatar().modifier('constitution') == 2
-    assert fx_user.avatar().modifier('strength') == 1
-    assert fx_user.avatar().modifier('dexterity') == 0
-    assert fx_user.avatar().modifier('wisdom') == -1
 
 
 def test_avatar_basic_moves(fx_user, fx_novice_status):
@@ -151,28 +92,6 @@ def test_avatar_basic_moves(fx_user, fx_novice_status):
         assert move.confirmed
         assert block.valid
         assert fx_user.avatar(block.id)
-
-
-def test_combine_move(fx_user, fx_novice_status):
-    move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
-
-    avatar = fx_user.avatar()
-    avatar.items['EGGS'] = 1
-    avatar.items['CHKN'] = 1
-    avatar.items['RICE'] = 1
-    avatar.items['GOLD'] = 1
-
-    combine = fx_user.combine('EGGS', 'CHKN', 'RICE')
-    fx_user.create_block([combine])
-
-    avatar, result = combine.execute(avatar)
-    assert result['result'] == 'success'
-    assert result['result_item'] == 'OYKD'
-    assert avatar.items['GOLD'] == 0
-
-    avatar, result = combine.execute(avatar)
-    assert result['result'] == 'failure'
 
 
 def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,

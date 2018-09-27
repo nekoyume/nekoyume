@@ -1,5 +1,5 @@
-import sys
 import random
+import sys
 
 from nekoyume.battle.simul import DummyBattle
 

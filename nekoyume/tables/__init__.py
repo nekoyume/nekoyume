@@ -1,6 +1,6 @@
+import dataclasses
 import os
 
-from dataclasses import dataclass
 from pkg_resources import resource_string
 
 from nekoyume.battle import WeightedList
@@ -13,7 +13,7 @@ class TableData(dict):
             setattr(self, key, data_type(data[header.index(key)]))
 
 
-@dataclass
+@dataclasses.dataclass
 class ExpData(TableData):
     id: str = ''
     exp_max: int = 0
@@ -22,7 +22,7 @@ class ExpData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class ItemData(TableData):
     id: str = ''
     cls: str = ''
@@ -34,7 +34,7 @@ class ItemData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class ItemDropData(TableData):
     id: str = ''
     zone_id: str = ''
@@ -45,7 +45,7 @@ class ItemDropData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class MonsterAppearData(TableData):
     id: str = ''
     zone_id: str = ''
@@ -56,7 +56,7 @@ class MonsterAppearData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class MonsterData(TableData):
     id: str = ''
     strength: int = 0
@@ -75,7 +75,7 @@ class MonsterData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class SkillData(TableData):
     id: str = ''
     cls: str = ''
@@ -88,7 +88,7 @@ class SkillData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class StatsData(TableData):
     id: str = ''
     strength: int = 0
@@ -101,7 +101,7 @@ class StatsData(TableData):
         super().__init__(header, data)
 
 
-@dataclass
+@dataclasses.dataclass
 class ZoneData(TableData):
     id: str = ''
     unlock_level: int = 0

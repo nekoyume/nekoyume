@@ -4,9 +4,9 @@ from nekoyume.battle.characters import Factory
 from nekoyume.battle.components.bag import Bag
 from nekoyume.battle.components.stats import Stats
 from nekoyume.battle.enums import CharacterType
+from nekoyume.battle.logger import Logger
 from nekoyume.items import Item
 from nekoyume.items.weapons import Weapon
-from nekoyume.battle.logger import Logger
 from nekoyume.tables import Tables
 
 

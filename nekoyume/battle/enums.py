@@ -1,13 +1,13 @@
-from enum import IntEnum
+import enum
 
 
-class CharacterType(IntEnum):
+class CharacterType(enum.IntEnum):
     NONE = 0
     PLAYER = 1
     MONSTER = 2
 
 
-class ItemType(IntEnum):
+class ItemType(enum.IntEnum):
     ITEM = 0,
     FOOD = 1,
     HEAD = 2,
@@ -15,7 +15,7 @@ class ItemType(IntEnum):
     WEAPON = 4,
 
 
-class AttackType(IntEnum):
+class AttackType(enum.IntEnum):
     MELEE = 0
     RANGED = 1
     MAGIC = 2

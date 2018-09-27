@@ -3,7 +3,7 @@ from nekoyume.battle.components.bag import Bag
 from nekoyume.battle.components.behaviors import BehaviorTreeBuilder
 from nekoyume.battle.components.behaviors.aggro import Aggro
 from nekoyume.battle.components.behaviors.skills import Skill
-from nekoyume.battle.components.stats import Stats, PlayerStats, MonsterStats
+from nekoyume.battle.components.stats import MonsterStats, PlayerStats, Stats
 from nekoyume.battle.enums import CharacterType
 from nekoyume.tables import Tables
 

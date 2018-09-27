@@ -1,4 +1,4 @@
-from enum import Enum
+import enum
 
 from nekoyume.battle.components import Component
 
@@ -51,7 +51,7 @@ class BehaviorTreeBuilder:
         return self.node
 
 
-class BehaviorTreeStatus(Enum):
+class BehaviorTreeStatus(enum.Enum):
     SUCCESS = 1,
     FAILURE = 2,
     RUNNING = 3,

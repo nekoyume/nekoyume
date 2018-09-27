@@ -28,13 +28,13 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from . import hashcash
 from .battle.characters import Factory as CharacterFactory
 from .battle.enums import ItemType
-from .battle.items import Item
 from .battle.simul import Simulator
-from .battle.tables import Tables
 from .exc import (InvalidBlockError,
                   InvalidMoveError,
                   InvalidNameError,
                   OutOfRandomError)
+from .items import Item
+from .tables import Tables
 
 
 PROTOCOL_VERSION: int = 2
@@ -831,27 +831,6 @@ class Send(Move):
         )
 
 
-class Combine(Move):
-    __mapper_args__ = {
-        'polymorphic_identity': 'combine',
-    }
-
-    def execute(self, avatar=None):
-        if not avatar:
-            avatar = Avatar.get(self.user_address, self.block_id - 1)
-        if avatar.gold <= 0:
-            return avatar, dict(
-                type='combine',
-                result='failure',
-                reason='insufficient_gold'
-            )
-        return avatar, dict(
-            type='combine',
-            result='failure',
-            reason='no_combination'
-        )
-
-
 class Sell(Move):
     __mapper_args__ = {
         'polymorphic_identity': 'sell',
@@ -967,11 +946,6 @@ class User():
 
     def say(self, content):
         return self.move(Say(details={'content': content}))
-
-    def combine(self, item1, item2, item3):
-        return self.move(Combine(details={'item1': item1,
-                                          'item2': item2,
-                                          'item3': item3}))
 
     def create_block(self, moves, commit=True, echo=None):
         """ Create a block. """
@@ -1114,26 +1088,6 @@ class Avatar:
                 avatar, result = move.receive(avatar)
 
         return avatar
-
-    def modifier(self, status):
-        """ Return modifier of the status. """
-        status = getattr(self, status)
-        # FIXME: it should be extracted to data files
-        if status in (1, 2, 3):
-            return -3
-        elif status in (4, 5):
-            return -2
-        elif status in (6, 7, 8):
-            return -1
-        elif status in (9, 10, 11, 12):
-            return 0
-        elif status in (13, 14, 15):
-            return 1
-        elif status in (16, 17):
-            return 2
-        elif status >= 18:
-            return 3
-        return 0
 
     def get_item(self, item):
         """

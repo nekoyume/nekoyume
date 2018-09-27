@@ -191,12 +191,6 @@
                       <td class="mdl-data-table__cell--non-numeric">STR</td>
                       <td>
                       {{ avatar.strength }}
-                      {% if avatar.modifier('strength') != 0 %}
-                        (<strong id="strength-modifier">{{ avatar.modifier('strength')}}</strong>)
-                        <div class="mdl-tooltip" data-mdl-for="strength-modifier">
-                          {% trans stat='+STR'%}Modifier when roll {{ stat }}.{%- endtrans %}
-                        </div>
-                      {% endif %}
                       {% if not unconfirmed_move and avatar.exp >= avatar.exp_max %}
                           <span class="level-up-button" onclick="levelUp('strength')">🔼</span>
                       {% endif %}
@@ -206,12 +200,6 @@
                       <td class="mdl-data-table__cell--non-numeric">DEX</td>
                       <td>
                       {{ avatar.dexterity }}
-                      {% if avatar.modifier('dexterity') != 0 %}
-                        (<strong id="dexterity-modifier">{{ avatar.modifier('dexterity')}}</strong>)
-                        <div class="mdl-tooltip" data-mdl-for="dexterity-modifier">
-                          {% trans stat='+DEX'%}Modifier when roll {{ stat }}.{%- endtrans %}
-                        </div>
-                      {% endif %}
                       {% if not unconfirmed_move and avatar.exp >= avatar.exp_max %}
                           <span class="level-up-button" onclick="levelUp('dexterity')">🔼</span>
                       {% endif %}
@@ -221,12 +209,6 @@
                       <td class="mdl-data-table__cell--non-numeric">CON</td>
                       <td>
                       {{ avatar.constitution }}
-                      {% if avatar.modifier('constitution') != 0 %}
-                        (<strong id="constitution-modifier">{{ avatar.modifier('constitution')}}</strong>)
-                        <div class="mdl-tooltip" data-mdl-for="constitution-modifier">
-                          {% trans stat='+CON'%}Modifier when roll {{ stat }}.{%- endtrans %}
-                        </div>
-                      {% endif %}
                       {% if not unconfirmed_move and avatar.exp >= avatar.exp_max %}
                           <span class="level-up-button" onclick="levelUp('constitution')">🔼</span>
                       {% endif %}
@@ -236,12 +218,6 @@
                       <td class="mdl-data-table__cell--non-numeric">INT</td>
                       <td>
                       {{ avatar.intelligence }}
-                      {% if avatar.modifier('intelligence') != 0 %}
-                        (<strong id="intelligence-modifier">{{ avatar.modifier('intelligence')}}</strong>)
-                        <div class="mdl-tooltip" data-mdl-for="intelligence-modifier">
-                          {% trans stat='+INT'%}Modifier when roll {{ stat }}.{%- endtrans %}
-                        </div>
-                      {% endif %}
                       {% if not unconfirmed_move and avatar.exp >= avatar.exp_max %}
                           <span class="level-up-button" onclick="levelUp('intelligence')">🔼</span>
                       {% endif %}
@@ -251,12 +227,6 @@
                       <td class="mdl-data-table__cell--non-numeric">LUK</td>
                       <td>
                       {{ avatar.luck }}
-                      {% if avatar.modifier('luck') != 0 %}
-                        (<strong id="luck-modifier">{{ avatar.modifier('luck')}}</strong>)
-                        <div class="mdl-tooltip" data-mdl-for="luck-modifier">
-                          {% trans stat='+WIS'%}Modifier when roll {{ stat }}.{%- endtrans %}
-                        </div>
-                      {% endif %}
                       {% if not unconfirmed_move and avatar.exp >= avatar.exp_max %}
                           <span class="level-up-button" onclick="levelUp('luck')">🔼</span>
                       {% endif %}

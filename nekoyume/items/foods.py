@@ -1,5 +1,5 @@
 from nekoyume.battle.enums import ItemType
-from nekoyume.battle.items.base import UseItem
+from nekoyume.items.base import UseItem
 
 
 class Food(UseItem):

@@ -1,6 +1,6 @@
 import enum
 
-from nekoyume.battle.components import Component
+from .. import Component
 
 
 # for behavior_tree components

@@ -1,5 +1,5 @@
-from nekoyume.battle.components import Component
-from nekoyume.battle.enums import ItemType
+from ..components import Component
+from ..enums import ItemType
 
 
 class Bag(Component):

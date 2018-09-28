@@ -1,8 +1,8 @@
 import math
 
-from nekoyume.battle.components import Component
-from nekoyume.battle.enums import CharacterType
-from nekoyume.tables import Tables
+from ...tables import Tables
+from ..enums import CharacterType
+from . import Component
 
 
 class Stats(Component):

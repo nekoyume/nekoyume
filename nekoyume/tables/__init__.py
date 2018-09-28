@@ -3,7 +3,7 @@ import os
 
 from pkg_resources import resource_string
 
-from nekoyume.battle import WeightedList
+from ..battle import WeightedList
 
 
 class TableData(dict):

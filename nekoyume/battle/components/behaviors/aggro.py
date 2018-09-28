@@ -1,4 +1,4 @@
-from nekoyume.battle.components.behaviors import Behavior, BehaviorTreeStatus
+from . import Behavior, BehaviorTreeStatus
 
 
 class Aggro(Behavior):

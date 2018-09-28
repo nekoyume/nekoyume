@@ -1,13 +1,12 @@
 import math
 
-from nekoyume.battle import WeightedList
-from nekoyume.battle.components.bag import Bag
-from nekoyume.battle.components.behaviors import Behavior
-from nekoyume.battle.components.behaviors import BehaviorTreeStatus
-from nekoyume.battle.components.behaviors.aggro import Aggro
-from nekoyume.battle.components.stats import Stats
-from nekoyume.battle.enums import AttackType, CharacterType, ItemType
-from nekoyume.tables import Tables
+from .....tables import Tables
+from .... import WeightedList
+from ....enums import AttackType, CharacterType, ItemType
+from ...bag import Bag
+from ...stats import Stats
+from .. import Behavior, BehaviorTreeStatus
+from ..aggro import Aggro
 
 
 class Skill(Behavior):

@@ -1,4 +1,4 @@
-from nekoyume.battle.utils import itersubclasses
+from ..utils import itersubclasses
 
 
 class ComponentContainer:

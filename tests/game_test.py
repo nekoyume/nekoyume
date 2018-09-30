@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from sqlalchemy.orm.session import Session
 
 from nekoyume.game import get_unconfirmed_move
-from nekoyume.models import Move, User, get_address
+from nekoyume.models import Block, Move, User, get_address
 
 
 def test_login(fx_test_client):
@@ -34,7 +34,8 @@ def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
         'private_key': fx_private_key.to_hex(),
     }, follow_redirects=True)
     rv = fx_test_client.post('/new')
-    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.get('/')
     assert rv.status == '200 OK'
@@ -44,20 +45,23 @@ def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
         'name': 'hack_and_slash'
     }, follow_redirects=True)
     assert rv.status == '200 OK'
-    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.post('/session_moves', data={
         'name': 'sleep'
     }, follow_redirects=True)
     assert rv.status == '200 OK'
-    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.post('/session_moves', data={
         'name': 'say',
         'content': 'hi!',
     }, follow_redirects=True)
     assert rv.status == '200 OK'
-    fx_user.create_block(fx_session.query(Move).filter_by(block_id=None))
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
 
 
 def test_logout(fx_test_client, fx_session, fx_user):
@@ -85,12 +89,12 @@ def test_prevent_hack_and_slash_when_dead(
         fx_private_key: PrivateKey, fx_novice_status: typing.Dict[str, str],
 ):
     move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
+    Block.create(fx_user, [move])
 
     assert fx_user.avatar().dead is False
     while fx_user.avatar().hp > 0:
         move = fx_user.hack_and_slash()
-        fx_user.create_block([move])
+        Block.create(fx_user, [move])
     assert fx_user.avatar().dead is True
 
     response = fx_test_client.post('/session_moves', data={

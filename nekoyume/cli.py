@@ -42,7 +42,8 @@ def mine(private_key: PrivateKey):
 
     while True:
         Block.sync()
-        block = User(private_key).create_block(
+        block = Block.create(
+            User(private_key),
             [m
              for m in Move.query.filter_by(block=None).limit(20).all()
              if m.valid],

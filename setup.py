@@ -38,6 +38,7 @@ install_requires = [
     'coincurve >= 9.0.0',
     'SQLAlchemy >= 1.2.2, < 1.3.0',
     'tablib >= 0.12.1, < 0.13.0',
+    'typeguard >= 2.2.2, < 2.3.0',
 ]
 
 if __name__ == '__main__':

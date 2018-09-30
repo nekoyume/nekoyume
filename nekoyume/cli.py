@@ -36,7 +36,7 @@ def cli():
 
 @cli.command()
 @argument('private_key', type=PrivateKeyType())
-def neko(private_key: PrivateKey):
+def mine(private_key: PrivateKey):
     app.app_context().push()
     Client(os.environ.get('SENTRY_DSN'))
 

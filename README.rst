@@ -54,7 +54,7 @@ Mining
 
 .. code-block:: console
 
-   $ nekoyume neko "user private key"
+   $ nekoyume mine "user private key"
 
 
 Running single node for development

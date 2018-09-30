@@ -25,7 +25,8 @@ def create_block(
         user: User,
         moves: typing.List[Move],
         commit: bool=True,
-        echo: typing.Optional[typing.Callable]=None
+        echo: typing.Optional[typing.Callable]=None,
+        sleep: typing.Union[int, float]=0.0,
 ) -> Block:
     """ Create a block. """
     for move in moves:
@@ -65,8 +66,10 @@ def create_block(
         block.id = 1
         block.prev_hash = None
         block.difficulty = 0
+        sleep = 0
 
-    block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty)
+    block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty,
+                                  sleep=sleep)
     if user.session.query(Block).get(block.id):
         return None
     block.hash = hashlib.sha256(

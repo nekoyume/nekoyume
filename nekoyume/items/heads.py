@@ -1,5 +1,5 @@
-from nekoyume.battle.enums import ItemType
-from nekoyume.items.base import Equipment
+from ..battle.enums import ItemType
+from .base import Equipment
 
 
 class Head(Equipment):

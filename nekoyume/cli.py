@@ -7,8 +7,8 @@ from coincurve import PrivateKey
 from ptpython.repl import embed
 from raven import Client
 
-from nekoyume.app import app, db
-from nekoyume.models import Block, Move, Node, User, get_my_public_url
+from .app import app, db
+from .models import Block, Move, Node, User, get_my_public_url
 
 
 DEFAULT_SEED_NODE_URL = os.environ.get(

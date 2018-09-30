@@ -1,13 +1,13 @@
 import random
 
-from nekoyume.battle.characters import Factory
-from nekoyume.battle.components.bag import Bag
-from nekoyume.battle.components.stats import Stats
-from nekoyume.battle.enums import CharacterType
-from nekoyume.battle.logger import Logger
-from nekoyume.items import Item
-from nekoyume.items.weapons import Weapon
-from nekoyume.tables import Tables
+from ..items import Item
+from ..items.weapons import Weapon
+from ..tables import Tables
+from .characters import Factory
+from .components.bag import Bag
+from .components.stats import Stats
+from .enums import CharacterType
+from .logger import Logger
 
 
 class Simulator:

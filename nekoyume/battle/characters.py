@@ -1,11 +1,11 @@
-from nekoyume.battle.components import ComponentContainer
-from nekoyume.battle.components.bag import Bag
-from nekoyume.battle.components.behaviors import BehaviorTreeBuilder
-from nekoyume.battle.components.behaviors.aggro import Aggro
-from nekoyume.battle.components.behaviors.skills import Skill
-from nekoyume.battle.components.stats import MonsterStats, PlayerStats, Stats
-from nekoyume.battle.enums import CharacterType
-from nekoyume.tables import Tables
+from ..tables import Tables
+from .components import ComponentContainer
+from .components.bag import Bag
+from .components.behaviors import BehaviorTreeBuilder
+from .components.behaviors.aggro import Aggro
+from .components.behaviors.skills import Skill
+from .components.stats import MonsterStats, PlayerStats, Stats
+from .enums import CharacterType
 
 
 class Character(ComponentContainer):

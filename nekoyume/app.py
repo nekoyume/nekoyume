@@ -3,10 +3,10 @@ import os
 from flask import Flask
 from raven.contrib.flask import Sentry
 
-from nekoyume.api import api
-from nekoyume.game import babel, game
-from nekoyume.models import cache, db
-from nekoyume.tasks import celery
+from .api import api
+from .game import babel, game
+from .models import cache, db
+from .tasks import celery
 
 
 def make_celery(app):

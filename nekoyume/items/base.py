@@ -1,5 +1,5 @@
-from nekoyume.battle.enums import ItemType
-from nekoyume.tables import Tables
+from ..battle.enums import ItemType
+from ..tables import Tables
 
 
 class Item:

@@ -1,4 +1,4 @@
-from nekoyume.battle.components import Component
+from . import Component
 
 
 class Buff(Component):

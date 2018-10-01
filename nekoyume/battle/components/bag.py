@@ -3,7 +3,7 @@ from ..enums import ItemType
 
 
 class Bag(Component):
-    def __init__(self, items=None, weapon_index=0, armor_index=0):
+    def __init__(self, items=None):
         if items is None:
             items = []
         self.items = items
@@ -42,3 +42,15 @@ class Bag(Component):
             if equipped:
                 equipped.unequip()
             item.equip()
+
+    @property
+    def armor_name(self):
+        return getattr(self.get_equipped(ItemType.ARMOR), 'name', '')
+
+    @property
+    def head_name(self):
+        return getattr(self.get_equipped(ItemType.HEAD), 'name', '')
+
+    @property
+    def weapon_name(self):
+        return getattr(self.get_equipped(ItemType.WEAPON), 'name', '')

@@ -2,7 +2,7 @@ id	zone_id	monster_id	weight
 appear_1	zone_0	slime	6
 appear_2	zone_0	goblin	3
 appear_3	zone_0	skeleton	1
-appear_4	zone_0	slime	1
+appear_4	zone_1	slime	1
 appear_5	zone_1	goblin	6
 appear_6	zone_1	skeleton	6
 appear_7	zone_1	kentauross	3

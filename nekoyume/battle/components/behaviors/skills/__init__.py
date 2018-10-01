@@ -3,6 +3,11 @@ import math
 from .....tables import Tables
 from .... import WeightedList
 from ....enums import AttackType, CharacterType, ItemType
+from ....status.skills import Attack as StatusAttack
+from ....status.skills import Casting
+from ....status.skills import Heal as StatusHeal
+from ....status.skills import Taunt as StatusTaunt
+from ....status.stats import Dead, GetExp
 from ...bag import Bag
 from ...stats import Stats
 from .. import Behavior, BehaviorTreeStatus
@@ -46,16 +51,8 @@ class Skill(Behavior):
                 break
         return targets
 
-
-# weapon based attack
-class Attack(Skill):
-    def tick(self, simulator):
-        if self.nexttime > simulator.time:
-            return BehaviorTreeStatus.FAILURE
+    def calc_atk(self):
         my_stats = self.owner.get_component(Stats)
-        if not my_stats:
-            return BehaviorTreeStatus.FAILURE
-        # calc atk
         my_bag = self.owner.get_component(Bag)
         weapon = my_bag.get_equipped(ItemType.WEAPON)
         atk = 0
@@ -70,120 +67,123 @@ class Attack(Skill):
         else:
             atk += my_stats.calc_melee_atk()
         atk = math.floor(atk * (self.data.power * 0.01))
-        # find target
+        return atk
+
+    def is_cooltime(self, simulator):
+        return self.nexttime > simulator.time
+
+    def kill(self, simulator, target):
+        my_stats = self.owner.get_component(Stats)
+        target_stats = target.get_component(Stats)
+        simulator.logger.log(Dead(id_=target.id_))
+        if self.owner.type_ is CharacterType.PLAYER:
+            my_stats.get_exp(target_stats.data.reward_exp)
+            simulator.logger.log(GetExp(
+                id_=self.owner.id_,
+                exp=target_stats.data.reward_exp
+            ))
+
+    def casting(self, simulator):
+        if self.cast_remains > 0:
+            self.cast_remains -= 1
+            simulator.logger.log(Casting(
+                id_=self.owner.id_,
+                tick_remain=self.cast_remains,
+            ))
+            return True
+        if not self.is_casting and self.data.cast_time > 0:
+            self.is_casting = True
+            self.cast_remains = self.data.cast_time
+            simulator.logger.log(Casting(
+                id_=self.owner.id_,
+                tick_remain=self.cast_remains,
+            ))
+            return True
+        self.is_casting = False
+        return False
+
+
+# weapon based attack
+class Attack(Skill):
+    def tick(self, simulator):
+        if self.is_cooltime(simulator):
+            return BehaviorTreeStatus.FAILURE
+        my_stats = self.owner.get_component(Stats)
+        atk = self.calc_atk()
         target_type = my_stats.get_target_type()
         targets = self.find_targets(simulator, target_type)
-        for target in targets:
+        for index, target in enumerate(targets):
             target_stats = target.get_component(Stats)
             damaged = target_stats.damaged(atk)
             target_aggro = target.get_component(Aggro)
             target_aggro.add(self.owner.id_, 1)
-            simulator.logger.log_attack({
-                'from_type': self.owner.type_,
-                'from': self.owner.to_dict(),
-                'to_type': target.type_,
-                'to': target.to_dict(),
-                'value': damaged,
-            })
+            simulator.logger.log(StatusAttack(
+                id_=self.owner.id_,
+                value=damaged,
+                target_id=target.id_,
+                target_hp=target_stats.hp,
+                target_remain=len(targets) - index - 1,
+            ))
             if target_stats.is_dead():
-                simulator.logger.log(target.name + ' is dead..')
-                if self.owner.type_ is CharacterType.PLAYER:
-                    my_stats.get_exp(target_stats.data.reward_exp)
-                    simulator.logger.log_exp(target_stats.data.reward_exp)
+                self.kill(simulator, target)
         return BehaviorTreeStatus.SUCCESS
 
 
 class Spell(Skill):
     def tick(self, simulator):
-        my_stats = self.owner.get_component(Stats)
-        if my_stats.check_damaged():
-            if self.cast_remains > 0:
-                self.cast_remains += 1
-                simulator.logger.log(
-                    '[' + self.name + '] ' + self.owner.name
-                    + ' casting delayed ... ' + str(self.cast_remains))
-        if not self.is_casting and self.data.cast_time > 0:
-            self.is_casting = True
-            self.cast_remains = self.data.cast_time
-            simulator.logger.log(
-                '[' + self.name + '] ' + self.owner.name
-                + ' casting ... ' + str(self.cast_remains))
-            return BehaviorTreeStatus.SUCCESS
-        if self.cast_remains > 0:
-            self.cast_remains -= 1
-            simulator.logger.log(
-                '[' + self.name + '] ' + self.owner.name
-                + ' casting ... ' + str(self.cast_remains))
-            return BehaviorTreeStatus.SUCCESS
-        if self.nexttime > simulator.time:
+        if self.is_cooltime(simulator):
             return BehaviorTreeStatus.FAILURE
+        if self.casting(simulator):
+            return BehaviorTreeStatus.SUCCESS
         my_aggro = self.owner.get_component(Aggro)
         my_aggro.value += 1
+        my_stats = self.owner.get_component(Stats)
         self.nexttime += my_stats.calc_cooltime(self.data.cooltime)
         atk = math.floor(my_stats.calc_magic_atk() * (self.data.power * 0.01))
         target_type = my_stats.get_target_type()
         targets = self.find_targets(simulator, target_type)
-        for target in targets:
+        for index, target in enumerate(targets):
             target_stats = target.get_component(Stats)
             damaged = target_stats.damaged(atk)
             target_aggro = target.get_component(Aggro)
             target_aggro.add(self.owner.id_, 1)
-            simulator.logger.log_attack({
-                'from_type': self.owner.type_,
-                'from': self.owner.to_dict(),
-                'to_type': target.type_,
-                'to': target.to_dict(),
-                'value': damaged,
-            })
+
+            simulator.logger.log(StatusAttack(
+                id_=self.owner.id_,
+                value=damaged,
+                target_id=target.id_,
+                target_hp=target_stats.hp,
+                target_remain=len(targets) - index - 1,
+            ))
             if target_stats.is_dead():
-                simulator.logger.log(target.name + ' is dead..')
-                if self.owner.type_ is CharacterType.PLAYER:
-                    my_stats.get_exp(target_stats.data.reward_exp)
-                    simulator.logger.log_exp(target_stats.data.reward_exp)
+                self.kill(simulator, target)
         return BehaviorTreeStatus.SUCCESS
 
 
 class Heal(Skill):
     def tick(self, simulator):
-        my_stats = self.owner.get_component(Stats)
-        if my_stats.check_damaged():
-            if self.cast_remains > 0:
-                self.cast_remains += 1
-                simulator.logger.log(
-                    '[' + self.name + '] ' + self.owner.name
-                    + ' casting delayed ... ' + str(self.cast_remains))
-        if not self.is_casting and self.data.cast_time > 0:
-            self.is_casting = True
-            self.cast_remains = self.data.cast_time
-            simulator.logger.log(
-                '[' + self.name + '] ' + self.owner.name
-                + ' casting ... ' + str(self.cast_remains))
-            return BehaviorTreeStatus.SUCCESS
-        if self.cast_remains > 0:
-            self.cast_remains -= 1
-            simulator.logger.log(
-                '[' + self.name + '] ' + self.owner.name
-                + ' casting ... ' + str(self.cast_remains))
-            return BehaviorTreeStatus.SUCCESS
-        if self.nexttime > simulator.time:
+        if self.is_cooltime(simulator):
             return BehaviorTreeStatus.FAILURE
+        if self.casting(simulator):
+            return BehaviorTreeStatus.SUCCESS
         my_aggro = self.owner.get_component(Aggro)
         my_aggro.value += 1
+        my_stats = self.owner.get_component(Stats)
         self.nexttime += my_stats.calc_cooltime(self.data.cooltime)
         targets = self.find_targets(simulator, self.owner.type_)
-        for target in targets:
+        for index, target in enumerate(targets):
             target_stats = target.get_component(Stats)
             if target_stats:
                 amount = math.floor(
                     my_stats.calc_magic_atk() * (self.data.power * 0.01))
                 target_stats.heal(amount)
-                simulator.logger.log_heal({
-                    'from_type': self.owner.type_,
-                    'from': self.owner.to_dict(),
-                    'to_type': target.type_,
-                    'to': target.to_dict(),
-                    'value': amount,
-                })
+                simulator.logger.log(StatusHeal(
+                    id_=self.owner.id_,
+                    value=amount,
+                    target_id=target.id_,
+                    target_hp=target_stats.hp,
+                    target_remain=len(targets) - index - 1,
+                ))
         return BehaviorTreeStatus.SUCCESS
 
 
@@ -195,11 +195,11 @@ class Slow(Skill):
 
 class Taunt(Skill):
     def tick(self, simulator):
-        my_stats = self.owner.get_component(Stats)
-        if self.nexttime > simulator.time:
+        if self.is_cooltime(simulator):
             return BehaviorTreeStatus.FAILURE
         my_aggro = self.owner.get_component(Aggro)
         my_aggro.value += math.floor(self.data.power * 0.01)
+        my_stats = self.owner.get_component(Stats)
         self.nexttime += my_stats.calc_cooltime(self.data.cooltime)
-        simulator.logger.log('[' + self.name + '] ' + self.owner.name)
+        simulator.logger.log(StatusTaunt(id_=self.owner.id_))
         return BehaviorTreeStatus.SUCCESS

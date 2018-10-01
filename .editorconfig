@@ -1,0 +1,24 @@
+# https://editorconfig.org/
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cfg,json,html,md,py,rst,txt,yml}]
+indent_style = space
+
+[*.{html,md,py,rst}]
+indent_size = 4
+
+[*.tsv]
+indent_style = tab
+
+[*.{json,yml}]
+indent_size = 2
+
+[hooks/*]
+indent_size = 4
+indent_style = space

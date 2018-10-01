@@ -485,7 +485,7 @@
                         {% endif %}
                         <div class="mdl-card__supporting-text">
                             <ol>
-                                {% set characters = result.battle_logger.get_characters %}
+                                {% set characters = result.battle_logger.get_characters() %}
                                 {% for status in result.battle_logger.logs %}
                                 {% if status.type == 'attack' %}
                                 {% if characters[status.id_].type == 1 %}

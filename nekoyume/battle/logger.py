@@ -18,7 +18,6 @@ class Logger:
             status.append(asdict(log))
         return json.dumps({'status': status})
 
-    @property
     def get_characters(self):
         characters = {}
         for log in self.logs:

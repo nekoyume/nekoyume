@@ -36,17 +36,20 @@ def cli():
 
 @cli.command()
 @argument('private_key', type=PrivateKeyType())
-def mine(private_key: PrivateKey):
+@option('--sleep', default=0, type=float)
+def mine(private_key: PrivateKey, sleep: float):
     app.app_context().push()
     Client(os.environ.get('SENTRY_DSN'))
 
     while True:
         Block.sync()
-        block = User(private_key).create_block(
+        block = Block.create(
+            User(private_key),
             [m
              for m in Move.query.filter_by(block=None).limit(20).all()
              if m.valid],
             echo=echo,
+            sleep=sleep,
         )
         if block:
             block.broadcast()

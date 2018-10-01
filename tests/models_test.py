@@ -40,7 +40,7 @@ def test_move_confirmed_and_validation(fx_user, fx_novice_status):
     assert not move.confirmed
     assert move.valid
 
-    block = fx_user.create_block([move])
+    block = Block.create(fx_user, [move])
 
     assert move.block_id
     assert move.confirmed
@@ -53,24 +53,24 @@ def test_move_confirmed_and_validation(fx_user, fx_novice_status):
 
 def test_level_up(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
+    Block.create(fx_user, [move])
 
     while True:
         if fx_user.avatar().exp >= 8:
             break
         move = fx_user.hack_and_slash()
-        fx_user.create_block([move])
+        Block.create(fx_user, [move])
 
         if fx_user.avatar().hp <= 0:
             move = fx_user.sleep()
-            fx_user.create_block([move])
+            Block.create(fx_user, [move])
 
     assert fx_user.avatar().level >= 2
 
 
 def test_block_validation(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
-    block = fx_user.create_block([move])
+    block = Block.create(fx_user, [move])
     assert block.valid
     move.id = ('00000000000000000000000000000000'
                '00000000000000000000000000000000')
@@ -87,7 +87,7 @@ def test_avatar_basic_moves(fx_user, fx_novice_status):
     ]
     for move in moves:
         move = fx_user.move(move)
-        block = fx_user.create_block([move])
+        block = Block.create(fx_user, [move])
         assert move.valid
         assert move.confirmed
         assert block.valid
@@ -103,7 +103,7 @@ def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
                               last_connected_at=datetime.datetime.utcnow()))
     fx_other_session.commit()
 
-    block = fx_other_user.create_block([])
+    block = Block.create(fx_other_user, [])
     block.broadcast(session=fx_other_session)
     assert fx_other_session.query(Block).count() == 1
     assert fx_session.query(Block).count() == 1
@@ -141,15 +141,15 @@ def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
     assert fx_other_session.query(Block).count() == 0
     assert fx_session.query(Block).count() == 0
 
-    fx_other_user.create_block([])
+    Block.create(fx_other_user, [])
     Block.sync(Node(url=fx_server.url), fx_other_session)
     assert fx_other_session.query(Block).count() == 1
     assert fx_session.query(Block).count() == 0
 
     move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
-    fx_user.create_block([])
-    fx_user.create_block([])
+    Block.create(fx_user, [move])
+    Block.create(fx_user, [])
+    Block.create(fx_user, [])
 
     assert fx_other_session.query(Block).count() == 1
     assert fx_other_session.query(Move).count() == 0
@@ -168,7 +168,7 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session,
     # 1. block validation failure scenario
     # syncing without flushing can cause block validation failure
     move = fx_user.create_novice(fx_novice_status)
-    invalid_block = fx_user.create_block([move])
+    invalid_block = Block.create(fx_user, [move])
     fx_session.delete(invalid_block)
 
     # syncing valid blocks from another node
@@ -216,7 +216,7 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session,
     # 2. valid scenario
     # flush session after deleting the invalid block
     move = fx_user.create_novice(fx_novice_status)
-    invalid_block = fx_user.create_block([move])
+    invalid_block = Block.create(fx_user, [move])
     fx_session.delete(invalid_block)
     fx_session.flush()
 
@@ -239,10 +239,10 @@ def test_get_address():
 
 def test_hack_and_slash_execute(fx_user, fx_novice_status):
     move = fx_user.create_novice(fx_novice_status)
-    fx_user.create_block([move])
+    Block.create(fx_user, [move])
     avatar = fx_user.avatar()
     avatar.hp = 0
     move = fx_user.move(HackAndSlash())
-    fx_user.create_block([move])
+    Block.create(fx_user, [move])
     with raises(InvalidMoveError):
         move.execute(avatar)

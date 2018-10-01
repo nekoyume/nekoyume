@@ -24,9 +24,12 @@ every time it is passed the same arguments.
 import hashlib
 import math
 import sys
+import time
+import typing
 
 
-def _mint(challenge: bytes, bits: int) -> bytes:
+def _mint(challenge: bytes, bits: int,
+          sleep: typing.Union[int, float]=0) -> bytes:
     """Answer a generalized Hashcash_ challenge.
 
     This function accepts a generalized prefix *challenge*,
@@ -46,6 +49,7 @@ def _mint(challenge: bytes, bits: int) -> bytes:
     byteorder = sys.byteorder
 
     counter = 1
+    time.sleep(sleep)
     while 1:
         answer_bytes_length = 1 + int(log2(counter) // 8)
         answer = counter.to_bytes(answer_bytes_length, byteorder)

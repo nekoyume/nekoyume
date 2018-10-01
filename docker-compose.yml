@@ -61,7 +61,9 @@ services:
     command:
       -
         nekoyume init --skip-sync &&
-        nekoyume mine ${MINER_KEY}
+        nekoyume mine ${MINER_KEY} --sleep ${MINER_SLEEP_SEC}
     depends_on: [sync]
+    environment:
+      <<: *app_environments
 networks:
   nekoyume-net:

@@ -63,6 +63,7 @@ jobs:
       - run:
           name: Run Docker Compose
           command: |
+            cp .env.dist .env
             docker-compose build
             docker-compose up -d
             docker-compose down

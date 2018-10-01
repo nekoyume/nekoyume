@@ -3,7 +3,7 @@ import enum
 from .. import Component
 
 
-# for behavior_tree components
+# for behavior components
 class Behavior(Component):
     pass
 
@@ -57,12 +57,12 @@ class BehaviorTreeStatus(enum.Enum):
     RUNNING = 3,
 
 
-class Node:
+class BehaviorNode:
     def __init__(self, name):
         self.name = name
 
 
-class ActionNode(Node):
+class ActionNode(BehaviorNode):
     def __init__(self, name, fn):
         super().__init__(name)
         self.fn = fn
@@ -71,7 +71,7 @@ class ActionNode(Node):
         return self.fn(data)
 
 
-class SequenceNode(Node):
+class SequenceNode(BehaviorNode):
     def __init__(self, name):
         super().__init__(name)
         self.children = []
@@ -87,7 +87,7 @@ class SequenceNode(Node):
         return BehaviorTreeStatus.SUCCESS
 
 
-class SelectorNode(Node):
+class SelectorNode(BehaviorNode):
     def __init__(self, name):
         super().__init__(name)
         self.children = []

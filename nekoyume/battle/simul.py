@@ -8,6 +8,9 @@ from .components.bag import Bag
 from .components.stats import Stats
 from .enums import CharacterType
 from .logger import Logger
+from .status.item import GetItem
+from .status.spawn import Spawn
+from .status.zone import Zone
 
 
 class Simulator:
@@ -20,28 +23,37 @@ class Simulator:
         self.result = ''  # win, lose, finish
 
     def simulate(self):
+        self.logger.log(Zone(id_=self.zone))
+
+        for character in self.characters:
+            self.logger.log(Spawn.from_character(character))
+
         while True:
             self.characters = sorted(
                 self.characters,
                 key=lambda c: c.get_component(Stats).calc_atk_spd(),
                 reverse=True)
+
             for character in self.characters:
                 character.tick(self)
+
             self.time = self.time + 1
             if self.time >= 100:
                 self.result = 'finish'
                 break
+
             is_win = True
             is_lose = True
             for character in self.characters:
                 if character.type_ == CharacterType.MONSTER:
                     stats = character.get_component(Stats)
-                    if stats is not None and not stats.is_dead():
+                    if not stats.is_dead():
                         is_win = False
                 if character.type_ == CharacterType.PLAYER:
                     stats = character.get_component(Stats)
-                    if stats is not None and not stats.is_dead():
+                    if not stats.is_dead():
                         is_lose = False
+
             if is_win:
                 self.result = 'win'
                 drop_items = Tables.get_item_drop_list(self.zone)
@@ -55,7 +67,10 @@ class Simulator:
                             # TODO item option
                             item.option = self.random.randint(1, 5)
                             bag.add(item)
-                            self.logger.log_item(item.name)
+                            self.logger.log(GetItem(
+                                id_=character.id_,
+                                item=item.name
+                            ))
                 break
             if is_lose:
                 self.result = 'lose'
@@ -65,17 +80,14 @@ class Simulator:
 class DummyBattle(Simulator):
     def __init__(self, seed):
         super().__init__(seed, 'zone_0')
-        self.characters.append(Factory.create_player(
+        factory = Factory()
+        self.characters.append(factory.create_player(
             'dummy_swordman', 'swordman', 1, ['taunt', 'attack'],
             [Weapon('sword_1')]))
-        self.characters.append(Factory.create_player(
+        self.characters.append(factory.create_player(
             'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))
-        self.characters.append(Factory.create_player(
+        self.characters.append(factory.create_player(
             'dummy_acolyte', 'acolyte', 1, ['heal', 'attack'], []))
-        self.characters.append(Factory.create_player(
-            'dummy_archer', 'archer', 1, ['attack'], []))
-        self.characters.append(Factory.create_monster('slime'))
-        self.characters.append(Factory.create_monster('slime'))
-        self.characters.append(Factory.create_monster('slime'))
-        self.characters.append(Factory.create_monster('slime'))
-        self.characters.append(Factory.create_monster('griffin'))
+        self.characters.append(factory.create_monster('slime'))
+        self.characters.append(factory.create_monster('slime'))
+        self.characters.append(factory.create_monster('griffin'))

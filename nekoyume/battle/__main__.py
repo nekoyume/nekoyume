@@ -1,7 +1,7 @@
 import random
 import sys
 
-from .simul import DummyBattle
+from nekoyume.battle.simul import DummyBattle
 
 
 def main():

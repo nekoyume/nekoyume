@@ -36,7 +36,7 @@ class Stats(Component):
 
     def damaged(self, damage):
         damage -= self.calc_defense()
-        self.hp = max(self.hp - damage, 0)
+        self.hp -= damage
         self.is_damaged = True
         return damage
 

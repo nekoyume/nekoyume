@@ -2,10 +2,6 @@
 {% set avatar = g.user.avatar() %}
 {% block title -%} Dashboard {%- endblock %}
 
-{% macro name_of(monster) %}
-<a href="{{ monster['url'] }}">{{ monster['id'] }}</a>
-{% endmacro %}
-
 {% block meta %}
 {% endblock %}
 
@@ -293,7 +289,7 @@
               <input type="hidden" name="new_status">
             </form>
             <div class="mdl-cell mdl-cell--7-col mdl-cell--5-col-tablet">
-              <section class="move-bar mdl-card mdl-shadow--2dp"">
+              <section class="move-bar mdl-card mdl-shadow--2dp">
                   <div class="move-bar-normal mdl-tabs mdl-js-tabs mdl-js-ripple-effect
                               {% if unconfirmed_move %} hidden {% endif %}">
                     <div class="mdl-tabs__tab-bar">
@@ -489,16 +485,17 @@
                         {% endif %}
                         <div class="mdl-card__supporting-text">
                             <ol>
-                                {% for status in result.battle_status %}
+                                {% set characters = result.battle_logger.get_characters() %}
+                                {% for status in result.battle_logger.logs %}
                                 {% if status.type == 'attack' %}
-                                {% if status.from_type.value == 1 %}
+                                {% if characters[status.id_].type == 1 %}
                                 <!-- from: player -->
                                 <li>
                                   💥
-                                  {% trans monster=name_of(status.to),
+                                  {% trans monster=characters[status.target_id].name,
                                            damage=status.value,
-                                           monster_hp=status.to.hp + status.value,
-                                           monster_hp_after_damage = status.to.hp -%}
+                                           monster_hp=status.target_hp + status.value,
+                                           monster_hp_after_damage = status.target_hp -%}
                                   You attacked {{ monster }} and wounded it for <strong>{{ damage }}</strong> damage. <small>(HP {{ monster_hp }} → {{ monster_hp_after_damage }})</small>
                                   {%- endtrans %}
                                 </li>
@@ -506,7 +503,7 @@
                                 <!-- to: player -->
                                 <li>
                                   😫
-                                  {% trans monster=name_of(status.from),
+                                  {% trans monster=characters[status.id_].name,
                                            damage=status.value -%}
                                   You are attacked by {{ monster }} and take <strong>{{ damage }}</strong> damage.
                                   {%- endtrans %}
@@ -519,24 +516,26 @@
                                   You learned from your previous mistake. <small>(XP +1)</small>
                                   {%- endtrans %}
                                 </li>
-                                {% elif status['type'] == 'kill_monster' %}
+                                {% elif status['type'] == 'dead' %}
+                                {% if characters[status.id_].type == 1 %}
+                                <li>
+                                    ☠️
+                                    {% trans monster=characters[status.id_].name -%}
+                                    You are defeated by {{ monster }}...
+                                    {%- endtrans %}
+                                  </li>
+                                {% else %}
                                 <li>
                                   ☠️
-                                  {% trans monster=name_of(status['monster']) -%}
+                                  {% trans monster=characters[status.id_].name -%}
                                   You defeated {{ monster }}!
                                   {%- endtrans %}
                                 </li>
-                                {% elif status['type'] == 'killed_by_monster' %}
-                                <li>
-                                  ☠️
-                                  {% trans monster=name_of(status['monster']) -%}
-                                  You are defeated by {{ monster }}...
-                                  {%- endtrans %}
-                                </li>
+                                {% endif %}
                                 {% elif status['type'] == 'run' %}
                                 <li>
                                   🏃
-                                  {% trans monster=name_of(status['monster']) -%}
+                                  {% trans monster=characters[status.id_].name -%}
                                   {{ monster }} has run away...
                                   {%- endtrans %}
                                 </li>
@@ -560,10 +559,6 @@
                                   {% trans item=status['item'], status_change=status['status_change'] -%}
                                   You tried to use {{ item }} but it doesn't works.
                                   {%- endtrans %}
-                                </li>
-                                {% else %}
-                                <li>
-                                  {{ status }}
                                 </li>
                                 {% endif %}
                                 {% endfor %}

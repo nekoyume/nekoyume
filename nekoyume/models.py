@@ -60,9 +60,7 @@ def get_my_public_url():
         has_public_address = get(
             f'http://{ip}{port}/ping'
         ).text == 'pong'
-    except ConnectionError:
-        return None
-    except Timeout:
+    except (ConnectionError, Timeout):
         return None
     if has_public_address:
         return f'http://{ip}{port}'
@@ -127,9 +125,7 @@ class Node(db.Model):
             if result:
                 self.last_connected_at = datetime.datetime.utcnow()
             return result
-        except ConnectionError:
-            return False
-        except Timeout:
+        except (ConnectionError, Timeout):
             return False
 
     @classmethod
@@ -161,9 +157,7 @@ class Node(db.Model):
                      timeout=3)
                 node.last_connected_at = datetime.datetime.utcnow()
                 session.add(node)
-            except ConnectionError:
-                continue
-            except Timeout:
+            except (ConnectionError, Timeout):
                 continue
 
         session.commit()
@@ -351,9 +345,7 @@ class Block(db.Model):
                    node_last_block['id'] < response.json()['block']['id']):
                     node_last_block = response.json()['block']
                     node = n
-            except ConnectionError:
-                continue
-            except Timeout:
+            except (ConnectionError, Timeout):
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()

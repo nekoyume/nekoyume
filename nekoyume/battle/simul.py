@@ -88,10 +88,6 @@ class DummyBattle(Simulator):
             'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))
         self.characters.append(factory.create_player(
             'dummy_acolyte', 'acolyte', 1, ['heal', 'attack'], []))
-        # self.characters.append(factory.create_player(
-        #    'dummy_archer', 'archer', 1, ['attack'], []))
         self.characters.append(factory.create_monster('slime'))
         self.characters.append(factory.create_monster('slime'))
-        # self.characters.append(factory.create_monster('slime'))
-        # self.characters.append(factory.create_monster('slime'))
         self.characters.append(factory.create_monster('griffin'))

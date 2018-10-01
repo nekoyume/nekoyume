@@ -31,7 +31,6 @@ class Skill(Behavior):
     def tick(self, simulator):
         pass
 
-    # todo: is_dead check to filter
     def find_targets(self, simulator, filter_type):
         if not self.data.target_count:
             return []
@@ -103,8 +102,8 @@ class Skill(Behavior):
         return False
 
 
-# weapon based attack
 class Attack(Skill):
+    """Weapon-based attack."""
     def tick(self, simulator):
         if self.is_cooltime(simulator):
             return BehaviorTreeStatus.FAILURE

@@ -444,7 +444,7 @@ class Block(db.Model):
             commit: bool=True,
             echo: Optional[Callable]=None,
             sleep: Union[int, float]=0.0,
-    ) -> 'Block':
+    ) -> Optional['Block']:
         """ Create a block. """
         for move in moves:
             if not move.valid:

@@ -195,7 +195,7 @@ class Block(db.Model):
                 (id == 1, prev_hash.is_(None)),
             ], else_=prev_hash.isnot(None))
         ),
-        db.CheckConstraint((id == 1) | (difficulty > 0)),
+        db.CheckConstraint((id == 1) | (difficulty > 1)),
     )
 
     @classmethod
@@ -241,14 +241,14 @@ class Block(db.Model):
                 (self.id - difficulty_check_block.id)
             )
             if avg_timedelta <= MIN_BLOCK_INTERVAL:
-                valid = valid and self.difficulty == max(0, difficulty + 1)
+                valid = valid and self.difficulty == max(1, difficulty + 1)
             elif avg_timedelta > MAX_BLOCK_INTERVAL:
-                valid = valid and self.difficulty == max(0, difficulty - 1)
+                valid = valid and self.difficulty == max(1, difficulty - 1)
             else:
                 valid = valid and self.difficulty == difficulty
         else:
             valid = valid and self.prev_hash is None
-            valid = valid and self.difficulty == 0
+            valid = valid and self.difficulty == 1
 
         valid = valid and self.root_hash == hashlib.sha256(
             ''.join(sorted((m.id for m in self.moves))).encode('utf-8')
@@ -482,7 +482,7 @@ class Block(db.Model):
             #: Genesis block
             block.id = 1
             block.prev_hash = None
-            block.difficulty = 0
+            block.difficulty = 1
             sleep = 0
 
         block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty,

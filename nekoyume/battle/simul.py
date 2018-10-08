@@ -82,12 +82,11 @@ class DummyBattle(Simulator):
         super().__init__(seed, 'zone_0')
         factory = Factory()
         self.characters.append(factory.create_player(
-            'dummy_swordman', 'swordman', 1, ['taunt', 'attack'],
-            [Weapon('sword_1')]))
+            'dummy_swordman', 'swordman', 5, [Weapon('sword_1')]))
         self.characters.append(factory.create_player(
-            'dummy_mage', 'mage', 1, ['firewall', 'attack'], []))
+            'dummy_mage', 'mage', 5, []))
         self.characters.append(factory.create_player(
-            'dummy_acolyte', 'acolyte', 1, ['heal', 'attack'], []))
+            'dummy_mage', 'acolyte', 5, []))
         self.characters.append(factory.create_monster('slime'))
         self.characters.append(factory.create_monster('slime'))
-        self.characters.append(factory.create_monster('griffin'))
+        # self.characters.append(factory.create_monster('griffin'))

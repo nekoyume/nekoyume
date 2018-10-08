@@ -108,6 +108,7 @@ class Attack(Skill):
         if self.is_cooltime(simulator):
             return BehaviorTreeStatus.FAILURE
         my_stats = self.owner.get_component(Stats)
+        self.nexttime += my_stats.calc_cooltime(self.data.cooltime)
         atk = self.calc_atk()
         target_type = my_stats.get_target_type()
         targets = self.find_targets(simulator, target_type)
@@ -118,6 +119,8 @@ class Attack(Skill):
             target_aggro.add(self.owner.id_, 1)
             simulator.logger.log(StatusAttack(
                 id_=self.owner.id_,
+                time=simulator.time,
+                name=self.data.id,
                 value=damaged,
                 target_id=target.id_,
                 target_hp=target_stats.hp,
@@ -149,6 +152,8 @@ class Spell(Skill):
 
             simulator.logger.log(StatusAttack(
                 id_=self.owner.id_,
+                time=simulator.time,
+                name=self.data.id,
                 value=damaged,
                 target_id=target.id_,
                 target_hp=target_stats.hp,
@@ -178,6 +183,8 @@ class Heal(Skill):
                 target_stats.heal(amount)
                 simulator.logger.log(StatusHeal(
                     id_=self.owner.id_,
+                    time=simulator.time,
+                    name=self.data.id,
                     value=amount,
                     target_id=target.id_,
                     target_hp=target_stats.hp,

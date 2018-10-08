@@ -79,6 +79,8 @@ class MonsterData(TableData):
 class SkillData(TableData):
     id: str = ''
     cls: str = ''
+    class_: str = '' # noqa
+    unlock_lv: int = 0
     cast_time: int = 0
     cooltime: int = 0
     target_count: int = 0

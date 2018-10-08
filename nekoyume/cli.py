@@ -7,8 +7,10 @@ from coincurve import PrivateKey
 from ptpython.repl import embed
 from raven import Client
 
-from .app import app, db
-from .models import Block, Move, Node, User, get_my_public_url
+from .app import app
+from .models import Block, Move, User, get_my_public_url
+from .node import Node
+from .orm import db
 
 
 DEFAULT_SEED_NODE_URL = os.environ.get(

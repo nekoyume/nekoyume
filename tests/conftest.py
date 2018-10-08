@@ -49,7 +49,7 @@ def fx_user(fx_session, fx_private_key: PrivateKey):
 
 
 @fixture
-def fx_server(request, fx_app):
+def fx_server(request, fx_app: Flask) -> WSGIServer:
     server = WSGIServer(application=fx_app.wsgi_app)
     server.start()
     request.addfinalizer(server.stop)

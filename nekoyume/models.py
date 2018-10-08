@@ -16,16 +16,14 @@ from typing import Callable, List, Optional, Type, Union
 from bencode import bencode
 from coincurve import PrivateKey, PublicKey
 from flask_caching import Cache
-from flask_sqlalchemy import SQLAlchemy
 from keccak import sha3_256
-from requests import get, post
+from requests import get
 from requests.exceptions import ConnectionError, Timeout
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from typeguard import typechecked
-
 
 from . import hashcash
 from .battle.characters import Factory as CharacterFactory
@@ -36,6 +34,8 @@ from .exc import (InvalidBlockError,
                   InvalidNameError,
                   OutOfRandomError)
 from .items import Item
+from .node import Node
+from .orm import db
 from .tables import Tables
 
 
@@ -44,7 +44,6 @@ MIN_BLOCK_INTERVAL = datetime.timedelta(0, 5)
 MAX_BLOCK_INTERVAL = datetime.timedelta(0, 15)
 NUM_HACK_AND_SLASH_MONSTERS: int = 3
 
-db = SQLAlchemy()
 cache = Cache()
 
 
@@ -66,102 +65,6 @@ def get_my_public_url():
         return f'http://{ip}{port}'
     else:
         return None
-
-
-class Node(db.Model):
-    """This object contains node information you know."""
-
-    #: URL of node
-    url = db.Column(db.String, primary_key=True)
-    #: last connected datetime of the node
-    last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
-
-    get_nodes_endpoint = '/nodes'
-    post_node_endpoint = '/nodes'
-    get_blocks_endpoint = '/blocks'
-    post_block_endpoint = '/blocks'
-    post_move_endpoint = '/moves'
-
-    @classmethod
-    def get(cls, url, session=db.session):
-        get_node = Node.query.filter_by(url=url).first
-        node = get_node()
-        if node:
-            return node
-        elif get(f'{url}/ping').text == 'pong':
-            node = Node(url=url, last_connected_at=datetime.datetime.utcnow())
-            if session:
-                session.add(node)
-                try:
-                    session.commit()
-                except IntegrityError:
-                    node = get_node()
-                    if node is None:
-                        raise
-                    return node
-            return node
-        else:
-            return None
-
-    @classmethod
-    def update(cls, node):
-        """
-        Update recent node list by scrapping other nodes' information.
-        """
-        try:
-            response = get(f"{node.url}{Node.get_nodes_endpoint}")
-        except (ConnectionError, Timeout):
-            return
-        for url in response.json()['nodes']:
-            try:
-                Node.get(url)
-            except (ConnectionError, Timeout):
-                continue
-        db.session.commit()
-
-    def ping(self):
-        try:
-            result = get(f'{self.url}/ping').text == 'pong'
-            if result:
-                self.last_connected_at = datetime.datetime.utcnow()
-            return result
-        except (ConnectionError, Timeout):
-            return False
-
-    @classmethod
-    def broadcast(cls,
-                  endpoint: str,
-                  serialized_obj: dict,
-                  sent_node=None,
-                  my_node=None,
-                  session=db.session) -> bool:
-        """
-        It broadcast `serialized_obj` to every nodes you know.
-
-        :param        endpoint: endpoint of node to broadcast
-        :param  serialized_obj: object that will be broadcasted.
-        :param       sent_node: sent :class:`nekoyume.models.Node`.
-                                this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.models.Node`.
-                                received node ignore my node when they
-                                broadcast received object.
-        """
-
-        for node in session.query(cls):
-            if sent_node and sent_node.url == node.url:
-                continue
-            try:
-                if my_node:
-                    serialized_obj['sent_node'] = my_node.url
-                post(node.url + endpoint, json=serialized_obj,
-                     timeout=3)
-                node.last_connected_at = datetime.datetime.utcnow()
-                session.add(node)
-            except (ConnectionError, Timeout):
-                continue
-
-        session.commit()
-        return True
 
 
 class Block(db.Model):

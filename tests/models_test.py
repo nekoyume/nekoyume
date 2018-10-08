@@ -9,11 +9,11 @@ from nekoyume.models import (Block,
                              HackAndSlash,
                              LevelUp,
                              Move,
-                             Node,
                              Say,
                              Sleep,
                              User,
                              get_address)
+from nekoyume.node import Node
 
 
 @fixture
@@ -123,13 +123,6 @@ def test_move_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
 
     move.broadcast(session=fx_other_session)
     assert fx_session.query(Move).get(move.id)
-
-
-def test_node(fx_server, fx_session):
-    assert fx_server.url
-    assert Node.get(fx_server.url, session=fx_session)
-    assert Node.get(fx_server.url, session=fx_session).url == fx_server.url
-    assert Node.get(fx_server.url, session=fx_session).last_connected_at
 
 
 def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,

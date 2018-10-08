@@ -96,6 +96,11 @@ class StatsData(TableData):
     intelligence: int = 0
     constitution: int = 0
     luck: int = 0
+    strength_lv: int = 0
+    dexterity_lv: int = 0
+    intelligence_lv: int = 0
+    constitution_lv: int = 0
+    luck_lv: int = 0
 
     def __init__(self, header, data):
         super().__init__(header, data)

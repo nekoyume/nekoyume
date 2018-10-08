@@ -14,16 +14,16 @@ class Stats(Component):
         return CharacterType.MONSTER if player else CharacterType.PLAYER
 
     def calc_melee_atk(self):
-        return self.data.strength + math.floor(self.data.dexterity * 0.2)
+        return self.strength + math.floor(self.dexterity * 0.2)
 
     def calc_ranged_atk(self):
-        return self.data.dexterity + math.floor(self.data.strength * 0.2)
+        return self.dexterity + math.floor(self.strength * 0.2)
 
     def calc_magic_atk(self):
-        return self.data.intelligence
+        return self.intelligence
 
     def calc_atk_spd(self):
-        return self.data.dexterity
+        return self.dexterity
 
     def calc_cooltime(self, cooltime):
         return cooltime
@@ -32,7 +32,7 @@ class Stats(Component):
         return self.data.get('defense', 0)
 
     def calc_hp_max(self):
-        return self.data.constitution * 10
+        return self.constitution * 10
 
     def damaged(self, damage):
         damage -= self.calc_defense()
@@ -68,6 +68,31 @@ class PlayerStats(Stats):
             self.level += 1
         self.exp_max = Tables.get_exp_max(self.level)
 
+    @property
+    def strength(self):
+        return self.data.strength + \
+            self.data.strength_lv * (self.level - 1)
+
+    @property
+    def dexterity(self):
+        return self.data.dexterity + \
+            self.data.dexterity_lv * (self.level - 1)
+
+    @property
+    def intelligence(self):
+        return self.data.intelligence + \
+            self.data.intelligence_lv * (self.level - 1)
+
+    @property
+    def constitution(self):
+        return self.data.constitution + \
+            self.data.constitution_lv * (self.level - 1)
+
+    @property
+    def luck(self):
+        return self.data.luck + \
+            self.data.luck_lv * (self.level - 1)
+
 
 class MonsterStats(Stats):
     def __init__(self, name):
@@ -75,3 +100,23 @@ class MonsterStats(Stats):
         super().__init__()
         self.name = name
         self.hp = self.calc_hp_max()
+
+    @property
+    def strength(self):
+        return self.data.strength
+
+    @property
+    def dexterity(self):
+        return self.data.dexterity
+
+    @property
+    def intelligence(self):
+        return self.data.intelligence
+
+    @property
+    def constitution(self):
+        return self.data.constitution
+
+    @property
+    def luck(self):
+        return self.data.luck

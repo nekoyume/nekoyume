@@ -32,15 +32,15 @@ class Character(ComponentContainer):
     def to_avatar(self, avatar, hp_recover=False):
         stats = self.get_component(PlayerStats)
         avatar.level = stats.level
+        avatar.strength = stats.strength
+        avatar.dexterity = stats.dexterity
+        avatar.intelligence = stats.intelligence
+        avatar.constitution = stats.constitution
+        avatar.luck = stats.luck
         avatar.exp_max = stats.exp_max
         avatar.exp = stats.exp
         avatar.hp_max = stats.calc_hp_max()
         avatar.hp = avatar.hp_max if hp_recover else stats.hp
-        avatar.strength = stats.data.strength
-        avatar.dexterity = stats.data.dexterity
-        avatar.intelligence = stats.data.intelligence
-        avatar.constitution = stats.data.constitution
-        avatar.luck = stats.data.luck
         bag = self.get_component(Bag)
         avatar.items = bag.items
 

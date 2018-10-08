@@ -1,0 +1,143 @@
+{% set avatar = g.user.avatar() %}
+
+{% macro create_item_table(prefix, cols) %}
+{% if cols > avatar.items|length %}
+    {% set cols = avatar.items|length %}
+{% endif %}
+<table class="items" style="width: {{ cols * 52 }}px;">
+    <tbody>
+    {% for item in avatar.items %}
+        {% if (loop.index - 1) % cols == 0 %}
+        <tr>
+        {% endif %}
+        <td>
+            <div id="{{ prefix }}-{{ item.name.lower() }}"
+                class="item item-{{ item.name.lower() }}">
+                <span class="equip" style="display: none;">E</span>
+                <span class="amount">{{ item.amount }}</span>
+            </div>
+            <div>{{ name }}</div>
+        </td>
+        {% if loop.index % cols == 0 %}
+        </tr>
+        {% endif %}
+    {% endfor %}    
+    </tbody>
+</table>
+{% endmacro %}
+
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>nekoyume</title>
+  </head>
+  <body>
+    <div class="status">
+
+      <div class="avatar">
+        <div>
+          LV. {{ avatar.level }} 
+          <img class="avatar-profile-image" src="{{ avatar.profile_image_url }}" alt="{{ avatar.name }} profile image">
+          {{ avatar.name }}
+        </div>
+        <label>HP {{ avatar.hp }} / {{ avatar.hp_max }}</label>
+        <div class="hp-bar">
+          <div class="bar" style="background: #c00; width: {{ avatar.hp / avatar.hp_max * 100 }}%;"></div>
+        </div>
+        <label>EXP {{ avatar.exp }} / {{ avatar.exp_max }}</label>
+        <div class="exp-bar">
+          <div class="bar" style="background: #0c0; width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
+        </div>
+        <center><button onclick="toggleStats();"> ▼ </button></center>
+        <div class="stats" style="display: none;">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">STATS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>STR</td>
+                <td><button onclick="strDown();"> ◀︎ </button>{{ avatar.strength }}<button onclick="strUp();"> ► </button></td>
+              </tr>
+              <tr>
+                <td>DEX</td>
+                <td><button onclick="dexDown();"> ◀︎ </button>{{ avatar.dexterity }}<button onclick="dexUp();"> ► </button></td>
+              </tr>
+              <tr>
+                <td>INT</td>
+                <td><button onclick="intDown();"> ◀︎ </button>{{ avatar.intelligence }}<button onclick="intUp();"> ► </button></td>
+              </tr>
+              <tr>
+                <td>CON</td>
+                <td><button onclick="conDown();"> ◀︎ </button>{{ avatar.constitution }}<button onclick="conUp();"> ► </button></td>
+              </tr>
+              <tr>
+              <td>LUK</td>
+                <td><button onclick="lukDown();"> ◀︎ </button>{{ avatar.luck }}<button onclick="lukUp();"> ► </button></td>
+              </tr>
+              <!-- <tr>
+                <td>POINTS</td>
+                <td>0</td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="gold"><div class="item-icon item-gold" style="float: left;"></div> {{ avatar.gold }}</div>
+      <div class="zone">{{ avatar.zone }}</div>
+
+      <div class="inventory popup">
+        <h2>INVENTORY</h2>
+        {{ create_item_table("inventory", 4) }}
+      </div>
+
+      <div class="equipments popup">
+        <div class="item">
+        </div>
+      </div>
+      
+      <!-- start moves -->
+      <div class="moves">
+        {% for move in feed.limit(10) %}
+        <div class="move move-{{ move.id }}">
+          {% set move_avatar, result = move.execute() %}
+          {% if result.type == 'create_novice' %}
+          {% elif result.type == 'hack_and_slash' %}
+          ⚔️ {% trans -%}Battle was finished.{%- endtrans %}
+          <input type="hidden" name="play_{{ move.block_id }}" value="{{ result.battle_logger.json_dump() }}">
+          <button onclick="replay({{ move.block_id }});">Replay</button>
+          {% set characters = result.battle_logger.get_characters() %}
+          {% for i in characters %}
+          {{ characters[i].name }}
+          {% endfor %}
+          <dl>
+          {% for status in result.battle_logger.logs %}
+            {% if status.type == 'get_exp' %}
+            <li>🤔(EXP +{{ status['exp'] }})</li>
+            {% elif status.type == 'get_item' %}
+            <li>🎁{% trans item=status['item'] -%}
+            You obtained {{ item }}!</li>
+            {%- endtrans %}
+            {% elif status.type == 'item_use' %}
+            <li>🎁{% trans item=status['item'], status_change=status['status_change'] -%}
+            You used {{ item }}. <small>({{ status_change }})</small></li>
+            {%- endtrans %}
+            {% endif %}
+          {% endfor %}
+        </dl>
+          {% elif result.type == 'sleep' %}
+          💤{% trans -%}HP was recovered by sleep.{%- endtrans %}
+          {% endif %}
+          <hr />
+        </div>
+        {% endfor %}
+      </div>
+      <!-- end moves-->
+    </div>
+  </body>
+</html>

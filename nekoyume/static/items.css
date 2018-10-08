@@ -1,0 +1,52 @@
+.item-icon {
+    margin: auto;
+    background-image: url("assets/tf_icon_32.png");
+    width: 32px;
+    height: 32px !important;
+}
+
+/* -- placeholder -- */
+.item-weapon {
+    background-position: -224px 0px;
+}
+.item-armor {
+    background-position: -256px 0px;
+}
+.item-food {
+    background-position: -288px 0px;
+}
+
+.item-sword_1 {
+    background-position: 0px -192px;
+}
+.item-wand_1 {
+    background-position: 0px -224px;
+}
+.item-bow_1 {
+    background-position: -320px -224px;
+}
+
+.item-gold {
+    background-position: -160px -416px;
+}
+.item-bndg {
+    background-position: -416px -416px;
+}
+.item-meat {
+    background-position: -160px -128px;
+}
+.item-whet {
+    background-position: -352px -160px;
+}
+.item-eggs {
+    background-position: -224px -128px;
+}
+.item-chkn {
+    background-position: -256px -128px;
+}
+.item-mplt {
+    background-position: -192px -128px;
+}
+.item-rkst {
+    background-position: -128px -96px;
+}

@@ -98,6 +98,41 @@ def get_dashboard():
                            rank=get_rank())
 
 
+@game.route('/game')
+@login_required
+def get_game():
+    if not g.user.avatar():
+        return redirect(url_for('.get_new_novice'))
+
+    return render_template('game.html')
+
+
+@game.route('/status')
+@login_required
+def get_status():
+    if not g.user.avatar():
+        return redirect(url_for('.get_new_novice'))
+
+    feed = g.user.moves
+    # for caching
+    for move in reversed(feed.limit(10).all()):
+        avatar, result = move.execute()
+    return render_template('status.html',
+                           feed=feed.order_by(Move.block_id.desc()))
+
+
+@game.route('/in_progress')
+@login_required
+def get_unconfirmed():
+    if not g.user.avatar():
+        return redirect(url_for('.get_new_novice'))
+
+    unconfirmed_move = get_unconfirmed_move(g.user.address)
+    if unconfirmed_move:
+        return "true"
+    return "false"
+
+
 @game.route('/new')
 @login_required
 def get_new_novice():

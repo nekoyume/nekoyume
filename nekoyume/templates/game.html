@@ -1,0 +1,204 @@
+{% set avatar = g.user.avatar() %}
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Game :: Nekøyume</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='items.css') }}">
+    <script src="{{ url_for('static', filename='Build/UnityLoader.js') }}"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="game">
+      <div id="gameContainer" style="width: 1136px; height: 640px"></div>
+
+      <div class="progress">
+        <h2>{% trans -%}Currently in progress ...{%- endtrans %}</h2>
+      </div>
+
+      <div class="message"></div>
+  
+      <div class="menus">
+        <button onclick="toggleInventory();">Inventory</button>
+      </div>
+
+      <div class="buttons">
+        <button class="hack-and-slash" onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>⚔️</button>
+        <button class="sleep" onclick="sleep();">🛌</button>
+        <!--<button class="zone" onclick"zone();">🐾</button>-->
+      </div>
+    </div>
+
+    <div style="display: none;" class="block"></div>
+    <div style="display: none;" class="check-unconfirmed"></div>
+
+    <div class="status"></div>
+
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='Build/webgl.json') }}", {onProgress: loading});
+      var inProgress = true;
+
+      function loading(gameInstance, progress) {
+        if (!gameInstance.Module) {
+          inProgress = false;
+          $('.status').load('/status .status');
+          return;
+        }
+
+        $('.message').text((100 * progress) + '%');
+        if (progress == 1) {
+          inProgress = false;
+          $('.message').text('');
+          $('.status').load('/status .status');
+        //gameInstance.logo.style.display = gameInstance.progress.style.display = "none";
+        }
+      }
+
+      function setInProgress(value) {
+        inProgress = value;
+        if (value)
+        {
+          $('.progress').show();
+          $('.message').text('');
+          $('.game button').prop('disabled', true);
+        }
+        else
+        {
+          $('.progress').hide();
+          $('.game button').prop('disabled', false);
+        }
+      }
+
+      function onLoadUnity() {
+        inProgress = false;
+        $('.status').load('/status .status', function () {
+        });
+      }
+
+      function onMessage(msg) {
+        // message from unity
+        if (msg == "end_battle") {
+          $('.message').text('');
+        }
+      }
+
+      function onSkill(name) {
+        $('.message').text(name);
+      }
+
+      function play() {
+        if (inProgress)
+          return;
+
+        var hasEl = $($('.moves div')[0]).children('input');
+        if (hasEl.length > 0) {
+          var json = $(hasEl).val();
+          gameInstance.SendMessage("Battle", "Play", json);
+        } else {
+          gameInstance.SendMessage("Battle", "Home", "novice");
+        }
+      }
+
+      function replay(block_id) {
+        if (inProgress)
+          return;
+
+        var json = $('input[name=play_' + block_id + ']').val();
+        gameInstance.SendMessage("Battle", "Play", json);
+      }
+
+      function update() {
+        var interval = setInterval(function() {
+          $('.check-unconfirmed').load('/in_progress', function (data) {
+            if (data == "false") {
+              clearInterval(interval);
+              setInProgress(false);
+              $('.status').load('/status .status', function () {
+                $('.block').append(' clear');
+                play();
+              });
+            }
+          });
+          $.getJSON("/blocks/last", function(data) {
+            $('.block').text(data['block']['id']);
+          });
+        }, 2000);
+      }
+
+      function hack_and_slash() {
+        if (inProgress)
+          return;
+
+        gameInstance.SendMessage("Battle", "Walking", "");
+        setInProgress(true);
+        $.post("{{ url_for('game.post_move') }}", {
+          name: 'hack_and_slash'
+        }, update);
+      }
+
+      function sleep() {
+        if (inProgress)
+          return;
+
+        gameInstance.SendMessage("Battle", "Sleep", "");
+        setInProgress(true);
+        $.post("{{ url_for('game.post_move') }}", {
+          name: 'sleep'
+        }, update);
+      }
+
+      function toggleStats() {
+        $('.stats').toggle();
+      }
+
+      function toggleInventory() {
+        $('.inventory').toggle();
+      }
+
+      function strDown() {
+
+      }
+
+      function strUp() {
+        
+      }
+
+      function dexDown() {
+
+      }
+
+      function dexUp() {
+        
+      }
+
+      function intDown() {
+
+      }
+
+      function intUp() {
+        
+      }
+
+      function conDown() {
+
+      }
+
+      function conUp() {
+        
+      }
+
+      function lukDown() {
+
+      }
+
+      function lukUp() {
+        
+      }
+    </script>
+  </body>
+</html>

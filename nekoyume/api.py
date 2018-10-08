@@ -157,6 +157,7 @@ def post_block():
                 Node.query.order_by(
                     Node.last_connected_at.desc()).first())
         return jsonify(result='failed',
+                       block_id=last_block.id,
                        message="new block isn't our next block."), 403
 
     block = Block.deserialize(new_block)

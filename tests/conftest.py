@@ -1,6 +1,8 @@
 import os
 
 from coincurve import PrivateKey
+from flask import Flask
+from flask.testing import FlaskClient
 from pytest import fixture
 from pytest_localserver.http import WSGIServer
 from sqlalchemy.orm import sessionmaker
@@ -55,7 +57,7 @@ def fx_server(request, fx_app):
 
 
 @fixture
-def fx_test_client(fx_app):
+def fx_test_client(fx_app: Flask) -> FlaskClient:
     fx_app.testing = True
     return fx_app.test_client()
 

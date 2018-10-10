@@ -195,7 +195,7 @@ class Block(db.Model):
                 (id == 1, prev_hash.is_(None)),
             ], else_=prev_hash.isnot(None))
         ),
-        db.CheckConstraint((id == 1) | (difficulty > 1)),
+        db.CheckConstraint((id == 1) | (difficulty > 0)),
     )
 
     @classmethod
@@ -248,7 +248,7 @@ class Block(db.Model):
                 valid = valid and self.difficulty == difficulty
         else:
             valid = valid and self.prev_hash is None
-            valid = valid and self.difficulty == 1
+            valid = valid and self.difficulty == 0
 
         valid = valid and self.root_hash == hashlib.sha256(
             ''.join(sorted((m.id for m in self.moves))).encode('utf-8')

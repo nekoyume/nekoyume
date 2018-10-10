@@ -1,60 +1,35 @@
 {% extends 'layout.html' %}
 {% block title %}Login{% endblock %}
 {% block body %}
-<style>
-    .private-key-form-card {
-        width:100%;
-    }
-
-    .private-key-form-card form {
-        margin-top: 20px;
-    }
-</style>
-<div class="mdl-layout mdl-js-layout">
-    <!-- Always shows a header, even in smaller screens. -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-        <header class="mdl-layout__header">
-            <div class="mdl-layout__header-row">
-            <!-- Title -->
-                <span class="mdl-layout-title">Nekøyume</span>
-            </div>
-        </header>
-        <main class="mdl-layout__content">
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--2-col">
-                </div>
-                <div class="mdl-cell mdl-cell--8-col">
-                    <div class="mdl-card private-key-form-card mdl-shadow--2dp">
-                        <div class="mdl-card__title mdl-card--expand">
-                            <h2 class="mdl-card__title-text">
-                            {% trans %}Welcome!{% endtrans %}
-                            </h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <center>
-                            <img width="80%" src="{{ url_for('static', filename='nekoyume.png') }}" alt="nekoyume">
-                            <p>
-                            {% trans %}Hello! Welcome to the world of Nekoyume. Please set your own private key and input that in the form below so that you can start game right know. Private key is a password that identify you. Please make this unique.{% endtrans %}</p>
-                            {% if request.args.get('error') == 'invalid-private-key' %}
-                                <p>{% trans %}Please enter a valid private key of 64 hexadecimal digits (it can be optionally prefixed with <tt>0x</tt>).{% endtrans %}</p>
-                            {% endif %}
-                            </center>
-                        </div>
-                        <div class="mdl-card__actions">
-                            <form action="{{ url_for('.post_login') }}" method="POST" style="text-align: center">
-                              <div class="mdl-textfield mdl-js-textfield">
-                                  <input class="mdl-textfield__input" type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
-                                <label class="mdl-textfield__label" for="private_key">{% trans %}Enter your private key{% endtrans %}</label>
-                              </div>
-                              <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans %}OK{% endtrans %}">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+Nekøyume
+<div>
+    <h2>{% trans %}Welcome!{% endtrans %}</h2>
 </div>
+<div>
+    <p>{% trans %}Hello! Welcome to the world of Nekoyume. Please set your own private key and input that in the form below so that you can start game right know. Private key is a password that identify you. Please make this unique.{% endtrans %}</p>
+    {% if request.args.get('error') == 'invalid-private-key' %}
+    <p>{% trans %}Please enter a valid private key of 64 hexadecimal digits (it can be optionally prefixed with <tt>0x</tt>).{% endtrans %}</p>
+    {% endif %}
+</div>
+<div>
+    <form action="{{ url_for('.post_login') }}" method="POST">
+        <div>
+            {% if 'username' in session and 'private_key' in session %}
+            <input type="text" id="name" name="name" maxlength="10">
+            <label for="name">{% trans %}Enter your name{% endtrans %}</label>
+            <input type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
+            <label for="private_key">{% trans %}Enter your private key{% endtrans %}</label>
+            {% else %}
+            <input type="text" id="name" name="name" maxlength="10">
+            <label for="name">{% trans %}Enter your name{% endtrans %}</label>
+            <input type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
+            <label for="private_key">{% trans %}Enter your private key{% endtrans %}</label>
+            {% endif %}
+        </div>
+        <input type="submit" value="{% trans %}OK{% endtrans %}">
+    </form>
+</div>
+{% if 'username' not in session and 'private_key' not in session %}
 <script src="https://cdn.rawgit.com/weepy/brequire/master/require.js"></script>
 <script>
 window.setTimeout(function () {
@@ -70,4 +45,5 @@ window.setTimeout(function () {
 	input.value = hex;
 }, 0);
 </script>
+{% endif %}
 {% endblock %}

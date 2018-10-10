@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}New{% endblock %}
+{% set avatar = g.user.avatar() %}
+{% block body %}
+    <div class="menus first-class" style="left: 700px;">
+      <button onclick="firstClass('swordman');">Swordman</button>
+      <button onclick="firstClass('mage');">Mage</button>
+      <button onclick="firstClass('archer');">Archer</button>
+      <button onclick="firstClass('acolyte');">Acolyte</button>
+    </div>
+    <div style="display: none;" class="check-unconfirmed"></div>
+    <script>
+        function update() {
+          var interval = setInterval(function() {
+            $('.check-unconfirmed').load('/in_progress', function (data) {
+              if (data == "false") {
+                clearInterval(interval);
+                location.href='{{ url_for("game.get_game") }}';
+              }
+            });
+          }, 3000);
+        }
+
+        function firstClass(c) {
+          $('.first-class button').prop('disabled', true);
+          $.post("{{ url_for('game.post_move') }}", {
+            name: 'first_class',
+            class_: c
+          }, update);
+        }
+    </script>
+{% endblock %}

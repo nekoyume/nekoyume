@@ -795,7 +795,7 @@ class CreateNovice(Move):
         gold = getattr(avatar, 'gold', 0)
 
         avatar = Avatar(
-            name=self.details.get('name', self.user_address[:6]),
+            name=self.details['name'][:10] + '#' + self.user_address[:6],
             user=self.user_address,
             current_block=self.block,
             gold=gold,

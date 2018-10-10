@@ -47,11 +47,12 @@ def get_login():
 
 @game.route('/login', methods=['POST'])
 def post_login():
+    session['name'] = request.values.get('name')
     session['private_key'] = request.values.get('private_key')
     if 'next' in request.values:
         return redirect(request.values.get('next'))
     else:
-        return redirect(url_for('.get_dashboard'))
+        return redirect(url_for('.get_game'))
 
 
 @game.route('/logout', methods=['GET'])
@@ -80,7 +81,7 @@ def get_unconfirmed_move(address):
     return None
 
 
-@game.route('/')
+@game.route('/dashboard')
 @login_required
 def get_dashboard():
     if not g.user.avatar():
@@ -98,11 +99,14 @@ def get_dashboard():
                            rank=get_rank())
 
 
-@game.route('/game')
+@game.route('/')
 @login_required
 def get_game():
-    if not g.user.avatar():
+    avatar = g.user.avatar()
+    if not avatar:
         return redirect(url_for('.get_new_novice'))
+    if avatar.class_ == 'novice':
+        return redirect(url_for('.get_first_class'))
 
     return render_template('game.html')
 
@@ -142,20 +146,26 @@ def get_new_novice():
             name='create_novice',
         ).first()
         if not move:
-            move = g.user.create_novice({
-                'strength': '12',
-                'dexterity': '12',
-                'constitution': '9',
-                'intelligence': '10',
-                'wisdom': '8',
-                'charisma': '13'})
+            move = g.user.create_novice({'name': session['name']})
             db.session.add(move)
             db.session.commit()
             move.broadcast(
                 my_node=Node(url=f'{request.scheme}://{request.host}')
             )
         return render_template('new.html', move=move)
-    return redirect(url_for('.get_dashboard'))
+    return redirect(url_for('.get_game'))
+
+
+@game.route('/first_class')
+@login_required
+def get_first_class():
+    avatar = g.user.avatar()
+    if not avatar:
+        return redirect(url_for('.get_new_novice'))
+    if avatar.class_ != 'novice':
+        return redirect(url_for('.get_game'))
+        
+    return render_template('first_class.html')
 
 
 @game.route('/session_moves', methods=['POST'])
@@ -164,11 +174,11 @@ def post_move():
     unconfirmed_move = get_unconfirmed_move(g.user.address)
 
     if unconfirmed_move:
-        return redirect(url_for('.get_dashboard'))
+        return redirect(url_for('.get_game'))
 
     if request.values.get('name') == 'hack_and_slash':
         if g.user.avatar().dead:
-            return redirect(url_for('.get_dashboard'))
+            return redirect(url_for('.get_game'))
         move = g.user.hack_and_slash(request.values.get('weapon'),
                                      request.values.get('armor'),
                                      request.values.get('food'),)
@@ -193,7 +203,7 @@ def post_move():
 
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))
-    return redirect(url_for('.get_dashboard'))
+    return redirect(url_for('.get_game'))
 
 
 @game.route('/export/', methods=['GET'])

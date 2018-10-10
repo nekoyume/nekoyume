@@ -1,10 +1,6 @@
-{% set avatar = g.user.avatar() %}
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Game :: Nekøyume</title>
+{% extends 'layout.html' %}
+{% block title %}Game{% endblock %}
+{% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='items.css') }}">
     <script src="{{ url_for('static', filename='Build/UnityLoader.js') }}"></script>
@@ -12,233 +8,241 @@
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
-  </head>
-  <body>
-    <div class="game">
-      <div id="gameContainer" style="width: 1136px; height: 640px"></div>
+{% endblock %}
+{% set avatar = g.user.avatar() %}
+{% block body %}
+  <div class="game">
+    <div id="gameContainer" style="width: 1136px; height: 640px"></div>
 
-      <div class="progress">
-        <h2>{% trans -%}Currently in progress ...{%- endtrans %}</h2>
-      </div>
-
-      <div class="message"></div>
-  
-      <div class="menus">
-        <button onclick="toggleInventory();">Inventory</button>
-      </div>
-
-      <div class="buttons">
-        <button class="hack-and-slash" onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>⚔️</button>
-        <button class="sleep" onclick="sleep();">🛌</button>
-        <!--<button class="zone" onclick"zone();">🐾</button>-->
-      </div>
+    <div class="progress">
+      <h2>{% trans -%}Currently in progress ...{%- endtrans %}</h2>
     </div>
 
-    <div style="display: none;" class="block"></div>
-    <div style="display: none;" class="check-unconfirmed"></div>
+    <div class="message"></div>
 
-    <div class="status"></div>
+    <div class="menus">
+      <button onclick="toggleInventory();">Inventory</button>
+    </div>
 
-    <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='Build/webgl.json') }}", {onProgress: loading});
-      var inProgress = true;
+    <div class="buttons">
+      <button class="hack-and-slash" onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>⚔️</button>
+      <button class="sleep" onclick="sleep();">🛌</button>
+      <!--<button class="zone" onclick"zone();">🐾</button>-->
+    </div>
+  </div>
 
-      // init
-      $('.check-unconfirmed').load('/in_progress', function (data) {
-        if (data == "false") {
-          setInProgress(false);
-          $('.status').load('/status .status');
-        } else {
-          $('.status').load('/status .status', function () {
-            update();
-            setInProgress(true);
-          });
-        }
-      });
-      //
+  <div style="display: none;" class="block"></div>
+  <div style="display: none;" class="check-unconfirmed"></div>
 
-      function loading(gameInstance, progress) {
-        if (!gameInstance.Module) {
-          inProgress = false;
-          $('.status').load('/status .status');
-          return;
-        }
+  <div class="status"></div>
 
-        $('.message').text((100 * progress) + '%');
-        if (progress == 1) {
-          inProgress = false;
-          $('.message').text('');
-          $('.status').load('/status .status');
-        //gameInstance.logo.style.display = gameInstance.progress.style.display = "none";
-        }
-      }
+  <div>
+    <a href="https://nekoyu.me/">{% trans -%}Homepage{%- endtrans %}</a>
+    <a href="https://nekoyu.me/token">{% trans -%}Buy Gold{%- endtrans %}</a>
+    <a href="https://github.com/nekoyume">Github</a>
+    <a href="{{ url_for('game.export_private_key') }}">{% trans -%}Export Private Key{%- endtrans %}</a>
+    <a href="{{ url_for('game.get_logout') }}">{% trans -%}Logout{%- endtrans %}</a>
+  </div>
 
-      function setInProgress(value) {
-        inProgress = value;
-        if (value)
-        {
-          $('.progress').show();
-          $('.message').text('');
-          $('.game button').prop('disabled', true);
-        }
-        else
-        {
-          $('.progress').hide();
-          $('.game button').prop('disabled', false);
-        }
-      }
+  <script>
+    var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='Build/webgl.json') }}", {onProgress: loading});
+    var inProgress = true;
 
-      function onLoadUnity() {
-        inProgress = false;
+    // init
+    $('.check-unconfirmed').load('/in_progress', function (data) {
+      if (data == "false") {
+        setInProgress(false);
+        $('.status').load('/status .status');
+      } else {
         $('.status').load('/status .status', function () {
+          update();
+          setInProgress(true);
         });
       }
+    });
+    //
 
-      function onMessage(msg) {
-        // message from unity
-        if (msg == "end_battle") {
-          $('.message').text('');
-        }
+    function loading(gameInstance, progress) {
+      if (!gameInstance.Module) {
+        inProgress = false;
+        $('.status').load('/status .status');
+        return;
       }
 
-      function onSkill(name) {
-        $('.message').text(name);
+      $('.message').text((100 * progress) + '%');
+      if (progress == 1) {
+        inProgress = false;
+        $('.message').text('');
+        $('.status').load('/status .status');
+      //gameInstance.logo.style.display = gameInstance.progress.style.display = "none";
       }
+    }
 
-      function play() {
-        if (inProgress)
-          return;
-
-        var hasEl = $($('.moves div')[0]).children('input');
-        if (hasEl.length > 0) {
-          var json = $(hasEl).val();
-          gameInstance.SendMessage("Battle", "Play", json);
-        } else {
-          gameInstance.SendMessage("Battle", "Home", "novice");
-        }
+    function setInProgress(value) {
+      inProgress = value;
+      if (value)
+      {
+        $('.progress').show();
+        $('.message').text('');
+        $('.game button').prop('disabled', true);
       }
+      else
+      {
+        $('.progress').hide();
+        $('.game button').prop('disabled', false);
+      }
+    }
 
-      function replay(block_id) {
-        if (inProgress)
-          return;
+    function onLoadUnity() {
+      inProgress = false;
+      $('.status').load('/status .status', function () {
+      });
+    }
 
-        var json = $('input[name=play_' + block_id + ']').val();
+    function onMessage(msg) {
+      // message from unity
+      if (msg == "end_battle") {
+        $('.message').text('');
+      }
+    }
+
+    function onSkill(name) {
+      $('.message').text(name);
+    }
+
+    function play() {
+      if (inProgress)
+        return;
+
+      var hasEl = $($('.moves div')[0]).children('input');
+      if (hasEl.length > 0) {
+        var json = $(hasEl).val();
         gameInstance.SendMessage("Battle", "Play", json);
+      } else {
+        gameInstance.SendMessage("Battle", "Home", "novice");
       }
+    }
 
-      function update() {
-        var interval = setInterval(function() {
-          $('.check-unconfirmed').load('/in_progress', function (data) {
-            if (data == "false") {
-              clearInterval(interval);
-              setInProgress(false);
-              $('.status').load('/status .status', function () {
-                $('.block').append(' clear');
-                play();
-              });
-            }
-          });
-          $.getJSON("/blocks/last", function(data) {
-            $('.block').text(data['block']['id']);
-          });
-        }, 2000);
-      }
+    function replay(block_id) {
+      if (inProgress)
+        return;
 
-      function hack_and_slash() {
-        if (inProgress)
-          return;
+      var json = $('input[name=play_' + block_id + ']').val();
+      gameInstance.SendMessage("Battle", "Play", json);
+    }
 
-        gameInstance.SendMessage("Battle", "Walking", "");
-        setInProgress(true);
-        $.post("{{ url_for('game.post_move') }}", {
-          name: 'hack_and_slash'
-        }, update);
-      }
+    function update() {
+      var interval = setInterval(function() {
+        $('.check-unconfirmed').load('/in_progress', function (data) {
+          if (data == "false") {
+            clearInterval(interval);
+            setInProgress(false);
+            $('.status').load('/status .status', function () {
+              $('.block').append(' clear');
+              play();
+            });
+          }
+        });
+        $.getJSON("/blocks/last", function(data) {
+          $('.block').text(data['block']['id']);
+        });
+      }, 2000);
+    }
 
-      function sleep() {
-        if (inProgress)
-          return;
+    function hack_and_slash() {
+      if (inProgress)
+        return;
 
-        gameInstance.SendMessage("Battle", "Sleep", "");
-        setInProgress(true);
-        $.post("{{ url_for('game.post_move') }}", {
-          name: 'sleep'
-        }, update);
-      }
+      gameInstance.SendMessage("Battle", "Walking", "");
+      setInProgress(true);
+      $.post("{{ url_for('game.post_move') }}", {
+        name: 'hack_and_slash'
+      }, update);
+    }
 
-      function firstClass(c) {
-        if (inProgress)
-          return;
+    function sleep() {
+      if (inProgress)
+        return;
 
-        $('.first-class button').prop('disabled', true);
-        gameInstance.SendMessage("Battle", "Clear", "");
-        setInProgress(true);
-        $.post("{{ url_for('game.post_move') }}", {
-          name: 'first_class',
-          class_: c
-        }, update);
-      }
+      gameInstance.SendMessage("Battle", "Sleep", "");
+      setInProgress(true);
+      $.post("{{ url_for('game.post_move') }}", {
+        name: 'sleep'
+      }, update);
+    }
 
-      function moveZone(zone) {
-        if (inProgress)
-          return;
+    function firstClass(c) {
+      if (inProgress)
+        return;
 
-        $('.zone button').prop('disabled', true);
-        gameInstance.SendMessage("Battle", "Walking", "");
-        setInProgress(true);
-        $.post("{{ url_for('game.post_move') }}", {
-          name: 'move_zone',
-          zone: zone
-        }, update);
-      }
+      $('.first-class button').prop('disabled', true);
+      gameInstance.SendMessage("Battle", "Clear", "");
+      setInProgress(true);
+      $.post("{{ url_for('game.post_move') }}", {
+        name: 'first_class',
+        class_: c
+      }, update);
+    }
 
-      function toggleStats() {
-        $('.stats').toggle();
-      }
+    function moveZone(zone) {
+      if (inProgress)
+        return;
 
-      function toggleInventory() {
-        $('.inventory').toggle();
-      }
+      $('.zone button').prop('disabled', true);
+      gameInstance.SendMessage("Battle", "Walking", "");
+      setInProgress(true);
+      $.post("{{ url_for('game.post_move') }}", {
+        name: 'move_zone',
+        zone: zone
+      }, update);
+    }
 
-      function strDown() {
+    function toggleStats() {
+      $('.stats').toggle();
+    }
 
-      }
+    function toggleInventory() {
+      $('.inventory').toggle();
+    }
 
-      function strUp() {
-        
-      }
+    function strDown() {
 
-      function dexDown() {
+    }
 
-      }
+    function strUp() {
+      
+    }
 
-      function dexUp() {
-        
-      }
+    function dexDown() {
 
-      function intDown() {
+    }
 
-      }
+    function dexUp() {
+      
+    }
 
-      function intUp() {
-        
-      }
+    function intDown() {
 
-      function conDown() {
+    }
 
-      }
+    function intUp() {
+      
+    }
 
-      function conUp() {
-        
-      }
+    function conDown() {
 
-      function lukDown() {
+    }
 
-      }
+    function conUp() {
+      
+    }
 
-      function lukUp() {
-        
-      }
-    </script>
-  </body>
-</html>
+    function lukDown() {
+
+    }
+
+    function lukUp() {
+      
+    }
+  </script>
+{% endblock %}

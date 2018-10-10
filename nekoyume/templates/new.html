@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}New{% endblock %}
 {% block body %}
 <style>
     .new-character-creation {
@@ -50,7 +50,7 @@
 var interval = setInterval(function() {
     $.getJSON('/moves/'+$('input[name=new_move_id]').val(), function(data) {
         if(data.move.block) {
-            location.href='{{ url_for("game.get_dashboard") }}';
+            location.href='{{ url_for("game.get_game") }}';
         }
     });
 }, 3000);

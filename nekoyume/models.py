@@ -42,7 +42,7 @@ from .tables import Tables
 PROTOCOL_VERSION: int = 2
 MIN_BLOCK_INTERVAL = datetime.timedelta(0, 5)
 MAX_BLOCK_INTERVAL = datetime.timedelta(0, 15)
-NUM_HACK_AND_SLASH_MONSTERS: int = 3
+NUM_HACK_AND_SLASH_PARTY: int = 3
 
 db = SQLAlchemy()
 cache = Cache()
@@ -750,8 +750,14 @@ class HackAndSlash(Move):
         my_character = factory.create_from_avatar(
             avatar, self.details)
         simul.characters.append(my_character)
+
+        npc_list = Tables.get_npc_list()
+        for i in range(NUM_HACK_AND_SLASH_PARTY - 1):
+            npc = factory.create_npc(npc_list.pop(rand))
+            simul.characters.append(npc)
+
         appear_monsters = Tables.get_monster_appear_list(avatar.zone)
-        for i in range(NUM_HACK_AND_SLASH_MONSTERS):
+        for i in range(NUM_HACK_AND_SLASH_PARTY):
             simul.characters.append(
                 factory.create_monster(appear_monsters.select(rand)))
         simul.simulate()

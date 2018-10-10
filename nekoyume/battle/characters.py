@@ -115,6 +115,23 @@ class Factory:
         Factory.set_behavior(character, skills)
         return character
 
+    def create_npc(self, id):
+        self.character_id += 1
+        data = Tables.npc[id]
+        character = Character()
+        character.id_ = self.character_id
+        character.type_ = CharacterType.PLAYER
+        character.class_ = data.class_
+        character.name = id
+        character.add_component(PlayerStats(data.class_, data.level, 0, 0))
+        stats = character.get_component(Stats)
+        stats.hp = stats.calc_hp_max()
+        character.add_component(Bag())
+        character.add_component(Aggro())
+        skills = character.get_skills()
+        Factory.set_behavior(character, skills)
+        return character
+
     def create_monster(self, name):
         self.character_id += 1
         data = Tables.monsters[name]

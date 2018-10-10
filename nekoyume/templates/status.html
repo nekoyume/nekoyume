@@ -93,7 +93,32 @@
       </div>
 
       <div class="gold"><div class="item-icon item-gold" style="float: left;"></div> {{ avatar.gold }}</div>
-      <div class="zone">{{ avatar.zone }}</div>
+
+      <div class="zone">
+        <dl>
+        {% set zone_list = avatar.unlocked_zone %}
+        {% for zone in zone_list %}
+          {% if zone == avatar.zone %}
+            <li>
+            {{ zone }}
+            </li>
+          {% else %}
+            <li>
+              <button onclick="moveZone('{{ zone }}');">{{ zone }}</button>
+            </li>
+          {% endif %}
+        {% endfor %}
+        </dl>
+      </div>
+
+      {% if avatar.class_ == 'novice' %}
+      <div class="menus first-class" style="left: 700px;">
+        <button onclick="firstClass('swordman');">Swordman</button>
+        <button onclick="firstClass('mage');">Mage</button>
+        <button onclick="firstClass('archer');">Archer</button>
+        <button onclick="firstClass('acolyte');">Acolyte</button>
+      </div>
+      {% endif %}
 
       <div class="inventory popup">
         <h2>INVENTORY</h2>

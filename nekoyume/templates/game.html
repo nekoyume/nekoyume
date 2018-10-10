@@ -32,15 +32,6 @@
         <button class="sleep" onclick="sleep();">🛌</button>
         <!--<button class="zone" onclick"zone();">🐾</button>-->
       </div>
-
-      {% if avatar.class_ == 'novice' %}
-      <div class="menus first-classes" style="left: 700px;">
-        <button onclick="firstClass('swordman');">Swordman</button>
-        <button onclick="firstClass('mage');">Mage</button>
-        <button onclick="firstClass('archer');">Archer</button>
-        <button onclick="firstClass('acolyte');">Acolyte</button>
-      </div>
-      {% endif %}
     </div>
 
     <div style="display: none;" class="block"></div>
@@ -179,11 +170,25 @@
         if (inProgress)
           return;
 
+        $('.first-class button').prop('disabled', true);
         gameInstance.SendMessage("Battle", "Clear", "");
         setInProgress(true);
         $.post("{{ url_for('game.post_move') }}", {
           name: 'first_class',
           class_: c
+        }, update);
+      }
+
+      function moveZone(zone) {
+        if (inProgress)
+          return;
+
+        $('.zone button').prop('disabled', true);
+        gameInstance.SendMessage("Battle", "Walking", "");
+        setInProgress(true);
+        $.post("{{ url_for('game.post_move') }}", {
+          name: 'move_zone',
+          zone: zone
         }, update);
       }
 

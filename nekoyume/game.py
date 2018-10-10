@@ -188,6 +188,8 @@ def post_move():
                               request.values.get('item3'))
     if request.values.get('name') == 'first_class':
         move = g.user.first_class(request.values.get('class_'))
+    if request.values.get('name') == 'move_zone':
+        move = g.user.move_zone(request.values.get('zone'))
 
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))

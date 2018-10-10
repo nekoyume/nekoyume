@@ -72,15 +72,14 @@ class Skill(Behavior):
         return self.nexttime > simulator.time
 
     def kill(self, simulator, target):
-        my_stats = self.owner.get_component(Stats)
         target_stats = target.get_component(Stats)
         simulator.logger.log(Dead(id_=target.id_))
+        simulator.logger.log(GetExp(exp=target_stats.data.reward_exp))
         if self.owner.type_ is CharacterType.PLAYER:
-            my_stats.get_exp(target_stats.data.reward_exp)
-            simulator.logger.log(GetExp(
-                id_=self.owner.id_,
-                exp=target_stats.data.reward_exp
-            ))
+            for character in simulator.characters:
+                if character.type_ is CharacterType.PLAYER:
+                    stats = character.get_component(Stats)
+                    stats.get_exp(target_stats.data.reward_exp)
 
     def casting(self, simulator):
         if self.cast_remains > 0:

@@ -59,6 +59,10 @@
               </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td>CLASS</td>
+                    <td>{{ avatar.class_ }}</td>
+                  </tr>
               <tr>
                 <td>STR</td>
                 <td><button onclick="strDown();"> ◀︎ </button>{{ avatar.strength }}<button onclick="strUp();"> ► </button></td>
@@ -120,13 +124,9 @@
             {% if status.type == 'get_exp' %}
             <li>🤔(EXP +{{ status['exp'] }})</li>
             {% elif status.type == 'get_item' %}
-            <li>🎁{% trans item=status['item'] -%}
-            You obtained {{ item }}!</li>
-            {%- endtrans %}
+            <li>🎁 {{ characters[status.id_].name }} << {{ status.item }}.</li>
             {% elif status.type == 'item_use' %}
-            <li>🎁{% trans item=status['item'], status_change=status['status_change'] -%}
-            You used {{ item }}. <small>({{ status_change }})</small></li>
-            {%- endtrans %}
+            <li>🎁 {{ characters[status.id_].name }} >> {{ status.item }}. <small>({{ status_change }})</small></li>
             {% endif %}
           {% endfor %}
         </dl>

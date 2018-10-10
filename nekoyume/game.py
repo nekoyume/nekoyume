@@ -186,6 +186,8 @@ def post_move():
         move = g.user.combine(request.values.get('item1'),
                               request.values.get('item2'),
                               request.values.get('item3'))
+    if request.values.get('name') == 'first_class':
+        move = g.user.first_class(request.values.get('class_'))
 
     if move:
         move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))

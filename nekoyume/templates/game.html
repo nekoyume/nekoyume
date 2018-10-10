@@ -32,6 +32,15 @@
         <button class="sleep" onclick="sleep();">🛌</button>
         <!--<button class="zone" onclick"zone();">🐾</button>-->
       </div>
+
+      {% if avatar.class_ == 'novice' %}
+      <div class="menus first-classes" style="left: 700px;">
+        <button onclick="firstClass('swordman');">Swordman</button>
+        <button onclick="firstClass('mage');">Mage</button>
+        <button onclick="firstClass('archer');">Archer</button>
+        <button onclick="firstClass('acolyte');">Acolyte</button>
+      </div>
+      {% endif %}
     </div>
 
     <div style="display: none;" class="block"></div>
@@ -42,6 +51,20 @@
     <script>
       var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='Build/webgl.json') }}", {onProgress: loading});
       var inProgress = true;
+
+      // init
+      $('.check-unconfirmed').load('/in_progress', function (data) {
+        if (data == "false") {
+          setInProgress(false);
+          $('.status').load('/status .status');
+        } else {
+          $('.status').load('/status .status', function () {
+            update();
+            setInProgress(true);
+          });
+        }
+      });
+      //
 
       function loading(gameInstance, progress) {
         if (!gameInstance.Module) {
@@ -149,6 +172,18 @@
         setInProgress(true);
         $.post("{{ url_for('game.post_move') }}", {
           name: 'sleep'
+        }, update);
+      }
+
+      function firstClass(c) {
+        if (inProgress)
+          return;
+
+        gameInstance.SendMessage("Battle", "Clear", "");
+        setInProgress(true);
+        $.post("{{ url_for('game.post_move') }}", {
+          name: 'first_class',
+          class_: c
         }, update);
       }
 

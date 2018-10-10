@@ -815,6 +815,27 @@ class CreateNovice(Move):
         ))
 
 
+class FirstClass(Move):
+    __mapper_args__ = {
+        'polymorphic_identity': 'first_class',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
+        if avatar.class_ != 'novice':
+            return avatar, dict(
+                type='first_class',
+                result='failed',
+                message="Already change class.",
+            )
+        avatar.class_ = self.details['class']
+        return avatar, dict(
+            type='first_class',
+            result='success',
+        )
+
+
 class LevelUp(Move):
     __mapper_args__ = {
         'polymorphic_identity': 'level_up',
@@ -1012,6 +1033,9 @@ class User():
 
     def create_novice(self, details):
         return self.move(CreateNovice(details=details))
+
+    def first_class(self, class_):
+        return self.move(FirstClass(details={'class': class_}))
 
     def level_up(self, new_status):
         return self.move(LevelUp(details={

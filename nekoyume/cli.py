@@ -9,6 +9,7 @@ from raven import Client
 
 from .app import app
 from .block import Block
+from .broadcast import broadcast_node
 from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
@@ -99,7 +100,7 @@ def sync(seed: str):
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")
-        Node.broadcast(Node.post_node_endpoint, {'url': public_url})
+        broadcast_node(serialized={'url': public_url})
     Node.update(Node.get(url=seed))
     engine = db.engine
     if not engine.dialect.has_table(engine.connect(), Block.__tablename__):

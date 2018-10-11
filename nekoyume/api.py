@@ -43,7 +43,7 @@ def get_nodes():
     return jsonify(nodes=nodes)
 
 
-@api.route(Node.post_node_endpoint, methods=['POST'])
+@api.route('/nodes', methods=['POST'])
 def post_node():
     if 'url' in request.values:
         url = request.values['url']

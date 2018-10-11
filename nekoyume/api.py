@@ -6,7 +6,7 @@ from requests.exceptions import ConnectionError
 from sqlalchemy.exc import IntegrityError
 
 from .block import Block
-from .models import Move, get_my_public_url
+from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
 from .tasks import block_broadcast, move_broadcast

@@ -9,7 +9,7 @@ from sqlalchemy import or_
 from .battle.enums import ItemType
 from .exc import InvalidMoveError, InvalidNameError
 from .items import Item
-from .models import (
+from .move import (
     Buy,
     CreateNovice,
     HackAndSlash,

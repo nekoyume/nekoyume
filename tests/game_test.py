@@ -6,7 +6,7 @@ from sqlalchemy.orm.session import Session
 
 from nekoyume.block import Block
 from nekoyume.game import get_unconfirmed_move
-from nekoyume.models import Move
+from nekoyume.move import Move
 from nekoyume.user import User
 from nekoyume.util import get_address
 

@@ -5,7 +5,7 @@ from pytest import fixture, raises
 
 from nekoyume.block import Block
 from nekoyume.exc import InvalidMoveError
-from nekoyume.models import (
+from nekoyume.move import (
     CreateNovice,
     HackAndSlash,
     LevelUp,

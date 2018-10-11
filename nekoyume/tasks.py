@@ -1,7 +1,7 @@
 from celery import Celery
 
 from .block import Block
-from .models import Move
+from .move import Move
 from .node import Node
 from .orm import db
 

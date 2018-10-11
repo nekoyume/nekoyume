@@ -6,7 +6,7 @@ from flask import (Blueprint, Response, g, redirect, render_template, request,
 from flask_babel import Babel
 from sqlalchemy import func
 
-from .models import LevelUp, Move
+from .move import LevelUp, Move
 from .node import Node
 from .orm import db
 from .user import User, cache

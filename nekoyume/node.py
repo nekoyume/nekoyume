@@ -81,9 +81,9 @@ class Node(db.Model):
 
         :param        endpoint: endpoint of node to broadcast
         :param  serialized_obj: object that will be broadcasted.
-        :param       sent_node: sent :class:`nekoyume.models.Node`.
+        :param       sent_node: sent :class:`nekoyume.node.Node`.
                                 this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.models.Node`.
+        :param         my_node: my :class:`nekoyume.node.Node`.
                                 received node ignore my node when they
                                 broadcast received object.
         """

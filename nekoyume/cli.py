@@ -9,7 +9,7 @@ from raven import Client
 
 from .app import app
 from .block import Block
-from .models import Move, get_my_public_url
+from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
 from .user import User

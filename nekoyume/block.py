@@ -166,9 +166,9 @@ class Block(db.Model):
         """
         It broadcast this block to every nodes you know.
 
-        :param       sent_node: sent :class:`nekoyume.models.Node`.
+        :param       sent_node: sent :class:`nekoyume.node.Node`.
                                 this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.models.Node`.
+        :param         my_node: my :class:`nekoyume.node.Node`.
                                 received node ignore my node when they
                                 broadcast received object.
         """
@@ -181,9 +181,9 @@ class Block(db.Model):
         """
         Sync blockchain with other node.
 
-        :param node: sync target :class:`nekoyume.models.Node`.
+        :param node: sync target :class:`nekoyume.node.Node`.
         """
-        from .models import Move
+        from .move import Move
         if not node:
             nodes = Node.query.order_by(
                 Node.last_connected_at.desc()

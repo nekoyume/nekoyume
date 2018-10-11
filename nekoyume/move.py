@@ -1,8 +1,8 @@
 """
-Models
-======
+Move
+====
 
-`models.py` contains every relations regarding nekoyume blockchain and
+`move.py` contains every relations regarding nekoyume blockchain and
 game moves.
 """
 import datetime
@@ -185,9 +185,9 @@ class Move(db.Model):
         """
         It broadcast this move to every nodes you know.
 
-       :param       sent_node: sent :class:`nekoyume.models.Node`.
+       :param       sent_node: sent :class:`nekoyume.node.Node`.
                                this node ignore sent node.
-       :param         my_node: my :class:`nekoyume.models.Node`.
+       :param         my_node: my :class:`nekoyume.node.Node`.
                                received node ignore my node when they
                                broadcast received object.
         """
@@ -223,13 +223,13 @@ class Move(db.Model):
         """
         Roll dices based on given randoms
 
-            >>> from nekoyume.models import Move
+            >>> from nekoyume.move import Move
             >>> move = Move()
             >>> move.roll([1, 7, 3], '2d6')
             6
 
         :params randoms: random numbers from
-                         :func:`nekoyume.models.Move.get_randoms`
+                         :func:`nekoyume.move.Move.get_randoms`
         :params    dice: dice to roll (e.g. 2d6)
         :params combine: return combined result or not if rolling it multiple.
         """

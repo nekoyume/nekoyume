@@ -102,3 +102,10 @@ def fx_novice_status():
         'wisdom': '8',
         'charisma': '5'
     }
+
+
+@fixture
+def fx_other_user(fx_other_session):
+    user = User(PrivateKey())
+    user.session = fx_other_session
+    return user

@@ -3,17 +3,19 @@ import datetime
 from coincurve import PrivateKey, PublicKey
 from pytest import fixture, raises
 
+from nekoyume.block import Block
 from nekoyume.exc import InvalidMoveError
-from nekoyume.models import (Block,
-                             CreateNovice,
-                             HackAndSlash,
-                             LevelUp,
-                             Move,
-                             Say,
-                             Sleep,
-                             User,
-                             get_address)
+from nekoyume.models import (
+    CreateNovice,
+    HackAndSlash,
+    LevelUp,
+    Move,
+    Say,
+    Sleep,
+)
 from nekoyume.node import Node
+from nekoyume.user import User
+from nekoyume.util import get_address
 
 
 @fixture

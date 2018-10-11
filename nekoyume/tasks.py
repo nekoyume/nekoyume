@@ -1,6 +1,7 @@
 from celery import Celery
 
-from .models import Block, Move
+from .block import Block
+from .models import Move
 from .node import Node
 from .orm import db
 

@@ -8,7 +8,8 @@ from pytest_localserver.http import WSGIServer
 from sqlalchemy.orm import sessionmaker
 
 from nekoyume.app import create_app
-from nekoyume.models import User, db
+from nekoyume.orm import db
+from nekoyume.user import User
 
 
 @fixture

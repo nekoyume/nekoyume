@@ -6,9 +6,10 @@ from flask import (Blueprint, Response, g, redirect, render_template, request,
 from flask_babel import Babel
 from sqlalchemy import func
 
-from .models import LevelUp, Move, User, cache
+from .models import LevelUp, Move
 from .node import Node
 from .orm import db
+from .user import User, cache
 
 
 game = Blueprint('game', __name__, template_folder='templates')

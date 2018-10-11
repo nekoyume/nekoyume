@@ -1,6 +1,9 @@
 from celery import Celery
 
-from .models import Block, Move, Node, db
+from .block import Block
+from .move import Move
+from .node import Node
+from .orm import db
 
 
 celery = Celery()

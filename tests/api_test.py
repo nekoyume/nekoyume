@@ -3,7 +3,8 @@ import json
 from flask.testing import FlaskClient
 from sqlalchemy.orm.session import Session
 
-from nekoyume.models import Block, User
+from nekoyume.block import Block
+from nekoyume.user import User
 
 
 def test_get_blocks(fx_test_client, fx_user):

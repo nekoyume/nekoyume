@@ -482,7 +482,7 @@ class Block(db.Model):
             #: Genesis block
             block.id = 1
             block.prev_hash = None
-            block.difficulty = 1
+            block.difficulty = 0
             sleep = 0
 
         block.suffix = hashcash._mint(block.serialize(), bits=block.difficulty,

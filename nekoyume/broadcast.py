@@ -20,6 +20,17 @@ def broadcast_node(
         sent_node: Optional[Node]=None,
         my_node: Optional[Node]=None,
 ):
+    """
+    It broadcast node to every nodes you know.
+
+    :param      serialized: serialized :class:`nekoyume.node.Node`.
+                            that will be broadcasted.
+    :param       sent_node: sent :class:`nekoyume.node.Node`.
+                            this node ignore sent node.
+    :param         my_node: my :class:`nekoyume.node.Node`.
+                            received node ignore my node when they
+                            broadcast received object.
+    """
     for node in db.session.query(Node):
         if sent_node and sent_node.url == node.url:
             continue
@@ -27,8 +38,7 @@ def broadcast_node(
             if my_node:
                 serialized['sent_node'] = my_node.url
             url = urllib.parse.urljoin(node.url, '/nodes')
-            post(url, json=serialized,
-                 timeout=3)
+            post(url, json=serialized, timeout=3)
             node.last_connected_at = datetime.datetime.utcnow()
             db.session.add(node)
         except (ConnectionError, Timeout):

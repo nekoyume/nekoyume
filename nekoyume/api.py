@@ -47,13 +47,15 @@ def get_nodes():
 def post_node():
     if 'url' in request.values:
         url = request.values['url']
-    elif 'url' in request.get_json():
-        url = request.get_json()['url']
     else:
-        return jsonify(
-            result='failed',
-            message='Invalid parameter.'
-        ), 400
+        payload = request.get_json()
+        if payload and 'url' in payload:
+            url = payload['url']
+        else:
+            return jsonify(
+                result='failed',
+                message='Invalid parameter.'
+            ), 400
     node = Node.query.get(url)
     if not node:
         node = Node(url=url)
@@ -61,6 +63,7 @@ def post_node():
     try:
         response = get(f'{node.url}/ping')
     except ConnectionError:
+        db.session.rollback()
         return jsonify(
             result='failed',
             message=f'Connection to node {node.url} was failed.'
@@ -70,6 +73,7 @@ def post_node():
         db.session.commit()
         return jsonify(result='success')
     else:
+        db.session.rollback()
         return jsonify(
             result='failed',
             message=f'Connection to node {node.url} was failed.'

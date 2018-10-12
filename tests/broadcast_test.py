@@ -1,16 +1,20 @@
 import datetime
+import typing
+import unittest.mock
 
 from flask import Flask
 from pytest import fixture, mark
 from pytest_localserver.http import WSGIServer
 from requests.exceptions import ConnectionError, Timeout
-from requests_mock import Mocker
+from requests_mock import Mocker, mock
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
 from typeguard import typechecked
 
-from nekoyume.broadcast import broadcast_node
+from nekoyume.block import Block
+from nekoyume.broadcast import broadcast_block, broadcast_node
 from nekoyume.node import Node
+from nekoyume.user import User
 
 
 @fixture
@@ -92,3 +96,142 @@ def broadcast_node_failed(fx_session: scoped_session,
         broadcast_node(serialized={'url': fx_other_server.url})
     assert not fx_session.query(Node).filter(Node.url == node2.url).first()
     assert node.last_connected_at == now
+
+
+@typechecked
+def test_broadcast_block(fx_session: scoped_session,
+                         fx_other_session: Session,
+                         fx_other_server: WSGIServer,
+                         fx_user: User):
+    block = Block.create(fx_user, [])
+    assert fx_other_session.query(Block).count() == 0
+    assert fx_session.query(Block).count() == 1
+    url = fx_other_server.url
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    fx_session.add(node)
+    fx_session.flush()
+    assert broadcast_block(
+        block.serialize(
+            use_bencode=False,
+            include_suffix=True,
+            include_moves=True,
+            include_hash=True
+        )
+    ) is True
+    assert node.last_connected_at > now
+    assert fx_session.query(Block).count() == 1
+
+
+@typechecked
+def test_broadcast_block_my_node(fx_session: scoped_session, fx_user: User):
+    block = Block.create(fx_user, [])
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    fx_session.add(node)
+    fx_session.flush()
+    with Mocker() as m:
+        m.post('http://test.neko/blocks', text='success')
+        expected = serialized = block.serialize(
+            use_bencode=False,
+            include_suffix=True,
+            include_moves=True,
+            include_hash=True
+        )
+        assert broadcast_block(serialized, my_node=node) is True
+        expected['sent_node'] = url
+        assert node.last_connected_at > now
+        assert node.last_connected_at > now
+        # check request.json value
+        assert m.request_history[0].json() == expected
+
+
+@typechecked
+def test_broadcast_block_same_node(fx_session: scoped_session, fx_user: User):
+    block = Block.create(fx_user, [])
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    fx_session.add(node)
+    fx_session.flush()
+    assert broadcast_block(
+        block.serialize(
+            use_bencode=False,
+            include_suffix=True,
+            include_moves=True,
+            include_hash=True
+        ),
+        sent_node=node
+    ) is True
+    assert node.last_connected_at == now
+
+
+@mark.parametrize('error', [ConnectionError, Timeout])
+def test_broadcast_block_raise_exception(
+        fx_session: scoped_session, fx_user: User,
+        error: typing.Union[ConnectionError, Timeout]
+):
+    block = Block.create(fx_user, [])
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    fx_session.add(node)
+    fx_session.flush()
+    with Mocker() as m:
+        m.post('http://test.neko/blocks', exc=error)
+        assert broadcast_block(
+            block.serialize(
+                use_bencode=False,
+                include_suffix=True,
+                include_moves=True,
+                include_hash=True
+            )
+        ) is True
+        assert node.last_connected_at == now
+
+
+@mark.parametrize('limit, blocks, expected', [
+    (1, 2, 3),
+    (2, 5, 6),
+])
+def test_broadcast_block_retry(
+        fx_session: scoped_session,
+        fx_user: User, limit: int, blocks: int, expected: int
+):
+    for i in range(blocks):
+        block = Block.create(fx_user, [])
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    fx_session.add(node)
+    fx_session.flush()
+    patch = unittest.mock.patch('nekoyume.broadcast.DEFAULT_BROADCAST_LIMIT',
+                                limit)
+    with mock() as m, patch:
+        m.register_uri('POST', 'http://test.neko/blocks', [
+            {
+                'json': {
+                    'result': 'failed',
+                    'block_id': 0,
+                    'mesage': "new block isn't our next block."
+                },
+                'status_code': 403
+            },
+            {
+                'json': {
+                    'result': 'success',
+                },
+                'status_code': 200
+            }
+        ])
+        assert broadcast_block(
+            block.serialize(
+                use_bencode=False,
+                include_suffix=True,
+                include_moves=True,
+                include_hash=True
+            )
+        ) is True
+        assert m.call_count == expected
+        assert node.last_connected_at > now

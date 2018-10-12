@@ -159,23 +159,6 @@ class Block(db.Model):
             serialized = bencode(serialized)
         return serialized
 
-    def broadcast(self,
-                  sent_node: bool=None,
-                  my_node: bool=None,
-                  session=db.session) -> bool:
-        """
-        It broadcast this block to every nodes you know.
-
-        :param       sent_node: sent :class:`nekoyume.node.Node`.
-                                this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.node.Node`.
-                                received node ignore my node when they
-                                broadcast received object.
-        """
-        return Node.broadcast(Node.post_block_endpoint,
-                              self.serialize(False, True, True, True),
-                              sent_node, my_node, session)
-
     @classmethod
     def sync(cls, node: Node=None, session=db.session, echo=None) -> bool:
         """

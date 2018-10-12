@@ -33,7 +33,7 @@ def broadcast_node(
         except (ConnectionError, Timeout):
             continue
 
-        db.session.commit()
+    db.session.commit()
     return True
 
 
@@ -42,6 +42,17 @@ def broadcast_block(
         sent_node: Optional[Node]=None,
         my_node: Optional[Node]=None,
 ):
+    """
+    It broadcast this block to every nodes you know.
+
+    :param      serialized: serialized :class:`nekoyume.block.Block`.
+                            that will be broadcasted.
+    :param       sent_node: sent :class:`nekoyume.node.Node`.
+                            this node ignore sent node.
+    :param         my_node: my :class:`nekoyume.node.Node`.
+                            received node ignore my node when they
+                            broadcast received object.
+    """
     for node in db.session.query(Node):
         if sent_node and sent_node.url == node.url:
             continue

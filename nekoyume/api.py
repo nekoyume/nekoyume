@@ -140,7 +140,7 @@ def get_moves(move_id):
     return jsonify(move=move)
 
 
-@api.route(Node.post_block_endpoint, methods=['POST'])
+@api.route('/blocks', methods=['POST'])
 def post_block():
     new_block = request.get_json()
     last_block = Block.query.order_by(Block.id.desc()).first()

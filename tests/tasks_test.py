@@ -1,13 +1,42 @@
-from pytest import fail
+import unittest.mock
 
+from sqlalchemy.orm.scoping import scoped_session
+
+from nekoyume.block import Block
+from nekoyume.node import Node
 from nekoyume.tasks import block_broadcast
+from nekoyume.user import User
 
 
-def test_muted_attribute_error(fx_session):
-    try:
+def test_block_broadcast(fx_session: scoped_session,
+                         fx_user: User):
+    block = Block.create(fx_user, [])
+    fx_session.add(block)
+    fx_session.commit()
+    with unittest.mock.patch('nekoyume.tasks.broadcast_block') as m:
+        block_broadcast(block.id,
+                        'http://localhost:5000',
+                        'http://localhost:5001',
+                        session=fx_session)
+        serialized = block.serialize(
+            use_bencode=False,
+            include_suffix=True,
+            include_moves=True,
+            include_hash=True
+        )
+        assert m.called
+        args = m.call_args[1]
+        assert serialized == args['serialized']
+        assert isinstance(args['sent_node'], Node)
+        assert args['sent_node'].url == 'http://localhost:5000'
+        assert isinstance(args['my_node'], Node)
+        assert args['my_node'].url == 'http://localhost:5001'
+
+
+def test_block_broadcast_no_block(fx_session: scoped_session):
+    with unittest.mock.patch('nekoyume.tasks.broadcast_block') as m:
         block_broadcast(0,
                         'http://localhost:5000',
-                        'http://localhsot:5001',
+                        'http://localhost:5001',
                         session=fx_session)
-    except AttributeError:
-        fail('broadcast tasks should not raise AttributeError.')
+        assert not m.called

@@ -9,7 +9,7 @@ from raven import Client
 
 from .app import app
 from .block import Block
-from .broadcast import broadcast_node
+from .broadcast import broadcast_block, broadcast_node
 from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
@@ -57,7 +57,13 @@ def mine(private_key: PrivateKey, sleep: float):
             sleep=sleep,
         )
         if block:
-            block.broadcast()
+            serialized = block.serialize(
+                use_bencode=False,
+                include_suffix=True,
+                include_moves=True,
+                include_hash=True
+            )
+            broadcast_block(serialized=serialized)
             echo(block)
 
 

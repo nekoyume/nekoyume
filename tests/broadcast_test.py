@@ -99,18 +99,23 @@ def broadcast_node_failed(fx_session: scoped_session,
 
 
 @typechecked
-def test_broadcast_block(fx_session: scoped_session,
-                         fx_other_session: Session,
-                         fx_other_server: WSGIServer,
-                         fx_user: User):
-    block = Block.create(fx_user, [])
-    assert fx_other_session.query(Block).count() == 0
-    assert fx_session.query(Block).count() == 1
-    url = fx_other_server.url
+def test_broadcast_block(
+        fx_server: WSGIServer,
+        fx_session: scoped_session,
+        fx_other_session: Session,
+        fx_other_server: WSGIServer,
+        fx_user: User
+):
     now = datetime.datetime.utcnow()
-    node = Node(url=url, last_connected_at=now)
-    fx_session.add(node)
+    node = Node(url=fx_server.url,
+                last_connected_at=now)
+    node2 = Node(url=fx_other_server.url,
+                 last_connected_at=datetime.datetime.utcnow())
+    block = Block.create(fx_user, [])
+    fx_session.add_all([node, node2, block])
     fx_session.flush()
+    assert fx_session.query(Block).get(block.id)
+    assert not fx_other_session.query(Block).get(block.id)
     assert broadcast_block(
         block.serialize(
             use_bencode=False,
@@ -121,6 +126,7 @@ def test_broadcast_block(fx_session: scoped_session,
     ) is True
     assert node.last_connected_at > now
     assert fx_session.query(Block).count() == 1
+    assert fx_other_session.query(Block).get(block.id)
 
 
 @typechecked

@@ -198,7 +198,7 @@ def post_block():
     return jsonify(result='success')
 
 
-@api.route(Node.post_move_endpoint, methods=['POST'])
+@api.route('/moves', methods=['POST'])
 def post_move():
     new_move = request.get_json()
     move = Move.query.get(new_move['id'])

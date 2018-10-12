@@ -19,7 +19,6 @@ class Node(db.Model):
 
     get_nodes_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
-    post_move_endpoint = '/moves'
 
     @classmethod
     def get(cls, url: str, session: Session=db.session):

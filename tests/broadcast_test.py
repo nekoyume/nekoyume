@@ -12,7 +12,12 @@ from sqlalchemy.orm.session import Session
 from typeguard import typechecked
 
 from nekoyume.block import Block
-from nekoyume.broadcast import broadcast_block, broadcast_node
+from nekoyume.broadcast import (
+    broadcast_block,
+    broadcast_move,
+    broadcast_node
+)
+from nekoyume.move import Move
 from nekoyume.node import Node
 from nekoyume.user import User
 
@@ -241,3 +246,102 @@ def test_broadcast_block_retry(
         ) is True
         assert m.call_count == expected
         assert node.last_connected_at > now
+
+
+@typechecked
+def test_broadcast_move(
+        fx_server: WSGIServer,
+        fx_session: scoped_session,
+        fx_other_server: WSGIServer,
+        fx_other_session: Session,
+        fx_user: User,
+        fx_novice_status: typing.Mapping[str, str],
+):
+    now = datetime.datetime.utcnow()
+    node = Node(url=fx_server.url,
+                last_connected_at=now)
+    node2 = Node(url=fx_other_server.url,
+                 last_connected_at=datetime.datetime.utcnow())
+    move = fx_user.create_novice(fx_novice_status)
+    fx_session.add_all([node, node2, move])
+    fx_session.commit()
+    assert not fx_other_session.query(Move).get(move.id)
+    serialized = move.serialize(
+        use_bencode=False,
+        include_signature=True,
+        include_id=True,
+        include_block=True
+    )
+    broadcast_move(serialized=serialized)
+    assert fx_other_session.query(Move).get(move.id)
+    assert node.last_connected_at > now
+
+
+@typechecked
+def test_broadcast_move_same_url(fx_session: scoped_session,
+                                 fx_user: User,
+                                 fx_novice_status: typing.Mapping[str, str]):
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    move = fx_user.create_novice(fx_novice_status)
+    fx_session.add_all([node, move])
+    fx_session.commit()
+    with Mocker() as m:
+        serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+            include_block=True
+        )
+        broadcast_move(serialized=serialized, sent_node=node)
+        assert not m.called
+    assert node.last_connected_at == now
+
+
+@typechecked
+def test_broadcast_move_my_node(fx_session: scoped_session,
+                                fx_user: User,
+                                fx_novice_status: typing.Mapping[str, str]):
+    url = 'http://test.neko'
+    now = datetime.datetime.utcnow()
+    node = Node(url=url, last_connected_at=now)
+    move = fx_user.create_novice(fx_novice_status)
+    fx_session.add_all([node, move])
+    fx_session.commit()
+    with Mocker() as m:
+        m.post('http://test.neko/moves', json={'result': 'success'})
+        expected = serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+            include_block=True
+        )
+        broadcast_move(serialized=serialized, my_node=node)
+        expected['sent_node'] = 'http://test.neko'
+        assert node.last_connected_at > now
+        # check request.json value
+        assert m.request_history[0].json() == expected
+
+
+@mark.parametrize('error', [ConnectionError, Timeout])
+def broadcast_move_failed(fx_session: scoped_session,
+                          fx_user: User,
+                          fx_novice_status: typing.Mapping[str, str],
+                          error):
+    now = datetime.datetime.utcnow()
+    move = fx_user.create_novice(fx_novice_status)
+    node = Node(url='http://test.neko',
+                last_connected_at=now)
+    fx_session.add_all([node, move])
+    fx_session.commit()
+    with Mocker() as m:
+        serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+            include_block=True
+        )
+        m.post('http://test.neko', exc=error)
+        broadcast_move(serialized=serialized)
+    assert node.last_connected_at == now

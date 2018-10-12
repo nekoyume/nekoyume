@@ -7,6 +7,7 @@ from requests import post
 from requests.exceptions import ConnectionError, Timeout
 
 from .block import Block
+from .move import Move
 from .node import Node
 from .orm import db
 
@@ -89,5 +90,38 @@ def broadcast_block(
             db.session.add(node)
         except (ConnectionError, Timeout):
             continue
+    db.session.commit()
+    return True
+
+
+def broadcast_move(
+        serialized: Mapping[str, object],
+        sent_node: Optional[Move]=None,
+        my_node: Optional[Move]=None,
+):
+    """
+    It broadcast this move to every nodes you know.
+
+    :param      serialized: serialized :class:`nekoyume.move.Move`.
+                            that will be broadcasted.
+    :param       sent_node: sent :class:`nekoyume.node.Node`.
+                            this node ignore sent node.
+    :param         my_node: my :class:`nekoyume.node.Node`.
+                            received node ignore my node when they
+                            broadcast received object.
+    """
+    for node in db.session.query(Node):
+        if sent_node and sent_node.url == node.url:
+            continue
+        try:
+            if my_node:
+                serialized['sent_node'] = my_node.url
+            url = urllib.parse.urljoin(node.url, '/moves')
+            post(url, json=serialized, timeout=3)
+            node.last_connected_at = datetime.datetime.utcnow()
+            db.session.add(node)
+        except (ConnectionError, Timeout):
+            continue
+
     db.session.commit()
     return True

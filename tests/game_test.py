@@ -23,6 +23,7 @@ def test_new_character_creation(fx_test_client, fx_session):
     privkey = PrivateKey()
     fx_test_client.post('/login', data={
         'private_key': privkey.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
 
     assert fx_session.query(Move).filter_by(
@@ -122,6 +123,7 @@ def test_export_private_key(
 ):
     fx_test_client.post('/login', data={
         'private_key': fx_private_key.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
     response = fx_test_client.get('/export/')
     assert response.headers['Content-Disposition'] == \

@@ -124,7 +124,6 @@ def get_new_novice():
                 use_bencode=False,
                 include_signature=True,
                 include_id=True,
-                include_block=True
             )
             broadcast_move(
                 serialized,
@@ -168,7 +167,6 @@ def post_move():
             use_bencode=False,
             include_signature=True,
             include_id=True,
-            include_block=True
         )
         broadcast_move(
             serialized,

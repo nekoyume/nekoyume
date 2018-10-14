@@ -19,7 +19,6 @@ def move_broadcast(move_id, sent_node_url, my_node_url, session=db.session):
         use_bencode=False,
         include_signature=True,
         include_id=True,
-        include_block=True
     )
     broadcast_move(
         serialized=serialized,

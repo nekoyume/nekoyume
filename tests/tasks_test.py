@@ -58,7 +58,6 @@ def test_move_broadcast(fx_session: scoped_session,
             use_bencode=False,
             include_signature=True,
             include_id=True,
-            include_block=True
         )
         assert m.called
         args = m.call_args[1]

@@ -270,7 +270,6 @@ def test_broadcast_move(
         use_bencode=False,
         include_signature=True,
         include_id=True,
-        include_block=True
     )
     broadcast_move(serialized=serialized)
     assert fx_other_session.query(Move).get(move.id)
@@ -292,7 +291,6 @@ def test_broadcast_move_same_url(fx_session: scoped_session,
             use_bencode=False,
             include_signature=True,
             include_id=True,
-            include_block=True
         )
         broadcast_move(serialized=serialized, sent_node=node)
         assert not m.called
@@ -315,7 +313,6 @@ def test_broadcast_move_my_node(fx_session: scoped_session,
             use_bencode=False,
             include_signature=True,
             include_id=True,
-            include_block=True
         )
         broadcast_move(serialized=serialized, my_node=node)
         expected['sent_node'] = 'http://test.neko'
@@ -340,7 +337,6 @@ def broadcast_move_failed(fx_session: scoped_session,
             use_bencode=False,
             include_signature=True,
             include_id=True,
-            include_block=True
         )
         m.post('http://test.neko', exc=error)
         broadcast_move(serialized=serialized)

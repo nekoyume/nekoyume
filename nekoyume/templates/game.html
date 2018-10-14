@@ -3,7 +3,7 @@
 {% block style %}
     <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='items.css') }}">
-    <script src="{{ url_for('static', filename='Build/UnityLoader.js') }}"></script>
+    <script src="https://planetarium.is/nekoyume-unity/build/UnityLoader.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -47,7 +47,7 @@
   </div>
 
   <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='Build/webgl.json') }}", {onProgress: loading});
+    var gameInstance = UnityLoader.instantiate("gameContainer", "https://planetarium.is/nekoyume-unity/build/webgl.json", {onProgress: loading});
     var inProgress = true;
 
     // init

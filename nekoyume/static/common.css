@@ -4,7 +4,7 @@ body {
 }
 
 .background {
-    background: #000000 url("images/bg_stage_01.png") repeat-x;
+    background: #000000 url("https://planetarium.is/nekoyume-unity/images/bg_stage_01.png") repeat-x;
     position: absolute;
     z-index: -2;
     top: 0;

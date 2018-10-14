@@ -35,6 +35,7 @@ def test_new_character_creation(fx_test_client, fx_session):
 def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
     rv = fx_test_client.post('/login', data={
         'private_key': fx_private_key.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
     rv = fx_test_client.post('/new')
     Block.create(fx_user,

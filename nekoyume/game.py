@@ -149,7 +149,7 @@ def get_new_novice():
             name='create_novice',
         ).first()
         if not move:
-            move = g.user.create_novice({'name': session['name']})
+            move = g.user.create_novice({'name': session.get('name', '')})
             db.session.add(move)
             db.session.commit()
             move.broadcast(
@@ -167,7 +167,7 @@ def get_first_class():
         return redirect(url_for('.get_new_novice'))
     if avatar.class_ != 'novice':
         return redirect(url_for('.get_game'))
-        
+
     return render_template('first_class.html')
 
 

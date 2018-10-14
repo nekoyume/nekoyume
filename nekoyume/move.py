@@ -327,8 +327,9 @@ class CreateNovice(Move):
         from .user import Avatar
         gold = getattr(avatar, 'gold', 0)
 
+        name = self.details.get('name', '')[:10] + '#' + self.user_address[:6]
         avatar = Avatar(
-            name=self.details.get('name', self.user_address[:6]),
+            name=name,
             user=self.user_address,
             current_block=self.block,
             gold=gold,
@@ -346,6 +347,51 @@ class CreateNovice(Move):
             type='create_novice',
             result='success',
         ))
+
+
+class FirstClass(Move):
+    __mapper_args__ = {
+        'polymorphic_identity': 'first_class',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            from .user import Avatar
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
+        if avatar.class_ != 'novice':
+            return avatar, dict(
+                type='first_class',
+                result='failed',
+                message="Already change class.",
+            )
+        avatar.class_ = self.details['class']
+        return avatar, dict(
+            type='first_class',
+            result='success',
+        )
+
+
+class MoveZone(Move):
+    __mapper_args__ = {
+        'polymorphic_identity': 'move_zone',
+    }
+
+    def execute(self, avatar=None):
+        if not avatar:
+            from .user import Avatar
+            avatar = Avatar.get(self.user_address, self.block_id - 1)
+        zone = self.details['zone']
+        if zone not in Tables.zone:
+            return avatar, dict(
+                type='move_zone',
+                result='failed',
+                message="Invalid zone.",
+            )
+        avatar.zone = zone
+        return avatar, dict(
+            type='move_zone',
+            result='success',
+        )
 
 
 class LevelUp(Move):

@@ -1,7 +1,6 @@
 import datetime
-import typing
 
-from requests import get, post
+from requests import get
 from requests.exceptions import ConnectionError, Timeout
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
@@ -18,10 +17,7 @@ class Node(db.Model):
     last_connected_at = db.Column(db.DateTime, nullable=False, index=True)
 
     get_nodes_endpoint = '/nodes'
-    post_node_endpoint = '/nodes'
     get_blocks_endpoint = '/blocks'
-    post_block_endpoint = '/blocks'
-    post_move_endpoint = '/moves'
 
     @classmethod
     def get(cls, url: str, session: Session=db.session):
@@ -68,38 +64,3 @@ class Node(db.Model):
             return result
         except (ConnectionError, Timeout):
             return False
-
-    @classmethod
-    def broadcast(cls,
-                  endpoint: str,
-                  serialized_obj: typing.Mapping[str, object],
-                  sent_node: typing.Optional['Node']=None,
-                  my_node: typing.Optional['Node']=None,
-                  session: Session=db.session) -> bool:
-        """
-        It broadcast `serialized_obj` to every nodes you know.
-
-        :param        endpoint: endpoint of node to broadcast
-        :param  serialized_obj: object that will be broadcasted.
-        :param       sent_node: sent :class:`nekoyume.node.Node`.
-                                this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.node.Node`.
-                                received node ignore my node when they
-                                broadcast received object.
-        """
-
-        for node in session.query(cls):
-            if sent_node and sent_node.url == node.url:
-                continue
-            try:
-                if my_node:
-                    serialized_obj['sent_node'] = my_node.url
-                post(node.url + endpoint, json=serialized_obj,
-                     timeout=3)
-                node.last_connected_at = datetime.datetime.utcnow()
-                session.add(node)
-            except (ConnectionError, Timeout):
-                continue
-
-        session.commit()
-        return True

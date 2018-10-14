@@ -100,9 +100,9 @@ class Block(db.Model):
                 (self.id - difficulty_check_block.id)
             )
             if avg_timedelta <= MIN_BLOCK_INTERVAL:
-                valid = valid and self.difficulty == max(0, difficulty + 1)
+                valid = valid and self.difficulty == max(1, difficulty + 1)
             elif avg_timedelta > MAX_BLOCK_INTERVAL:
-                valid = valid and self.difficulty == max(0, difficulty - 1)
+                valid = valid and self.difficulty == max(1, difficulty - 1)
             else:
                 valid = valid and self.difficulty == difficulty
         else:
@@ -158,23 +158,6 @@ class Block(db.Model):
                 del serialized['prev_hash']
             serialized = bencode(serialized)
         return serialized
-
-    def broadcast(self,
-                  sent_node: bool=None,
-                  my_node: bool=None,
-                  session=db.session) -> bool:
-        """
-        It broadcast this block to every nodes you know.
-
-        :param       sent_node: sent :class:`nekoyume.node.Node`.
-                                this node ignore sent node.
-        :param         my_node: my :class:`nekoyume.node.Node`.
-                                received node ignore my node when they
-                                broadcast received object.
-        """
-        return Node.broadcast(Node.post_block_endpoint,
-                              self.serialize(False, True, True, True),
-                              sent_node, my_node, session)
 
     @classmethod
     def sync(cls, node: Node=None, session=db.session, echo=None) -> bool:
@@ -335,9 +318,9 @@ class Block(db.Model):
                     f'avg: {avg_timedelta}, difficulty: {block.difficulty}'
                 )
             if avg_timedelta <= MIN_BLOCK_INTERVAL:
-                block.difficulty = max(0, block.difficulty + 1)
+                block.difficulty = max(1, block.difficulty + 1)
             elif avg_timedelta > MAX_BLOCK_INTERVAL:
-                block.difficulty = max(0, block.difficulty - 1)
+                block.difficulty = max(1, block.difficulty - 1)
         else:
             #: Genesis block
             block.id = 1

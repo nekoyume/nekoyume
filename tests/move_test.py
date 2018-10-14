@@ -1,5 +1,3 @@
-import datetime
-
 from coincurve import PrivateKey
 from pytest import fixture, raises
 
@@ -13,7 +11,6 @@ from nekoyume.move import (
     Say,
     Sleep,
 )
-from nekoyume.node import Node
 from nekoyume.user import User
 
 
@@ -77,22 +74,6 @@ def test_avatar_basic_moves(fx_user, fx_novice_status):
         assert move.confirmed
         assert block.valid
         assert fx_user.avatar(block.id)
-
-
-def test_move_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
-                        fx_server, fx_novice_status):
-    assert fx_other_session.query(Move).count() == 0
-    assert fx_session.query(Move).count() == 0
-
-    fx_other_session.add(Node(url=fx_server.url,
-                              last_connected_at=datetime.datetime.utcnow()))
-    fx_other_session.commit()
-
-    move = fx_other_user.create_novice(fx_novice_status)
-    assert not fx_session.query(Move).get(move.id)
-
-    move.broadcast(session=fx_other_session)
-    assert fx_session.query(Move).get(move.id)
 
 
 def test_hack_and_slash_execute(fx_user, fx_novice_status):

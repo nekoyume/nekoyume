@@ -6,6 +6,7 @@ from flask import (Blueprint, Response, g, redirect, render_template, request,
 from flask_babel import Babel
 from sqlalchemy import func
 
+from .broadcast import broadcast_move
 from .move import LevelUp, Move
 from .node import Node
 from .orm import db
@@ -119,7 +120,13 @@ def get_new_novice():
                 'charisma': '13'})
             db.session.add(move)
             db.session.commit()
-            move.broadcast(
+            serialized = move.serialize(
+                use_bencode=False,
+                include_signature=True,
+                include_id=True,
+            )
+            broadcast_move(
+                serialized,
                 my_node=Node(url=f'{request.scheme}://{request.host}')
             )
         return render_template('new.html', move=move)
@@ -156,7 +163,15 @@ def post_move():
                               request.values.get('item3'))
 
     if move:
-        move.broadcast(my_node=Node(url=f'{request.scheme}://{request.host}'))
+        serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+        )
+        broadcast_move(
+            serialized,
+            my_node=Node(url=f'{request.scheme}://{request.host}')
+        )
     return redirect(url_for('.get_dashboard'))
 
 

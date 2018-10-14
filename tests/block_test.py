@@ -1,5 +1,3 @@
-import datetime
-
 from nekoyume.block import Block
 from nekoyume.move import Move
 from nekoyume.node import Node
@@ -12,21 +10,6 @@ def test_block_validation(fx_user, fx_novice_status):
     move.id = ('00000000000000000000000000000000'
                '00000000000000000000000000000000')
     assert not block.valid
-
-
-def test_block_broadcast(fx_user, fx_session, fx_other_user, fx_other_session,
-                         fx_server):
-    assert fx_other_session.query(Block).count() == 0
-    assert fx_session.query(Block).count() == 0
-
-    fx_other_session.add(Node(url=fx_server.url,
-                              last_connected_at=datetime.datetime.utcnow()))
-    fx_other_session.commit()
-
-    block = Block.create(fx_other_user, [])
-    block.broadcast(session=fx_other_session)
-    assert fx_other_session.query(Block).count() == 1
-    assert fx_session.query(Block).count() == 1
 
 
 def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,

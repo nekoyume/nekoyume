@@ -41,9 +41,18 @@ def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
     Block.create(fx_user,
                  fx_session.query(Move).filter_by(block_id=None).all())
 
+    rv = fx_test_client.post('/session_moves', data={
+        'name': 'first_class',
+        'class_': 'swordman',
+    }, follow_redirects=True)
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
+
+    avatar = fx_user.avatar()
+    assert avatar.class_ == 'swordman'
+
     rv = fx_test_client.get('/')
     assert rv.status == '200 OK'
-    assert fx_user.address.encode() in rv.data
 
     rv = fx_test_client.post('/session_moves', data={
         'name': 'hack_and_slash'

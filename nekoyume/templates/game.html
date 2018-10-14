@@ -12,6 +12,7 @@
 {% set avatar = g.user.avatar() %}
 {% block body %}
   <div class="game">
+    <div class="gradient-left"></div>
     <div id="gameContainer" style="width: 1136px; height: 640px"></div>
 
     <div class="progress">
@@ -20,13 +21,13 @@
 
     <div class="message"></div>
 
-    <div class="menus">
-      <button onclick="toggleInventory();">Inventory</button>
-    </div>
-
-    <div class="buttons">
-      <button class="hack-and-slash" onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>⚔️</button>
-      <button class="sleep" onclick="sleep();">🛌</button>
+    <div class="bottom">
+      <button class="bag block mdl-button mdl-js-button mdl-js-ripple-effect"
+              onclick="toggleInventory();">Inventory</button>
+      <button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect" 
+              onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>Hack And Slash</button>
+      <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect" 
+              onclick="sleep();">Sleep</button>
       <!--<button class="zone" onclick"zone();">🐾</button>-->
     </div>
   </div>

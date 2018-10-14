@@ -1,32 +1,201 @@
 {% extends 'layout.html' %}
 {% block title %}New{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+<style>
+  .character-select {
+    background: url("{{ url_for('static', filename='images/bg_character_select.png') }}") no-repeat;
+    width: 1136px;
+    height: 640px;
+    margin: 0 auto;
+  }
+  .gradient {
+    position: absolute;
+    width: 100%;
+    top: 580px;
+    left: 0;
+    height: 70px;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
+    background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  }
+  .gradient-left {
+    float: left;
+    width: 70px;
+    height: 100%;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
+    background: -moz-linear-gradient(right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(right, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  }
+  .gradient-right {
+    float: right;
+    width: 70px;
+    height: 100%;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
+    background: -moz-linear-gradient(left, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  }
+  .character {
+    width: 100%;
+    height: 250px;
+    padding-top: 100px;
+  }
+  .character.swordman {
+    background: url("{{ url_for('static', filename='images/character_swordman.png') }}") no-repeat center center;
+  }
+  .character.mage {
+    background: url("{{ url_for('static', filename='images/character_mage.png') }}") no-repeat center center;
+  }
+  .character.archer {
+    background: url("{{ url_for('static', filename='images/character_archer.png') }}") no-repeat center center;
+  }
+  .character.acolyte {
+    background: url("{{ url_for('static', filename='images/character_acolyte.png') }}") no-repeat center center;
+  }
+  .first-class {
+    padding-top: 40px;
+    text-align: center;
+  }
+  .first-class button {
+    width: 130px;
+    height: 130px;
+    text-indent: -9999px;
+    padding: 0 4px;
+  }
+  button.swordman {
+    background: url("{{ url_for('static', filename='images/icon_swordman.png') }}") no-repeat center center;
+  }
+  button.mage {
+    background: url("{{ url_for('static', filename='images/icon_mage.png') }}") no-repeat center center;
+  }
+  button.archer {
+    background: url("{{ url_for('static', filename='images/icon_archer.png') }}") no-repeat center center;
+  }
+  button.acolyte {
+    background: url("{{ url_for('static', filename='images/icon_acolyte.png') }}") no-repeat center center;
+  }
+  .character-info, .character-stats {
+    position: absolute;
+    top: 60px;
+    padding: 20px 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    width: 160px;
+    height: 280px;
+    overflow: hidden;
+  }
+  .character-info {
+    left: 50%;
+    margin-left: -500px;
+  }
+  .character-stats {
+    right: 50%;
+    margin-right: -500px;
+  }
+  dd {
+    clear: left;
+    float: left;
+    width: 100px;
+  }
+  dt {
+    float: left;
+  }
+</style>
+{% endblock %}
 {% set avatar = g.user.avatar() %}
 {% block body %}
-    <div class="menus first-class" style="left: 700px;">
-      <button onclick="firstClass('swordman');">Swordman</button>
-      <button onclick="firstClass('mage');">Mage</button>
-      <button onclick="firstClass('archer');">Archer</button>
-      <button onclick="firstClass('acolyte');">Acolyte</button>
-    </div>
-    <div style="display: none;" class="check-unconfirmed"></div>
-    <script>
-        function update() {
-          var interval = setInterval(function() {
-            $('.check-unconfirmed').load('/in_progress', function (data) {
-              if (data == "false") {
-                clearInterval(interval);
-                location.href='{{ url_for("game.get_game") }}';
-              }
-            });
-          }, 3000);
-        }
+<center>
+<div style="position: absolute; top: 200px; display: none;"
+     class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+</center>
+<div class="character-info" style="display: none;">
+  <p>{% trans %}Hello! Welcome to the world of Nekoyume.{% endtrans %}</p>
+</div>
+<div class="character-stats" style="display: none;">
+  <h6>Stats</h6>
+  <dl>
+    <dd>STR</dd>
+    <dt>10</dt>
+    <dd>DEX</dd>
+    <dt>10</dt>
+    <dd>INT</dd>
+    <dt>10</dt>
+    <dd>CON</dd>
+    <dt>10</dt>
+    <dd>LUK</dd>
+    <dt>10</dt>
+  </dl>
+</div>
+<div class="character-select">
+  <div class="gradient"></div>
+  <div class="gradient-left"></div>
+  <div class="gradient-right"></div>
+  <div class="character"></div>
+  <center>
+    <button style="visibility: hidden; font-size: 1.6em; width: 140px; height: 48px;"
+          class="select-class mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+          onclick="confirmClass()"
+          type="submit">{% trans %}OK{% endtrans %}</button>
+  </center>
+  <div class="first-class">
+    <button disabled class="swordman mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('swordman');">Swordman</button>
+    <button disabled class="mage mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('mage');">Mage</button>
+    <button disabled class="archer mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('archer');">Archer</button>
+    <button disabled class="acolyte mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('acolyte');">Acolyte</button>
+  </div>
+</div>
+<div style="display: none;" class="check-unconfirmed"></div>
+<div style="display: none;" class="selected-class"></div>
+{% endblock %}
+{% block script %}
+<script>
+  $('.check-unconfirmed').load('/in_progress', function (data) {
+    if (data == "false") {
+      $('.first-class button').prop('disabled', false);
+    } else {
+      $('.mdl-spinner').show();
+      $('.first-class button').prop('disabled', true);
+      update();
+    }
+  });
 
-        function firstClass(c) {
-          $('.first-class button').prop('disabled', true);
-          $.post("{{ url_for('game.post_move') }}", {
-            name: 'first_class',
-            class_: c
-          }, update);
+  function update() {
+    var interval = setInterval(function() {
+      $('.check-unconfirmed').load('/in_progress', function (data) {
+        if (data == "false") {
+          clearInterval(interval);
+          location.href='{{ url_for("game.get_game") }}';
         }
-    </script>
+      });
+    }, 3000);
+  }
+
+  function selectClass(c) {
+    $('.select-class').css('visibility', 'visible');
+    $('.character-info').show();
+    $('.character-stats').show();
+    $('.selected-class').text(c);
+    var $character = $('.character');
+    $character.removeAttr('class');
+    $character.addClass('character');
+    $character.addClass(c);
+  }
+
+  function confirmClass() {
+    $('.mdl-spinner').show();
+    $('.first-class button').prop('disabled', false);
+    $('.select-class').css('visibility', 'hidden');
+    $('.first-class button').prop('disabled', true);
+    $.post("{{ url_for('game.post_move') }}", {
+      name: 'first_class',
+      class_: $('.selected-class').text()
+    }, update);
+  }
+</script>
 {% endblock %}

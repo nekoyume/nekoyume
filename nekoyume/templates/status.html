@@ -37,18 +37,18 @@
     <div class="status">
 
       <div class="avatar">
-        <div>
+        <div class="avatar-profile">
           LV. {{ avatar.level }} 
           <img class="avatar-profile-image" src="{{ avatar.profile_image_url }}" alt="{{ avatar.name }} profile image">
           {{ avatar.name }}
         </div>
-        <label>HP {{ avatar.hp }} / {{ avatar.hp_max }}</label>
+        <label class="hp">HP {{ avatar.hp }} / {{ avatar.hp_max }}</label>
         <div class="hp-bar">
-          <div class="bar" style="background: #c00; width: {{ avatar.hp / avatar.hp_max * 100 }}%;"></div>
+          <div class="bar" style="width: {{ avatar.hp / avatar.hp_max * 100 }}%;"></div>
         </div>
-        <label>EXP {{ avatar.exp }} / {{ avatar.exp_max }}</label>
+        <label class="exp">EXP {{ avatar.exp }} / {{ avatar.exp_max }}</label>
         <div class="exp-bar">
-          <div class="bar" style="background: #0c0; width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
+          <div class="bar" style="width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
         </div>
         <center><button onclick="toggleStats();"> ▼ </button></center>
         <div class="stats" style="display: none;">
@@ -92,7 +92,7 @@
         </div>
       </div>
 
-      <div class="gold"><div class="item-icon item-gold" style="float: left;"></div> {{ avatar.gold }}</div>
+      <div class="gold">{{ avatar.gold }}</div>
 
       <div class="zone">
         <dl>

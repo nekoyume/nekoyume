@@ -1,13 +1,5 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: 'Spoqa Han Sans', sans-serif; 
-}
-
 body {
-    overflow-x: hidden;
-    background: #000;
-    color: #d5c8ab;
+    color: #fff9dd;
 }
 
 .popup {
@@ -19,36 +11,71 @@ body {
 }
 
 .avatar {
-    background: #000;
-    opacity: 0.7;
     padding: 10px;
     position: absolute;
     top: 0;
     left: 0;
+    font-size: 20px;
+    font-weight: 200;
+    /* https://css-tricks.com/adding-stroke-to-web-text/ */
+    text-shadow:
+        0px 2px 1px #000,
+        0px 3px 1px #000,
+        0px 4px 1px #000,
+        -1px -1px 1px #000,
+        1px -1px 1px #000,
+        -1px 1px 1px #000,
+        1px 1px 1px #000,
+        -2px 2px 1px #000,
+        2px 2px 1px #000;
+}
+.avatar-profile {
+    margin-bottom: 10px;
+}
+.avatar-profile-image {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    margin-right: 6px;
+    margin-top: -2px;
 }
 .avatar .hp-bar, .avatar .exp-bar {
-    margin-bottom: 4px;
-    background: #444;
-    border: 2px solid #333;
-    color: #fff;
+    clear: left;
+    border: 7px solid;
+    border-image: url("images/UI_bar_01_bg.png") 6 6 6 6 repeat;
     width: 200px;
+}
+.avatar .hp-bar .bar, .avatar .exp-bar .bar {
+    float: left;
+    position: relative;
+    top: -9px;
+    left: -7px;
+    border: 7px solid;
+    width: 200px;
+}
+.avatar .hp-bar .bar {
+    border-image: url("images/UI_bar_01_green.png") 7 7 7 7 repeat;
+}
+.avatar .exp-bar .bar {
+    border-image: url("images/UI_bar_01_blue.png") 7 7 7 7 repeat;
+}
+.avatar label {
+    float: left;
+    clear: left;
+    font-size: 14px;
+}
+.avatar .hp {
+    color: #00e607;
+}
+.avatar .hp-less {
+    color: #ff2116;
+}
+.avatar .exp {
+    color: #3ca6ff;
 }
 .avatar button {
     margin: 4px 10px;
     padding: 4px;
-}
-.avatar label {
-    font-size: 0.9em;
-}
-.avatar .bar {
-    height: 20px;
-}
-.avatar-profile-image {
-    width: 16px;
-    height: 16px;
-    border-radius: 100%;
-    margin-right: 6px;
-    margin-top: -2px;
 }
 
 .stats {
@@ -67,14 +94,14 @@ body {
 }
 
 .gold {
-    background: #000;
+    background: #000 url("images/icon_coin.png") no-repeat 4px 4px;
     opacity: 0.7;
-    padding: 10px;
+    padding: 4px 0 6px 52px;
     position: absolute;
     top: 0;
     left: 1030px;
     width: 90px;
-    text-align: right;
+    text-shadow: 0 2px 2px #000;
     line-height: 36px;
 }
 
@@ -98,7 +125,7 @@ body {
     height: 400px;
 }
 .inventory .items {
-    background: url("assets/item_frame.png") repeat 2px 3px;
+    background: url("images/item_frame.png") repeat 2px 3px;
     float: left;
 }
 .inventory .items td {
@@ -112,7 +139,7 @@ body {
     display: block;
     width: 32px;
     height: 32px;
-    background-image: url("assets/tf_icon_32.png");
+    background-image: url("images/tf_icon_32.png");
     background-repeat: no-repeat;
     text-shadow: 0px 0px 4px #000;
 }
@@ -148,12 +175,18 @@ body {
     background: #fff;
     overflow: hidden;
 }
-
-.menus {
+.game .gradient-left {
     position: absolute;
-    top: 560px;
-    left: 20px;
+    top: 0;
+    left: 0;
+    width: 205px;
+    height: 640px;
+    background: url("images/UI_black_bg.png") repeat-y;
+    /*background: -moz-linear-gradient(right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 90%); /* FF3.6-15 */
+    /*background: -webkit-linear-gradient(right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 90%); /* Chrome10-25,Safari5.1-6 */
+    /*background: linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 90%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
+
 .menus button {
     margin-right: 10px;
     background: #999;
@@ -162,30 +195,40 @@ body {
     height: 60px;
 }
 
-.buttons {
+.bottom {
     position: absolute;
-    top: 560px;
-    left: 420px;
+    top: 500px;
+    left: 0;
+    width: 1136px;
+    height: 140px;
+    text-align: center;
 }
-.buttons button {
+.bottom .menu {
+    float: left;
+}
+.bottom button {
+    border: none;
     margin-right: 10px;
-    background: #999;
-    border: 2px solid #000;
-    width: 60px;
-    height: 60px;
-    font-size: 2em;
+    width: 140px;
+    height: 140px;
+    text-indent: -9999px;
 }
-/*
-.buttons button.hack-and-slash {
-    background: url("assets/icon_01.png") no-repeat bottom center;
+.bottom button:hover {
+    border: none;
 }
-.buttons button.sleep {
-    background: url("assets/icon_02.png") no-repeat bottom center;
+.bottom button:active {
+    border: none;
 }
-.buttons button.say {
-    background: url("assets/icon_03.png") no-repeat bottom center;
+.bottom button.bag {
+    background: url("images/icon_inventory.png") no-repeat bottom center;
+    float: left;
 }
-*/
+.bottom button.hack-and-slash {
+    background: url("images/icon_fight.png") no-repeat bottom center;
+}
+.bottom button.sleep {
+    background: url("images/icon_sleep.png") no-repeat bottom center;
+}
 
 .moves {
     width: 1136px;

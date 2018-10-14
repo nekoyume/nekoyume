@@ -5,8 +5,9 @@ from raven.contrib.flask import Sentry
 
 from .api import api
 from .game import babel, game
-from .models import cache, db
+from .orm import db
 from .tasks import celery
+from .user import cache
 
 
 def make_celery(app):

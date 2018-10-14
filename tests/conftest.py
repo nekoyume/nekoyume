@@ -1,12 +1,15 @@
 import os
 
 from coincurve import PrivateKey
+from flask import Flask
+from flask.testing import FlaskClient
 from pytest import fixture
 from pytest_localserver.http import WSGIServer
 from sqlalchemy.orm import sessionmaker
 
 from nekoyume.app import create_app
-from nekoyume.models import User, db
+from nekoyume.orm import db
+from nekoyume.user import User
 
 
 @fixture
@@ -47,7 +50,7 @@ def fx_user(fx_session, fx_private_key: PrivateKey):
 
 
 @fixture
-def fx_server(request, fx_app):
+def fx_server(request, fx_app: Flask) -> WSGIServer:
     server = WSGIServer(application=fx_app.wsgi_app)
     server.start()
     request.addfinalizer(server.stop)
@@ -55,7 +58,7 @@ def fx_server(request, fx_app):
 
 
 @fixture
-def fx_test_client(fx_app):
+def fx_test_client(fx_app: Flask) -> FlaskClient:
     fx_app.testing = True
     return fx_app.test_client()
 
@@ -99,3 +102,10 @@ def fx_novice_status():
         'wisdom': '8',
         'charisma': '5'
     }
+
+
+@fixture
+def fx_other_user(fx_other_session):
+    user = User(PrivateKey())
+    user.session = fx_other_session
+    return user

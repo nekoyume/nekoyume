@@ -5,7 +5,10 @@ from requests import get
 from requests.exceptions import ConnectionError
 from sqlalchemy.exc import IntegrityError
 
-from .models import Block, Move, Node, db, get_my_public_url
+from .block import Block
+from .move import Move, get_my_public_url
+from .node import Node
+from .orm import db
 from .tasks import block_broadcast, move_broadcast
 
 
@@ -157,6 +160,7 @@ def post_block():
                 Node.query.order_by(
                     Node.last_connected_at.desc()).first())
         return jsonify(result='failed',
+                       block_id=last_block.id,
                        message="new block isn't our next block."), 403
 
     block = Block.deserialize(new_block)

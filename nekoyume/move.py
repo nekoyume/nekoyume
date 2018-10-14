@@ -21,7 +21,6 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from .battle.characters import Factory as CharacterFactory
 from .battle.simul import Simulator
 from .exc import InvalidMoveError, OutOfRandomError
-from .node import Node
 from .orm import db
 from .tables import Tables
 from .util import get_address
@@ -180,20 +179,6 @@ class Move(db.Model):
         if use_bencode:
             serialized = bencode(serialized)
         return serialized
-
-    def broadcast(self, sent_node=None, my_node=None, session=db.session):
-        """
-        It broadcast this move to every nodes you know.
-
-       :param       sent_node: sent :class:`nekoyume.node.Node`.
-                               this node ignore sent node.
-       :param         my_node: my :class:`nekoyume.node.Node`.
-                               received node ignore my node when they
-                               broadcast received object.
-        """
-        Node.broadcast(Node.post_move_endpoint,
-                       self.serialize(False, True, True),
-                       sent_node, my_node, session)
 
     @property
     def hash(self) -> str:

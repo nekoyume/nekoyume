@@ -9,7 +9,7 @@ from ....status.skills import Heal as StatusHeal
 from ....status.skills import Taunt as StatusTaunt
 from ....status.stats import Dead, GetExp
 from ...bag import Bag
-from ...stats import Stats
+from ...stats import MonsterStats, Stats
 from .. import Behavior, BehaviorTreeStatus
 from ..aggro import Aggro
 
@@ -72,14 +72,15 @@ class Skill(Behavior):
         return self.nexttime > simulator.time
 
     def kill(self, simulator, target):
-        target_stats = target.get_component(Stats)
         simulator.logger.log(Dead(id_=target.id_))
-        simulator.logger.log(GetExp(exp=target_stats.data.reward_exp))
         if self.owner.type_ is CharacterType.PLAYER:
             for character in simulator.characters:
                 if character.type_ is CharacterType.PLAYER:
                     stats = character.get_component(Stats)
-                    stats.get_exp(target_stats.data.reward_exp)
+                    monster_stats = target.get_component(MonsterStats)
+                    stats.get_exp(monster_stats.data.reward_exp)
+                    simulator.logger.log(GetExp(
+                        exp=monster_stats.data.reward_exp))
 
     def casting(self, simulator):
         if self.cast_remains > 0:

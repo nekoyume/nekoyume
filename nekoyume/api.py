@@ -6,6 +6,11 @@ from requests.exceptions import ConnectionError
 from sqlalchemy.exc import IntegrityError
 
 from .block import Block
+from .broadcast import (
+    POST_BLOCK_ENDPOINT,
+    POST_MOVE_ENDPOINT,
+    POST_NODE_ENDPOINT,
+)
 from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
@@ -43,15 +48,15 @@ def get_nodes():
     return jsonify(nodes=nodes)
 
 
-@api.route('/nodes', methods=['POST'])
+@api.route(POST_NODE_ENDPOINT, methods=['POST'])
 def post_node():
     if 'url' in request.values:
         url = request.values['url']
     else:
         payload = request.get_json()
-        if payload and 'url' in payload:
+        try:
             url = payload['url']
-        else:
+        except (KeyError, TypeError):
             return jsonify(
                 result='failed',
                 message='Invalid parameter.'
@@ -140,7 +145,7 @@ def get_moves(move_id):
     return jsonify(move=move)
 
 
-@api.route('/blocks', methods=['POST'])
+@api.route(POST_BLOCK_ENDPOINT, methods=['POST'])
 def post_block():
     new_block = request.get_json()
     last_block = Block.query.order_by(Block.id.desc()).first()
@@ -198,7 +203,7 @@ def post_block():
     return jsonify(result='success')
 
 
-@api.route('/moves', methods=['POST'])
+@api.route(POST_MOVE_ENDPOINT, methods=['POST'])
 def post_move():
     new_move = request.get_json()
     move = Move.query.get(new_move['id'])

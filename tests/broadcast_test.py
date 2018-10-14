@@ -121,14 +121,14 @@ def test_broadcast_block(
     fx_session.flush()
     assert fx_session.query(Block).get(block.id)
     assert not fx_other_session.query(Block).get(block.id)
-    assert broadcast_block(
+    broadcast_block(
         block.serialize(
             use_bencode=False,
             include_suffix=True,
             include_moves=True,
             include_hash=True
         )
-    ) is True
+    )
     assert node.last_connected_at > now
     assert fx_session.query(Block).count() == 1
     assert fx_other_session.query(Block).get(block.id)
@@ -150,7 +150,7 @@ def test_broadcast_block_my_node(fx_session: scoped_session, fx_user: User):
             include_moves=True,
             include_hash=True
         )
-        assert broadcast_block(serialized, my_node=node) is True
+        broadcast_block(serialized, my_node=node)
         expected['sent_node'] = url
         assert node.last_connected_at > now
         assert node.last_connected_at > now
@@ -166,7 +166,7 @@ def test_broadcast_block_same_node(fx_session: scoped_session, fx_user: User):
     node = Node(url=url, last_connected_at=now)
     fx_session.add(node)
     fx_session.flush()
-    assert broadcast_block(
+    broadcast_block(
         block.serialize(
             use_bencode=False,
             include_suffix=True,
@@ -174,7 +174,7 @@ def test_broadcast_block_same_node(fx_session: scoped_session, fx_user: User):
             include_hash=True
         ),
         sent_node=node
-    ) is True
+    )
     assert node.last_connected_at == now
 
 
@@ -191,14 +191,14 @@ def test_broadcast_block_raise_exception(
     fx_session.flush()
     with Mocker() as m:
         m.post('http://test.neko/blocks', exc=error)
-        assert broadcast_block(
+        broadcast_block(
             block.serialize(
                 use_bencode=False,
                 include_suffix=True,
                 include_moves=True,
                 include_hash=True
             )
-        ) is True
+        )
         assert node.last_connected_at == now
 
 
@@ -217,8 +217,7 @@ def test_broadcast_block_retry(
     node = Node(url=url, last_connected_at=now)
     fx_session.add(node)
     fx_session.flush()
-    patch = unittest.mock.patch('nekoyume.broadcast.DEFAULT_BROADCAST_LIMIT',
-                                limit)
+    patch = unittest.mock.patch('nekoyume.broadcast.BROADCAST_LIMIT', limit)
     with mock() as m, patch:
         m.register_uri('POST', 'http://test.neko/blocks', [
             {
@@ -236,14 +235,14 @@ def test_broadcast_block_retry(
                 'status_code': 200
             }
         ])
-        assert broadcast_block(
+        broadcast_block(
             block.serialize(
                 use_bencode=False,
                 include_suffix=True,
                 include_moves=True,
                 include_hash=True
             )
-        ) is True
+        )
         assert m.call_count == expected
         assert node.last_connected_at > now
 

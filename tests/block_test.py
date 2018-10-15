@@ -1,6 +1,9 @@
+from pytest import raises
+
 from nekoyume.block import Block
 from nekoyume.move import Move
 from nekoyume.node import Node
+from nekoyume.user import User
 
 
 def test_block_validation(fx_user, fx_novice_status):
@@ -106,3 +109,18 @@ def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session,
     assert valid_block1.hash == \
         fx_session.query(Block).get(valid_block2.id - 1).hash
     assert valid_block2.valid
+
+
+def test_ensure_block(fx_user: User):
+
+    class ValidMove(Move):
+        __mapper_args__ = {
+            'polymorphic_identity': 'valid',
+        }
+
+    move = fx_user.move(ValidMove())
+    Block.create(fx_user, [move])
+    assert move.block
+    assert move.block_id
+    with raises(NotImplementedError):
+        move.execute()

@@ -26,6 +26,7 @@ from .tables import Tables
 from .util import get_address
 
 
+NUM_HACK_AND_SLASH_PLAYERS: int = 3
 NUM_HACK_AND_SLASH_MONSTERS: int = 3
 
 
@@ -271,6 +272,12 @@ class HackAndSlash(Move):
         factory = CharacterFactory()
         my_character = factory.create_from_avatar(
             avatar, self.details)
+
+        npc_list = Tables.get_npc_list()
+        for i in range(NUM_HACK_AND_SLASH_PLAYERS - 1):
+            npc = factory.create_npc(npc_list.pop(rand))
+            simul.characters.append(npc)
+
         simul.characters.append(my_character)
         appear_monsters = Tables.get_monster_appear_list(avatar.zone)
         for i in range(NUM_HACK_AND_SLASH_MONSTERS):

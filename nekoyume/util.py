@@ -16,9 +16,12 @@ def ensure_block(f: Callable) -> Callable:
     @functools.wraps(f)
     def decorator(self, *args, **kwargs):
         try:
-            if self.block:
-                return f(self, *args, **kwargs)
+            block = self.block
         except AttributeError:
+            raise InvalidMoveError
+        if block:
+            return f(self, *args, **kwargs)
+        else:
             raise InvalidMoveError
         raise InvalidMoveError
     return decorator

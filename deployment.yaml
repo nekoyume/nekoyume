@@ -52,9 +52,10 @@ spec:
             value: postgresql://$(POSTGRES_DB_USER):$(POSTGRES_DB_PASSWORD)@$(POSTGRES_DB_HOST)/$(POSTGRES_DB_NAME)
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.11
-        command: ["/cloud_sql_proxy",
-        "-instances=$GOOGLE_PROJECT_ID:$COMPUTE_ZONE:$GOOGLE_COMPUTE_INSTANCE=tcp:5432",
-        "-credential_file=/secrets/cloudsql/credentials.json"]
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=$GOOGLE_PROJECT_ID:$COMPUTE_ZONE:$GOOGLE_COMPUTE_INSTANCE=tcp:5432"
+          - "-credential_file=/secrets/cloudsql/credentials.json"
         securityContext:
           runAsUser: 2  # non-root user
           allowPrivilegeEscalation: false

@@ -235,6 +235,9 @@ class Move(db.Model):
         else:
             return result
 
+    def execute(self):
+        raise NotImplementedError()
+
 
 class MoveDetail(db.Model):
     """ This object contains move's key/value information. """

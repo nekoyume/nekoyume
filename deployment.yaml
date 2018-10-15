@@ -1,0 +1,69 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nekoyume-web
+  labels:
+    app: nekoyume-web
+spec:
+  template:
+    metadata:
+      labels:
+        app: nekoyume-web
+        tier: web
+    spec:
+      containers:
+      - name: nekoyume-web
+        image: gcr.io/$GOOGLE_PROJECT_ID/nekoyume:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PUBLIC_URL
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: public_url
+          - name: SEED_NODE_URL
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: seed_node_url
+          - name: POSTGRES_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: hostname
+          - name: POSTGRES_DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: dbname
+          - name: POSTGRES_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: username
+          - name: POSTGRES_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: password
+          - name: DATABASE_URL
+            value: postgresql://$(POSTGRES_DB_USER):$(POSTGRES_DB_PASSWORD)@$(POSTGRES_DB_HOST)/$(POSTGRES_DB_NAME)
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=$GOOGLE_PROJECT_ID:$COMPUTE_ZONE:$GOOGLE_COMPUTE_INSTANCE=tcp:5432"
+          - "-credential_file=/secrets/cloudsql/credentials.json"
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials

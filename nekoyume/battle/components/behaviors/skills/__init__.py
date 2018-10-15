@@ -74,13 +74,13 @@ class Skill(Behavior):
     def kill(self, simulator, target):
         simulator.logger.log(Dead(id_=target.id_))
         if self.owner.type_ is CharacterType.PLAYER:
+            monster_stats = target.get_component(MonsterStats)
+            simulator.logger.log(GetExp(
+                        exp=monster_stats.data.reward_exp))
             for character in simulator.characters:
                 if character.type_ is CharacterType.PLAYER:
                     stats = character.get_component(Stats)
-                    monster_stats = target.get_component(MonsterStats)
                     stats.get_exp(monster_stats.data.reward_exp)
-                    simulator.logger.log(GetExp(
-                        exp=monster_stats.data.reward_exp))
 
     def casting(self, simulator):
         if self.cast_remains > 0:

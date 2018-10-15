@@ -1,7 +1,3 @@
-body {
-    color: #fff9dd;
-}
-
 .popup {
     display: none;
     position: absolute;
@@ -44,6 +40,7 @@ body {
     border: 7px solid;
     border-image: url("https://planetarium.is/nekoyume-unity/images/UI_bar_01_bg.png") 6 6 6 6 repeat;
     width: 200px;
+    margin-left: -4px;
 }
 .avatar .hp-bar .bar, .avatar .exp-bar .bar {
     float: left;
@@ -94,8 +91,7 @@ body {
 }
 
 .gold {
-    background: #000 url("https://planetarium.is/nekoyume-unity/images/icon_coin.png") no-repeat 4px 4px;
-    opacity: 0.7;
+    background: url("https://planetarium.is/nekoyume-unity/images/icon_coin.png") no-repeat 4px 4px;
     padding: 4px 0 6px 52px;
     position: absolute;
     top: 0;
@@ -153,20 +149,13 @@ body {
     color: #0d0;
 }
 
-.progress {
-    display: none;
-    position: absolute;
-    top: 500px;
-    left: 400px;
-}
-
 .message {
     position: absolute;
     top: 200px;
     left: 0;
     width: 1136px;
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 
 .game {

@@ -23,7 +23,7 @@ from .battle.simul import Simulator
 from .exc import InvalidMoveError, OutOfRandomError
 from .orm import db
 from .tables import Tables
-from .util import get_address
+from .util import ensure_block, get_address
 
 
 NUM_HACK_AND_SLASH_MONSTERS: int = 3
@@ -235,6 +235,7 @@ class Move(db.Model):
         else:
             return result
 
+    @ensure_block
     def execute(self):
         raise NotImplementedError()
 
@@ -261,6 +262,7 @@ class HackAndSlash(Move):
         'polymorphic_identity': 'hack_and_slash',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar
@@ -295,6 +297,7 @@ class Sleep(Move):
         'polymorphic_identity': 'sleep',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar
@@ -311,6 +314,7 @@ class CreateNovice(Move):
         'polymorphic_identity': 'create_novice',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         from .user import Avatar
         gold = getattr(avatar, 'gold', 0)
@@ -341,6 +345,7 @@ class LevelUp(Move):
         'polymorphic_identity': 'level_up',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar
@@ -373,6 +378,7 @@ class Say(Move):
         'polymorphic_identity': 'say',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar
@@ -389,6 +395,7 @@ class Send(Move):
         'polymorphic_identity': 'send',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar

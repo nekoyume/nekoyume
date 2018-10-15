@@ -1,58 +1,48 @@
 {% extends 'layout.html' %}
-{% block title %}Login{% endblock %}
-{% block body %}
+{% block title %}New{% endblock %}
+{% block style %}
 <style>
     .new-character-creation {
         width:100%;
     }
-
     .new-character-creation li {
         margin-bottom: 20px;
     }
-
-
 </style>
-<div class="mdl-layout mdl-js-layout">
-    <!-- Always shows a header, even in smaller screens. -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-        <header class="mdl-layout__header">
-            <div class="mdl-layout__header-row">
-            <!-- Title -->
-                <span class="mdl-layout-title">Nekøyume</span>
-            </div>
-        </header>
-        <main class="mdl-layout__content">
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--2-col">
-                </div>
-                <div class="mdl-cell mdl-cell--8-col">
-                    <div class="mdl-card new-character-creation mdl-shadow--2dp">
-                        <div class="mdl-card__title mdl-card--expand">
-                            <h2 class="mdl-card__title-text">
-                            👶
-                            {% trans %}Currently creating a new character...{% endtrans %}
-                            </h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <p>
-                            {% trans %}Hello! Welcome to the world of Nekoyume. We are currently creating a novice character. <br>This process will take about 15 seconds.{% endtrans %}</p>
-                            <h5>{% trans %}Know in advance!{% endtrans %}</h5>
-                            {% include 'basic_info.html' %}
-                            <input type="hidden" name="new_move_id" value="{{ move.id }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+{% endblock %}
+{% block body %}
+<div class="background forest">
+    <div class="gradient"></div>
 </div>
+
+<div class="box">
+    <h1>Nekøyume</h1>
+    <h4>👶 {% trans %}Currently creating a new character...{% endtrans %}</h4>
+    <div>
+        {% trans %}Hello! Welcome to the world of Nekoyume. We are currently creating a novice character. <br>This process will take about 15 seconds.{% endtrans %}</p>
+        <h5>{% trans %}Know in advance!{% endtrans %}</h5>
+        {% include 'basic_info.html' %}
+        <input type="hidden" name="new_move_id" value="{{ move.id }}">
+    </div>
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+</div>
+{% endblock %}
+{% block script %}
 <script>
 var interval = setInterval(function() {
     $.getJSON('/moves/'+$('input[name=new_move_id]').val(), function(data) {
         if(data.move.block) {
-            location.href='{{ url_for("game.get_dashboard") }}';
+            location.href='{{ url_for("game.get_game") }}';
         }
     });
 }, 3000);
+
+$(document).ready(function(){
+    var bg_position = 0;
+    setInterval(function () {
+        $('.background').css('background-position', bg_position +'px 0');
+        bg_position-=1;
+    }, 50);
+});
 </script>
 {% endblock %}

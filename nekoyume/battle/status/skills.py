@@ -4,7 +4,13 @@ from .base import Status
 
 
 @dataclass
-class Attack(Status):
+class Skill(Status):
+    type: str = ''
+    name: str = ''
+
+
+@dataclass
+class Attack(Skill):
     type: str = 'attack'
     id_: str = ''
     value: int = 0
@@ -14,27 +20,27 @@ class Attack(Status):
 
 
 @dataclass
-class Casting(Status):
+class Casting(Skill):
     type: str = 'casting'
     id_: str = ''
     tick_remain: int = 0
 
 
 @dataclass
-class Delaying(Status):
+class Delaying(Skill):
     type: str = 'delaying'
     id_: str = ''
     tick_remain: int = 0
 
 
 @dataclass
-class Taunt(Status):
+class Taunt(Skill):
     type: str = 'taunt'
     id_: str = ''
 
 
 @dataclass
-class Heal(Status):
+class Heal(Skill):
     type: str = 'heal'
     id_: str = ''
     value: int = 0

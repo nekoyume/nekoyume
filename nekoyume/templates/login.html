@@ -1,73 +1,96 @@
 {% extends 'layout.html' %}
 {% block title %}Login{% endblock %}
+{% block style %}
+{% endblock %}
 {% block body %}
-<style>
-    .private-key-form-card {
-        width:100%;
-    }
+<div class="background forest">
+    <div class="gradient"></div>
+</div>
 
-    .private-key-form-card form {
-        margin-top: 20px;
-    }
-</style>
-<div class="mdl-layout mdl-js-layout">
-    <!-- Always shows a header, even in smaller screens. -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-        <header class="mdl-layout__header">
-            <div class="mdl-layout__header-row">
-            <!-- Title -->
-                <span class="mdl-layout-title">Nekøyume</span>
-            </div>
-        </header>
-        <main class="mdl-layout__content">
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--2-col">
+<div class="box">
+    <h1>Nekøyume</h1>
+    <h4>{% trans %}Welcome!{% endtrans %}</h4>
+    <div>
+        <p>{% trans %}Hello! Welcome to the world of Nekoyume.{% endtrans %}</p>
+        {% if request.args.get('error') == 'invalid-private-key' %}
+        <p>{% trans %}Please enter a valid private key of 64 hexadecimal digits (it can be optionally prefixed with <tt>0x</tt>).{% endtrans %}</p>
+        {% endif %}
+    </div>
+    <div>
+        <div class="join">
+            <h5>[{% trans %}Join{% endtrans %}]</h5>
+            <form action="{{ url_for('.post_login') }}" method="POST">
+                <div>
+                    <label for="name">{% trans %}Name{% endtrans %}</label>
+                    <br />
+                    <input type="text" id="name" name="name" maxlength="10">
+                    <br />
+                    <label for="private_key">{% trans %}private key{% endtrans %}</label>
+                    <a style="cursor: pointer; font-size: 0.9em;" class="copy-private-key material-icons">file_copy</a>
+                    <br />
+                    <input type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
                 </div>
-                <div class="mdl-cell mdl-cell--8-col">
-                    <div class="mdl-card private-key-form-card mdl-shadow--2dp">
-                        <div class="mdl-card__title mdl-card--expand">
-                            <h2 class="mdl-card__title-text">
-                            {% trans %}Welcome!{% endtrans %}
-                            </h2>
-                        </div>
-                        <div class="mdl-card__supporting-text">
-                            <center>
-                            <img width="80%" src="{{ url_for('static', filename='nekoyume.png') }}" alt="nekoyume">
-                            <p>
-                            {% trans %}Hello! Welcome to the world of Nekoyume. Please set your own private key and input that in the form below so that you can start game right know. Private key is a password that identify you. Please make this unique.{% endtrans %}</p>
-                            {% if request.args.get('error') == 'invalid-private-key' %}
-                                <p>{% trans %}Please enter a valid private key of 64 hexadecimal digits (it can be optionally prefixed with <tt>0x</tt>).{% endtrans %}</p>
-                            {% endif %}
-                            </center>
-                        </div>
-                        <div class="mdl-card__actions">
-                            <form action="{{ url_for('.post_login') }}" method="POST" style="text-align: center">
-                              <div class="mdl-textfield mdl-js-textfield">
-                                  <input class="mdl-textfield__input" type="text" id="private_key" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
-                                <label class="mdl-textfield__label" for="private_key">{% trans %}Enter your private key{% endtrans %}</label>
-                              </div>
-                              <input type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="{% trans %}OK{% endtrans %}">
-                            </form>
-                        </div>
-                    </div>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                        type="submit">{% trans %}OK{% endtrans %}</button>
+            </form>
+        </div>
+        <div class="login">
+            <h5>[{% trans %}Login{% endtrans %}]</h5>
+            <form action="{{ url_for('.post_login') }}" method="POST">
+                <div>
+                    <label for="private_key_login">{% trans %}private key{% endtrans %}</label>
+                    <br />
+                    <input type="text" id="private_key_login" name="private_key" pattern="^(0[Xx])?[A-Fa-f0-9]{64}$">
                 </div>
-            </div>
-        </main>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                        type="submit">{% trans %}OK{% endtrans %}</button>
+            </form>
+        </div>
     </div>
 </div>
+
+<div id="toast" class="mdl-js-snackbar mdl-snackbar">
+  <div class="mdl-snackbar__text"></div>
+  <button class="mdl-snackbar__action" type="button"></button>
+</div>
+
+{% if 'username' not in session and 'private_key' not in session %}
+{% endif %}
+{% endblock %}
+{% block script %}
 <script src="https://cdn.rawgit.com/weepy/brequire/master/require.js"></script>
 <script>
-window.setTimeout(function () {
-    var elliptic = require(
-		'https://cdn.rawgit.com/indutny/elliptic/v6.4.1/dist/elliptic.min.js'
-	);
-	var ec = new elliptic.ec('secp256k1');
-	var keyPair = ec.genKeyPair();
-	var privKey = keyPair.getPrivate();
-	var input = document.getElementById('private_key');
-	var hex = privKey.toString('hex');
-	while (hex.length < 64) hex = '0' + hex;
-	input.value = hex;
-}, 0);
+    window.setTimeout(function () {
+        var elliptic = require(
+            'https://cdn.rawgit.com/indutny/elliptic/v6.4.1/dist/elliptic.min.js'
+        );
+        var ec = new elliptic.ec('secp256k1');
+        var keyPair = ec.genKeyPair();
+        var privKey = keyPair.getPrivate();
+        var input = document.getElementById('private_key');
+        var hex = privKey.toString('hex');
+        while (hex.length < 64) hex = '0' + hex;
+        input.value = hex;
+    }, 0);
+
+    $(document).ready(function(){
+        var bg_position = 0;
+        setInterval(function () {
+            $('.background').css('background-position', bg_position +'px 0');
+            bg_position-=1;
+        }, 50);
+
+        $('.copy-private-key').click(copyPrivateKey);
+    });
+
+    function copyPrivateKey() {
+        var copyText = document.getElementById("private_key");
+        copyText.select();
+        document.execCommand("copy");
+        
+        var data = {message: 'Copied "' + copyText.value + '"'};
+        var snackbarContainer = document.querySelector('#toast');
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+      }
 </script>
 {% endblock %}

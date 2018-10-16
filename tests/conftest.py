@@ -95,12 +95,7 @@ def fx_other_session(fx_app, fx_other_app):
 @fixture
 def fx_novice_status():
     return {
-        'strength': '13',
-        'dexterity': '12',
-        'constitution': '16',
-        'intelligence': '10',
-        'wisdom': '8',
-        'charisma': '5'
+        'name': 'test',
     }
 
 

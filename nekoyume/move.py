@@ -342,6 +342,9 @@ class CreateNovice(Move):
         character = factory.create_from_avatar(avatar, self.details)
         character.to_avatar(avatar, hp_recover=True)
 
+        if 'hp' in self.details:
+            avatar.hp = min(int(self.details['hp']), avatar.hp_max)
+
         return (avatar, dict(
             type='create_novice',
             result='success',

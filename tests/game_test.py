@@ -102,6 +102,7 @@ def test_prevent_hack_and_slash_when_dead(
         fx_test_client: FlaskClient, fx_session: Session, fx_user: User,
         fx_private_key: PrivateKey, fx_novice_status: typing.Dict[str, str],
 ):
+    fx_novice_status['hp'] = '1'
     move = fx_user.create_novice(fx_novice_status)
     Block.create(fx_user, [move])
 

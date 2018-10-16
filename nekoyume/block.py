@@ -349,7 +349,7 @@ class Block(db.Model):
 
 def find_branch_point(
         node: Node, session, value: int, high: int
-) -> Optional[int]:
+) -> int:
     if value > high:
         return 0
     mid = int((value + high) / 2)

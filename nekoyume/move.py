@@ -346,6 +346,7 @@ class FirstClass(Move):
         'polymorphic_identity': 'first_class',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar
@@ -368,6 +369,7 @@ class MoveZone(Move):
         'polymorphic_identity': 'move_zone',
     }
 
+    @ensure_block
     def execute(self, avatar=None):
         if not avatar:
             from .user import Avatar

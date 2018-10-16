@@ -7,7 +7,8 @@ from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
 from typeguard import typechecked
 
-from nekoyume.block import Block
+from nekoyume.block import Block, find_branch_point
+from nekoyume.exc import NodeUnavailable
 from nekoyume.move import Move
 from nekoyume.node import Node
 from nekoyume.user import User
@@ -213,3 +214,27 @@ def test_ensure_block(fx_user: User):
     assert move.block_id
     with raises(NotImplementedError):
         move.execute()
+
+
+@typechecked
+@mark.parametrize('value, high, expected', [
+    (0, 1, 0),
+    (1, 1, 1),
+    (2, 1, 0),
+])
+def test_find_branch_point(
+        fx_session: scoped_session, fx_server: WSGIServer,
+        fx_user: User, value: int, high: int, expected: int
+):
+    node = Node(url=fx_server.url)
+    Block.create(fx_user, [])
+    assert find_branch_point(node, fx_session, value, high) == expected
+
+
+@typechecked
+@mark.parametrize('code', [500, 502, 503])
+def test_find_branch_point_raise_error(fx_session: scoped_session, code: int):
+    node = Node(url='http://test.neko')
+    with raises(NodeUnavailable), Mocker() as m:
+        m.get('http://test.neko/blocks/1', status_code=500)
+        find_branch_point(node, fx_session, 1, 1)

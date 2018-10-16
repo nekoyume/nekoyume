@@ -184,11 +184,13 @@ class Block(db.Model):
                     f"{n.url}{Node.get_blocks_endpoint}/last",
                     timeout=3
                 )
+                if response.status_code != 200:
+                    continue
                 if (not node_last_block or
                    node_last_block['id'] < response.json()['block']['id']):
                     node_last_block = response.json()['block']
                     node = n
-            except (ConnectionError, Timeout):
+            except (ConnectionError, KeyError, Timeout):
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()
@@ -204,23 +206,28 @@ class Block(db.Model):
             mid = int((value + high) / 2)
             response = get((f"{node.url}{Node.get_blocks_endpoint}/"
                             f"{mid}"))
+            if response.status_code != 200:
+                return
             block = session.query(Block).get(mid)
             if value > high:
                 return 0
             if (response.json()['block'] and block and
                block.hash == response.json()['block']['hash']):
                 if value == mid:
-                        return value
+                    return value
                 return find_branch_point(mid, high)
             else:
                 return find_branch_point(value, mid - 1)
 
         if last_block:
             # TODO: Very hard to understand. fix this easily.
-            if find_branch_point(last_block.id,
-                                 last_block.id) == last_block.id:
+            branch_point = find_branch_point(last_block.id, last_block.id)
+            if branch_point == last_block.id:
                 branch_point = last_block.id
             else:
+                # None is not 0
+                if branch_point is None:
+                    return
                 branch_point = find_branch_point(0, last_block.id)
         else:
             branch_point = 0
@@ -243,6 +250,8 @@ class Block(db.Model):
             response = get(f"{node.url}{Node.get_blocks_endpoint}",
                            params={'from': from_,
                                    'to': from_ + limit - 1})
+            if response.status_code != 200:
+                break
             if len(response.json()['blocks']) == 0:
                 break
             for new_block in response.json()['blocks']:

@@ -143,6 +143,8 @@ workflows:
             branches:
               ignore: /.*/
       - dev-deploy:
+          requires:
+            - build
           filters:
             branches:
               only: /dev-.*/

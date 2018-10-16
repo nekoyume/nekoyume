@@ -353,8 +353,7 @@ def find_branch_point(
     if value > high:
         return 0
     mid = int((value + high) / 2)
-    response = get((f"{node.url}{Node.get_blocks_endpoint}/"
-                    f"{mid}"))
+    response = get(f"{node.url}{Node.get_blocks_endpoint}/{mid}")
     if response.status_code != 200:
         raise NodeUnavailable
     block = session.query(Block).get(mid)

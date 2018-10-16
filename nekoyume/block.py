@@ -12,6 +12,7 @@ from . import hashcash
 from .exc import (
     InvalidBlockError,
     InvalidMoveError,
+    NodeUnavailable,
 )
 from .node import Node
 from .orm import db
@@ -184,11 +185,13 @@ class Block(db.Model):
                     f"{n.url}{Node.get_blocks_endpoint}/last",
                     timeout=3
                 )
+                if response.status_code != 200:
+                    continue
                 if (not node_last_block or
                    node_last_block['id'] < response.json()['block']['id']):
                     node_last_block = response.json()['block']
                     node = n
-            except (ConnectionError, Timeout):
+            except (ConnectionError, KeyError, Timeout):
                 continue
 
         last_block = session.query(Block).order_by(Block.id.desc()).first()
@@ -200,28 +203,18 @@ class Block(db.Model):
         if last_block and last_block.id >= node_last_block['id']:
             return True
 
-        def find_branch_point(value: int, high: int):
-            mid = int((value + high) / 2)
-            response = get((f"{node.url}{Node.get_blocks_endpoint}/"
-                            f"{mid}"))
-            block = session.query(Block).get(mid)
-            if value > high:
-                return 0
-            if (response.json()['block'] and block and
-               block.hash == response.json()['block']['hash']):
-                if value == mid:
-                        return value
-                return find_branch_point(mid, high)
-            else:
-                return find_branch_point(value, mid - 1)
-
         if last_block:
             # TODO: Very hard to understand. fix this easily.
-            if find_branch_point(last_block.id,
-                                 last_block.id) == last_block.id:
-                branch_point = last_block.id
-            else:
-                branch_point = find_branch_point(0, last_block.id)
+            try:
+                branch_point = find_branch_point(node, session, last_block.id,
+                                                 last_block.id)
+                if branch_point == last_block.id:
+                    branch_point = last_block.id
+                else:
+                    branch_point = find_branch_point(node, session, 0,
+                                                     last_block.id)
+            except NodeUnavailable:
+                return
         else:
             branch_point = 0
 
@@ -243,6 +236,8 @@ class Block(db.Model):
             response = get(f"{node.url}{Node.get_blocks_endpoint}",
                            params={'from': from_,
                                    'to': from_ + limit - 1})
+            if response.status_code != 200:
+                break
             if len(response.json()['blocks']) == 0:
                 break
             for new_block in response.json()['blocks']:
@@ -350,3 +345,24 @@ class Block(db.Model):
                 return None
 
         return block
+
+
+def find_branch_point(
+        node: Node, session, value: int, high: int
+) -> int:
+    if value > high:
+        return 0
+    mid = int((value + high) / 2)
+    response = get(f"{node.url}{Node.get_blocks_endpoint}/{mid}")
+    if response.status_code != 200:
+        raise NodeUnavailable
+    block = session.query(Block).get(mid)
+    if (
+            response.json()['block'] and block and
+            block.hash == response.json()['block']['hash']
+    ):
+        if value == mid:
+            return value
+        return find_branch_point(node, session, mid, high)
+    else:
+        return find_branch_point(node, session, value, mid - 1)

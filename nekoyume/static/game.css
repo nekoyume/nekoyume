@@ -38,7 +38,6 @@
 .avatar .hp-bar, .avatar .exp-bar {
     clear: left;
     border: 7px solid;
-    border-image: url("https://planetarium.is/nekoyume-unity/images/UI_bar_01_bg.png") 6 6 6 6 repeat;
     width: 200px;
     margin-left: -4px;
 }
@@ -49,12 +48,6 @@
     left: -7px;
     border: 7px solid;
     width: 200px;
-}
-.avatar .hp-bar .bar {
-    border-image: url("https://planetarium.is/nekoyume-unity/images/UI_bar_01_green.png") 7 7 7 7 repeat;
-}
-.avatar .exp-bar .bar {
-    border-image: url("https://planetarium.is/nekoyume-unity/images/UI_bar_01_blue.png") 7 7 7 7 repeat;
 }
 .avatar label {
     float: left;
@@ -75,6 +68,11 @@
     padding: 4px;
 }
 
+button.stats {
+    border: 7px solid;
+    width: 200px;
+    margin-left: -4px;
+}
 .stats {
     
 }
@@ -91,7 +89,6 @@
 }
 
 .gold {
-    background: url("https://planetarium.is/nekoyume-unity/images/icon_coin.png") no-repeat 4px 4px;
     padding: 4px 0 6px 52px;
     position: absolute;
     top: 0;
@@ -121,7 +118,6 @@
     height: 400px;
 }
 .inventory .items {
-    background: url("https://planetarium.is/nekoyume-unity/images/item_frame.png") repeat 2px 3px;
     float: left;
 }
 .inventory .items td {
@@ -135,7 +131,6 @@
     display: block;
     width: 32px;
     height: 32px;
-    background-image: url("https://planetarium.is/nekoyume-unity/images/tf_icon_32.png");
     background-repeat: no-repeat;
     text-shadow: 0px 0px 4px #000;
 }
@@ -170,10 +165,6 @@
     left: 0;
     width: 205px;
     height: 640px;
-    background: url("https://planetarium.is/nekoyume-unity/images/UI_black_bg.png") repeat-y;
-    /*background: -moz-linear-gradient(right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 90%); /* FF3.6-15 */
-    /*background: -webkit-linear-gradient(right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 90%); /* Chrome10-25,Safari5.1-6 */
-    /*background: linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 90%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 .menus button {
@@ -209,14 +200,7 @@
     border: none;
 }
 .bottom button.bag {
-    background: url("https://planetarium.is/nekoyume-unity/images/icon_inventory.png") no-repeat bottom center;
     float: left;
-}
-.bottom button.hack-and-slash {
-    background: url("https://planetarium.is/nekoyume-unity/images/icon_fight.png") no-repeat bottom center;
-}
-.bottom button.sleep {
-    background: url("https://planetarium.is/nekoyume-unity/images/icon_sleep.png") no-repeat bottom center;
 }
 
 .moves {

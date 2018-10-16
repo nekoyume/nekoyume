@@ -1,6 +1,7 @@
 import os
+import urllib
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 from raven.contrib.flask import Sentry
 
 from .api import api
@@ -31,6 +32,7 @@ def make_celery(app):
 
 def create_app():
     app = Flask(__name__)
+    app.config['STATIC_URL'] = 'https://planetarium.is/nekoyume-unity/'
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'DATABASE_URL', 'sqlite:///yume.db')
     app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -59,6 +61,24 @@ def create_app():
             'CELERY_BROKER_URL', 'sqla+sqlite:///yume_broker.db'),
         CELERY_RESULT_BACKEND=os.environ.get(
             'CELERY_RESULT_BACKEND', 'db+sqlite:///yume_reuslt.db'))
+
+    @app.endpoint('static')
+    def static(filename):
+        static_url = app.config.get('STATIC_URL')
+
+        if static_url:
+            return redirect(urllib.parse.urljoin(static_url, filename))
+
+        return app.send_static_file(filename)
+
+    @app.template_global()
+    def static_url(filename):
+        static_url = app.config.get('STATIC_URL')
+
+        if static_url:
+            return urllib.parse.urljoin(static_url, filename)
+
+        return url_for('static', filename=filename)
     return app
 
 

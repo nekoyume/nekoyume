@@ -1,13 +1,11 @@
 {% extends 'layout.html' %}
 {% block title %}New{% endblock %}
 {% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
 <style>
-    .new-character-creation {
-        width:100%;
-    }
-    .new-character-creation li {
-        margin-bottom: 20px;
-    }
+.background {
+    background: #000000 url("{{ url_for('static', filename='dist/images/bg_stage_01.png') }}") repeat-x;
+}
 </style>
 {% endblock %}
 {% block body %}

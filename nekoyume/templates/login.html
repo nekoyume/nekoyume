@@ -1,6 +1,12 @@
 {% extends 'layout.html' %}
 {% block title %}Login{% endblock %}
 {% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+<style>
+.background {
+    background: #000000 url("{{ url_for('static', filename='dist/images/bg_stage_01.png') }}") repeat-x;
+}
+</style>
 {% endblock %}
 {% block body %}
 <div class="background forest">

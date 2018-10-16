@@ -1,10 +1,4 @@
-body {
-    background-color: #000;
-    color: #fff9dd;
-}
-
 .background {
-    background: #000000 url("https://planetarium.is/nekoyume-unity/images/bg_stage_01.png") repeat-x;
     position: absolute;
     z-index: -2;
     top: 0;
@@ -23,9 +17,7 @@ body {
     background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
     background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
     background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }
-
 .box {
     margin: 100px auto 0;
     padding: 20px 40px;
@@ -34,7 +26,6 @@ body {
     width: 640px;
     overflow: hidden;
 }
-
 .join, .login {
     float: left;
     width: 310px;
@@ -50,4 +41,10 @@ body {
 }
 .join {
     margin-right: 20px;
+}
+.new-character-creation {
+    width:100%;
+}
+.new-character-creation li {
+    margin-bottom: 20px;
 }

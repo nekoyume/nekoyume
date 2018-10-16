@@ -1,3 +1,5 @@
+import typing
+
 from coincurve import PrivateKey
 from pytest import fixture, raises
 
@@ -85,3 +87,28 @@ def test_hack_and_slash_execute(fx_user, fx_novice_status):
     Block.create(fx_user, [move])
     with raises(InvalidMoveError):
         move.execute(avatar)
+
+
+def test_execute_raise_invalid_move_error(
+        fx_user: User,
+        fx_novice_status: typing.Mapping[str, str]
+):
+    move = fx_user.create_novice(fx_novice_status)
+    Block.create(fx_user, [move])
+    for move_type in Move.__subclasses__():
+        move = fx_user.move(move_type())
+        assert not move.block
+        assert not move.block_id
+        with raises(InvalidMoveError):
+            move.execute()
+
+
+def test_ensure_block_raise_invalid_move_error():
+
+    class InvalidMove(Move):
+        __mapper_args__ = {
+            'polymorphic_identity': 'invalid',
+        }
+
+    with raises(InvalidMoveError):
+        InvalidMove().execute()

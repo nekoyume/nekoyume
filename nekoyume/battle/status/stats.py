@@ -12,5 +12,4 @@ class Dead(Status):
 @dataclass
 class GetExp(Status):
     type: str = 'get_exp'
-    id_: str = ''
     exp: int = 0

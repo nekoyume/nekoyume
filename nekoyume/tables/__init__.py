@@ -76,9 +76,21 @@ class MonsterData(TableData):
 
 
 @dataclasses.dataclass
+class NpcData(TableData):
+    id: str = ''
+    level: int = 0
+    class_: str = '' # noqa
+
+    def __init__(self, header, data):
+        super().__init__(header, data)
+
+
+@dataclasses.dataclass
 class SkillData(TableData):
     id: str = ''
     cls: str = ''
+    class_: str = '' # noqa
+    unlock_lv: int = 0
     cast_time: int = 0
     cooltime: int = 0
     target_count: int = 0
@@ -96,6 +108,11 @@ class StatsData(TableData):
     intelligence: int = 0
     constitution: int = 0
     luck: int = 0
+    strength_lv: int = 0
+    dexterity_lv: int = 0
+    intelligence_lv: int = 0
+    constitution_lv: int = 0
+    luck_lv: int = 0
 
     def __init__(self, header, data):
         super().__init__(header, data)
@@ -143,6 +160,7 @@ class Tables:
     items = Table(['items.tsv', 'item_equips.tsv'], ItemData)
     monster_appear = Table('monster_appear.tsv', MonsterAppearData)
     monsters = Table('monsters.tsv', MonsterData)
+    npc = Table('npc.tsv', NpcData)
     skills = Table(['skills.tsv', 'monster_skills.tsv'], SkillData)
     stats = Table('stats.tsv', StatsData)
     zone = Table('zone.tsv', ZoneData)
@@ -171,3 +189,11 @@ class Tables:
             if data.zone_id == zone:
                 appear_monsters.add(data.monster_id, data.weight)
         return appear_monsters
+
+    @classmethod
+    def get_npc_list(cls) -> WeightedList:
+        npc_list = WeightedList()
+        for id_ in Tables.npc:
+            data = Tables.npc[id_]
+            npc_list.add(data.id, 1)
+        return npc_list

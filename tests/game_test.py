@@ -23,6 +23,7 @@ def test_new_character_creation(fx_test_client, fx_session):
     privkey = PrivateKey()
     fx_test_client.post('/login', data={
         'private_key': privkey.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
 
     assert fx_session.query(Move).filter_by(
@@ -35,14 +36,24 @@ def test_new_character_creation(fx_test_client, fx_session):
 def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
     rv = fx_test_client.post('/login', data={
         'private_key': fx_private_key.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
     rv = fx_test_client.post('/new')
     Block.create(fx_user,
                  fx_session.query(Move).filter_by(block_id=None).all())
 
+    rv = fx_test_client.post('/session_moves', data={
+        'name': 'first_class',
+        'class_': 'swordman',
+    }, follow_redirects=True)
+    Block.create(fx_user,
+                 fx_session.query(Move).filter_by(block_id=None).all())
+
+    avatar = fx_user.avatar()
+    assert avatar.class_ == 'swordman'
+
     rv = fx_test_client.get('/')
     assert rv.status == '200 OK'
-    assert fx_user.address.encode() in rv.data
 
     rv = fx_test_client.post('/session_moves', data={
         'name': 'hack_and_slash'
@@ -112,6 +123,7 @@ def test_export_private_key(
 ):
     fx_test_client.post('/login', data={
         'private_key': fx_private_key.to_hex(),
+        'name': 'test_user',
     }, follow_redirects=True)
     response = fx_test_client.get('/export/')
     assert response.headers['Content-Disposition'] == \

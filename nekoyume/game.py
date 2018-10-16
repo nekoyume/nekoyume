@@ -51,11 +51,12 @@ def get_login():
 
 @game.route('/login', methods=['POST'])
 def post_login():
+    session['name'] = request.values.get('name')
     session['private_key'] = request.values.get('private_key')
     if 'next' in request.values:
         return redirect(request.values.get('next'))
     else:
-        return redirect(url_for('.get_dashboard'))
+        return redirect(url_for('.get_game'))
 
 
 @game.route('/logout', methods=['GET'])
@@ -84,7 +85,7 @@ def get_unconfirmed_move(address):
     return None
 
 
-@game.route('/')
+@game.route('/dashboard')
 @login_required
 def get_dashboard():
     if not g.user.avatar():
@@ -102,6 +103,44 @@ def get_dashboard():
                            rank=get_rank())
 
 
+@game.route('/')
+@login_required
+def get_game():
+    avatar = g.user.avatar()
+    if not avatar:
+        return redirect(url_for('.get_new_novice'))
+    if avatar.class_ == 'novice':
+        return redirect(url_for('.get_first_class'))
+
+    return render_template('game.html')
+
+
+@game.route('/status')
+@login_required
+def get_status():
+    if not g.user.avatar():
+        return redirect(url_for('.get_new_novice'))
+
+    feed = g.user.moves
+    # for caching
+    for move in reversed(feed.limit(10).all()):
+        avatar, result = move.execute()
+    return render_template('status.html',
+                           feed=feed.order_by(Move.block_id.desc()))
+
+
+@game.route('/in_progress')
+@login_required
+def get_unconfirmed():
+    if not g.user.avatar():
+        return redirect(url_for('.get_new_novice'))
+
+    unconfirmed_move = get_unconfirmed_move(g.user.address)
+    if unconfirmed_move:
+        return "true"
+    return "false"
+
+
 @game.route('/new')
 @login_required
 def get_new_novice():
@@ -111,13 +150,7 @@ def get_new_novice():
             name='create_novice',
         ).first()
         if not move:
-            move = g.user.create_novice({
-                'strength': '12',
-                'dexterity': '12',
-                'constitution': '9',
-                'intelligence': '10',
-                'wisdom': '8',
-                'charisma': '13'})
+            move = g.user.create_novice({'name': session.get('name', '')})
             db.session.add(move)
             db.session.commit()
             serialized = move.serialize(
@@ -130,7 +163,19 @@ def get_new_novice():
                 my_node=Node(url=f'{request.scheme}://{request.host}')
             )
         return render_template('new.html', move=move)
-    return redirect(url_for('.get_dashboard'))
+    return redirect(url_for('.get_game'))
+
+
+@game.route('/first_class')
+@login_required
+def get_first_class():
+    avatar = g.user.avatar()
+    if not avatar:
+        return redirect(url_for('.get_new_novice'))
+    if avatar.class_ != 'novice':
+        return redirect(url_for('.get_game'))
+
+    return render_template('first_class.html')
 
 
 @game.route('/session_moves', methods=['POST'])
@@ -139,11 +184,11 @@ def post_move():
     unconfirmed_move = get_unconfirmed_move(g.user.address)
 
     if unconfirmed_move:
-        return redirect(url_for('.get_dashboard'))
+        return redirect(url_for('.get_game'))
 
     if request.values.get('name') == 'hack_and_slash':
         if g.user.avatar().dead:
-            return redirect(url_for('.get_dashboard'))
+            return redirect(url_for('.get_game'))
         move = g.user.hack_and_slash(request.values.get('weapon'),
                                      request.values.get('armor'),
                                      request.values.get('food'),)
@@ -161,6 +206,10 @@ def post_move():
         move = g.user.combine(request.values.get('item1'),
                               request.values.get('item2'),
                               request.values.get('item3'))
+    if request.values.get('name') == 'first_class':
+        move = g.user.first_class(request.values.get('class_'))
+    if request.values.get('name') == 'move_zone':
+        move = g.user.move_zone(request.values.get('zone'))
 
     if move:
         serialized = move.serialize(
@@ -172,7 +221,7 @@ def post_move():
             serialized,
             my_node=Node(url=f'{request.scheme}://{request.host}')
         )
-    return redirect(url_for('.get_dashboard'))
+    return redirect(url_for('.get_game'))
 
 
 @game.route('/export/', methods=['GET'])

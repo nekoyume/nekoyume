@@ -12,16 +12,19 @@ from .items import Item
 from .move import (
     Buy,
     CreateNovice,
+    FirstClass,
     HackAndSlash,
     LevelUp,
     Move,
     MoveDetail,
+    MoveZone,
     Say,
     Sell,
     Send,
     Sleep
 )
 from .orm import db
+from .tables import Tables
 from .util import get_address
 
 
@@ -123,6 +126,12 @@ class User():
 
     def create_novice(self, details):
         return self.move(CreateNovice(details=details))
+
+    def first_class(self, class_):
+        return self.move(FirstClass(details={'class': class_}))
+
+    def move_zone(self, zone):
+        return self.move(MoveZone(details={'zone': zone}))
 
     def level_up(self, new_status):
         return self.move(LevelUp(details={
@@ -268,3 +277,11 @@ class Avatar:
     @property
     def dead(self) -> bool:
         return self.hp <= 0
+
+    @property
+    def unlocked_zone(self) -> list:
+        zone_list = []
+        for (k, v) in Tables.zone.items():
+            if self.level >= v.unlock_level:
+                zone_list.append(k)
+        return zone_list

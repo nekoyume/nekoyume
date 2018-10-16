@@ -32,17 +32,27 @@ class Character(ComponentContainer):
     def to_avatar(self, avatar, hp_recover=False):
         stats = self.get_component(PlayerStats)
         avatar.level = stats.level
+        avatar.strength = stats.strength
+        avatar.dexterity = stats.dexterity
+        avatar.intelligence = stats.intelligence
+        avatar.constitution = stats.constitution
+        avatar.luck = stats.luck
         avatar.exp_max = stats.exp_max
         avatar.exp = stats.exp
         avatar.hp_max = stats.calc_hp_max()
         avatar.hp = avatar.hp_max if hp_recover else stats.hp
-        avatar.strength = stats.data.strength
-        avatar.dexterity = stats.data.dexterity
-        avatar.intelligence = stats.data.intelligence
-        avatar.constitution = stats.data.constitution
-        avatar.luck = stats.data.luck
         bag = self.get_component(Bag)
         avatar.items = bag.items
+
+    def get_skills(self):
+        stats = self.get_component(Stats)
+        skills = []
+        for (k, v) in Tables.skills.items():
+            if v.class_ == self.class_ or v.class_ == '':
+                if v.unlock_lv <= stats.level:
+                    skills.append(k)
+        skills.reverse()
+        return skills
 
 
 class Factory:
@@ -69,7 +79,7 @@ class Factory:
         b = b.end()
         character.behavior = b.build()
 
-    def create_player(self, name, class_, level, skills, items):
+    def create_player(self, name, class_, level, items):
         self.character_id += 1
         character = Character()
         character.id_ = self.character_id
@@ -81,6 +91,7 @@ class Factory:
         stats.hp = stats.calc_hp_max()
         character.add_component(Bag(items))
         character.add_component(Aggro())
+        skills = character.get_skills()
         Factory.set_behavior(character, skills)
         return character
 
@@ -100,7 +111,25 @@ class Factory:
             bag.equip(int(details['armor']))
         character.add_component(bag)
         character.add_component(Aggro())
-        Factory.set_behavior(character, ['attack'])
+        skills = character.get_skills()
+        Factory.set_behavior(character, skills)
+        return character
+
+    def create_npc(self, id):
+        self.character_id += 1
+        data = Tables.npc[id]
+        character = Character()
+        character.id_ = self.character_id
+        character.type_ = CharacterType.PLAYER
+        character.class_ = data.class_
+        character.name = id
+        character.add_component(PlayerStats(data.class_, data.level, 0, 0))
+        stats = character.get_component(Stats)
+        stats.hp = stats.calc_hp_max()
+        character.add_component(Bag())
+        character.add_component(Aggro())
+        skills = character.get_skills()
+        Factory.set_behavior(character, skills)
         return character
 
     def create_monster(self, name):

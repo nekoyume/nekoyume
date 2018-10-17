@@ -34,11 +34,12 @@ install_requires = [
     'pytz >= 2018.3',
     'sentry-sdk[flask] == 0.4.1',
     'redis >= 2.10.6, < 2.11.0',
-    'requests >= 2.18.4, < 2.19.0',
+    'requests >= 2.19.1, < 2.20.0',  # version confict in sentry, requests
     'coincurve >= 9.0.0',
     'SQLAlchemy >= 1.2.2, < 1.3.0',
     'tablib >= 0.12.1, < 0.13.0',
     'typeguard >= 2.2.2, < 2.3.0',
+    'urllib3 == 1.23',  # version confict in sentry, requests
 ]
 
 if __name__ == '__main__':

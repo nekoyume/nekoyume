@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import os
 from typing import Callable, Optional, Type, Union
 
 from bencode import bencode
@@ -19,8 +20,12 @@ from .orm import db
 from .user import User
 
 
-MIN_BLOCK_INTERVAL = datetime.timedelta(0, 5)
-MAX_BLOCK_INTERVAL = datetime.timedelta(0, 15)
+MIN_BLOCK_INTERVAL = datetime.timedelta(
+    0, int(os.environ.get('MIN_BLOCK_INTERVAL', 5))
+)
+MAX_BLOCK_INTERVAL = datetime.timedelta(
+    0, int(os.environ.get('MAX_BLOCK_INTERVAL', 15))
+)
 PROTOCOL_VERSION: int = 2
 
 

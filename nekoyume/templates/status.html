@@ -101,21 +101,17 @@
 
       <div class="gold">{{ avatar.gold }}</div>
 
-      <div class="zone">
-        <dl>
+      <button onclick="toggleZone();" class="zone black label-text">{{ avatar.zone }}</button>
+      {% set zone_list = avatar.unlocked_zone %}
+      {% set zone_height = zone_list|length * 20 %}
+      <div class="zone" style="top: {{ 570 - zone_height }}px; height: {{ zone_height }}px;">
+        <i class="here"></i>
         {% set zone_list = avatar.unlocked_zone %}
         {% for zone in zone_list %}
-          {% if zone == avatar.zone %}
-            <li>
-            {{ zone }}
-            </li>
-          {% else %}
-            <li>
-              <button onclick="moveZone('{{ zone }}');">{{ zone }}</button>
-            </li>
+          {% if zone != avatar.zone %}
+          <button onclick="moveZone('{{ zone }}');">{{ zone }}</button>
           {% endif %}
         {% endfor %}
-        </dl>
       </div>
 
       {% if avatar.class_ == 'novice' %}

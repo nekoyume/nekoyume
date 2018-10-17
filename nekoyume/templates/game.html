@@ -61,6 +61,10 @@ button.close {
 .inventory .items .item {
   background-image: url("{{ url_for('static', filename='dist/images/tf_icon_32.png') }}");
 }
+.zone {
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
+}
 .game .gradient-left {
   background: url("{{ url_for('static', filename='dist/images/UI_black_bg.png') }}") repeat-y;
 }
@@ -253,15 +257,12 @@ button.close {
     }
 
     function toggleInventory() {
-      $('.inventory').toggle();
+      $('div.inventory').toggle();
     }
 
-    function drop(ev) {
-      ev.preventDefault();
-      alert(ev);
-      //var data = ev.dataTransfer.getData("text");
-      //ev.target.appendChild(document.getElementById(data));
-  }
+    function toggleZone() {
+      $('div.zone').toggle();
+    }
 
     function strDown() {
 

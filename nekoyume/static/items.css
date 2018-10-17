@@ -19,11 +19,29 @@
 .item-sword_1 {
     background-position: 0px -192px;
 }
+.item-sword_2 {
+    background-position: -32px -192px;
+}
+.item-sword_3 {
+    background-position: -64px -192px;
+}
 .item-wand_1 {
     background-position: 0px -224px;
 }
+.item-wand_2 {
+    background-position: -32px -224px;
+}
+.item-wand_3 {
+    background-position: -64px -224px;
+}
 .item-bow_1 {
     background-position: -320px -224px;
+}
+.item-bow_2 {
+    background-position: -352px -224px;
+}
+.item-bow_3 {
+    background-position: -384px -224px;
 }
 
 .item-gold {

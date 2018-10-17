@@ -1,84 +1,84 @@
 {% extends 'layout.html' %}
 {% block title %}Game{% endblock %}
 {% block style %}
-<link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='items.css') }}">
+<link rel="stylesheet" href="{{ static_url(filename='game.css') }}">
+<link rel="stylesheet" href="{{ static_url(filename='items.css') }}">
 <style>
 .avatar .hp-bar, .avatar .exp-bar {
   border: 7px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_bg.png') }}") 6 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_bar_01_bg.png') }}") 6 fill;
 }
 .avatar .hp-bar .bar {
   border: 7px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_green.png') }}") 7 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_bar_01_green.png') }}") 7 fill;
 }
 .avatar .exp-bar .bar {
   border: 7px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_blue.png') }}") 7 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_bar_01_blue.png') }}") 7 fill;
 }
 button.black {
   background: none;
   border: 6px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/button_black_01.png') }}") 6 fill;
+  border-image: url("{{ static_url(filename='dist/images/button_black_01.png') }}") 6 fill;
 }
 button.close {
   float: right;
   width: 30px;
   height: 30px;
   text-indent: -9999px;
-  background: url("{{ url_for('static', filename='dist/images/button_black_close.png') }}") no-repeat center;
+  background: url("{{ static_url(filename='dist/images/button_black_close.png') }}") no-repeat center;
   border: none;
 }
 .stats {
   border: 6px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .stats table tr {
   border: 6px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_box_01.png') }}") 6 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_box_01.png') }}") 6 fill;
 }
 .stats .stat {
   border: 5px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_box_01.png') }}") 5 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_box_01.png') }}") 5 fill;
 }
 .stats .stat button.up {
-  background: url("{{ url_for('static', filename='dist/images/button_blue_plus.png') }}") no-repeat;
+  background: url("{{ static_url(filename='dist/images/button_blue_plus.png') }}") no-repeat;
 }
 .stats .stat button.down {
-  background: url("{{ url_for('static', filename='dist/images/button_blue_minus.png') }}") no-repeat;
+  background: url("{{ static_url(filename='dist/images/button_blue_minus.png') }}") no-repeat;
 }
 .gold {
-  background: url("{{ url_for('static', filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;
+  background: url("{{ static_url(filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;
 }
 .inventory {
   border: 6px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .inventory .title {
   border-bottom: 1px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_line_02.png') }}") 1 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_line_02.png') }}") 1 fill;
 }
 .inventory .items .item {
-  background-image: url("{{ url_for('static', filename='dist/images/tf_icon_32.png') }}");
+  background-image: url("{{ static_url(filename='dist/images/tf_icon_32.png') }}");
 }
 .zone {
   border: 6px solid;
   border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .game .gradient-left {
-  background: url("{{ url_for('static', filename='dist/images/UI_black_bg.png') }}") repeat-y;
+  background: url("{{ static_url(filename='dist/images/UI_black_bg.png') }}") repeat-y;
 }
 .bottom button.bag {
-  background: url("{{ url_for('static', filename='dist/images/icon_inventory.png') }}") no-repeat bottom center;
+  background: url("{{ static_url(filename='dist/images/icon_inventory.png') }}") no-repeat bottom center;
 }
 .bottom button.hack-and-slash {
-  background: url("{{ url_for('static', filename='dist/images/icon_fight.png') }}") no-repeat bottom center;
+  background: url("{{ static_url(filename='dist/images/icon_fight.png') }}") no-repeat bottom center;
 }
 .bottom button.sleep {
-  background: url("{{ url_for('static', filename='dist/images/icon_sleep.png') }}") no-repeat bottom center;
+  background: url("{{ static_url(filename='dist/images/icon_sleep.png') }}") no-repeat bottom center;
 }
 </style>
-<script src="{{ url_for('static', filename='dist/build/UnityLoader.js') }}"></script>
+<script src="{{ static_url(filename='dist/build/UnityLoader.js') }}"></script>
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -114,7 +114,7 @@ button.close {
   </div>
 
   <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "{{ url_for('static', filename='dist/build/webgl.json') }}", {onProgress: loading});
+    var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
     var inProgress = true;
 
     function init() {

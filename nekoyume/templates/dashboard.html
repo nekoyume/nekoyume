@@ -367,7 +367,7 @@
                                 <input type="hidden" name="name" value="send">
                                 <select name="item_index">
                                   {% for item in avatar.items %}
-                                  <option 
+                                  <option
                                    value="{{ avatar.items.index(item) }}">
                                     {{ item.name }}
                                   </option>
@@ -397,7 +397,7 @@
                                     <option value="----">----</option>
                                     {% for item in avatar.items %}
                                       {% if item.amount > 0 %}
-                                        <option 
+                                        <option
                                          value="{{ avatar.items.index(item) }}">
                                           {{ item.name }}
                                         </option>

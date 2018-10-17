@@ -1,7 +1,7 @@
 import os
 import urllib
 
-from flask import Flask, redirect, url_for
+from flask import Flask, url_for
 from raven.contrib.flask import Sentry
 
 from .api import api
@@ -61,15 +61,6 @@ def create_app():
             'CELERY_BROKER_URL', 'sqla+sqlite:///yume_broker.db'),
         CELERY_RESULT_BACKEND=os.environ.get(
             'CELERY_RESULT_BACKEND', 'db+sqlite:///yume_reuslt.db'))
-
-    @app.endpoint('static')
-    def static(filename):
-        static_url = app.config.get('STATIC_URL')
-
-        if static_url:
-            return redirect(urllib.parse.urljoin(static_url, filename))
-
-        return app.send_static_file(filename)
 
     @app.template_global()
     def static_url(filename):

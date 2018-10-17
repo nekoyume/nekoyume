@@ -118,7 +118,7 @@ button.close {
         unityInit: false,
         inProgress: false,
         dead: false,
-        renderQueue: [],
+        battleResults: [],
         renderInProgress: false
     }
 
@@ -131,7 +131,7 @@ button.close {
     }
 
     function autoBattle() {
-      console.log("starting autoBattle");
+      console.log("starting idle mode");
       setInterval(_autoBattle, 1000);
     }
 
@@ -140,10 +140,10 @@ button.close {
 
       // always render something
       if (!gs.renderInProgress) {
-        if (gs.renderQueue.length > 0) {
-          // render action
-          console.log("▶️: (queue " + (gs.renderQueue.length - 1) + ")");
-          renderBattle(gs.renderQueue.shift());
+        if (gs.battleResults.length > 0) {
+          // render battle result
+          console.log("▶️: (queue " + (gs.battleResults.length - 1) + ")");
+          renderBattle(gs.battleResults.shift());
         } else {
           if (gs.dead) { // sleep
             gameInstance.SendMessage("Battle", "Sleep", "");
@@ -155,7 +155,7 @@ button.close {
 
       if (inProgress) return;
 
-      if (gs.renderQueue.length < MAX_QUEUE_LENGTH) {
+      if (gs.battleResults.length < MAX_QUEUE_LENGTH) {
         if (gs.dead) {
           queueSleep();
         } else {
@@ -171,8 +171,8 @@ button.close {
     }
 
     function handleBattleData(json) {
-      gs.renderQueue.push(json);
-      console.log("queue size = " + gs.renderQueue.length);
+      gs.battleResults.push(json);
+      console.log("queue size = " + gs.battleResults.length);
       var battle = JSON.parse(json);
       for (var action in battle["status"]) {
           if (action["type"] == "dead" && action["id"] == 1) {

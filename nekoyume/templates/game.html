@@ -5,16 +5,39 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='items.css') }}">
 <style>
 .avatar .hp-bar, .avatar .exp-bar {
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_bg.png') }}") 6 6 6 6 repeat;
+  border: 7px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_bg.png') }}") 6 fill;
 }
 .avatar .hp-bar .bar {
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_green.png') }}") 7 7 7 7 repeat;
+  border: 7px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_green.png') }}") 7 fill;
 }
 .avatar .exp-bar .bar {
-  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_blue.png') }}") 7 7 7 7 repeat;
+  border: 7px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_bar_01_blue.png') }}") 7 fill;
 }
-button.stats {
-  border-image: url("{{ url_for('static', filename='dist/images/button_black_01.png') }}") 6 6 6 6 repeat;
+button.black {
+  background: none;
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/button_black_01.png') }}") 6 fill;
+}
+.stats {
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
+}
+.stats table tr {
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_01.png') }}") 6 fill;
+}
+.stats .stat {
+  border: 5px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_01.png') }}") 5 fill;
+}
+.stats .stat button.up {
+  background: url("{{ url_for('static', filename='dist/images/button_blue_plus.png') }}") no-repeat;
+}
+.stats .stat button.down {
+  background: url("{{ url_for('static', filename='dist/images/button_blue_minus.png') }}") no-repeat;
 }
 .gold {
   background: url("{{ url_for('static', filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;

@@ -50,47 +50,56 @@
         <div class="exp-bar">
           <div class="bar" style="width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
         </div>
-        <button class="stats" onclick="toggleStats();"> ▼ </button></center>
+        <button class="black toggle-stats label-text" style="width: 191px; margin-bottom: 4px;" onclick="toggleStats();"> Stats ▼ </button></center>
         <div class="stats" style="display: none;">
-          <table>
-            <thead>
-              <tr>
-                <th colspan="2">STATS</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>CLASS</td>
-                    <td>{{ avatar.class_ }}</td>
-                  </tr>
-              <tr>
-                <td>STR</td>
-                <td><button onclick="strDown();"> ◀︎ </button>{{ avatar.strength }}<button onclick="strUp();"> ► </button></td>
-              </tr>
-              <tr>
-                <td>DEX</td>
-                <td><button onclick="dexDown();"> ◀︎ </button>{{ avatar.dexterity }}<button onclick="dexUp();"> ► </button></td>
-              </tr>
-              <tr>
-                <td>INT</td>
-                <td><button onclick="intDown();"> ◀︎ </button>{{ avatar.intelligence }}<button onclick="intUp();"> ► </button></td>
-              </tr>
-              <tr>
-                <td>CON</td>
-                <td><button onclick="conDown();"> ◀︎ </button>{{ avatar.constitution }}<button onclick="conUp();"> ► </button></td>
-              </tr>
-              <tr>
-              <td>LUK</td>
-                <td><button onclick="lukDown();"> ◀︎ </button>{{ avatar.luck }}<button onclick="lukUp();"> ► </button></td>
-              </tr>
-              <!-- <tr>
-                <td>POINTS</td>
-                <td>0</td>
-              </tr> -->
-            </tbody>
+          <p class="label-text">Class <i class="value-text" style="float: right;">{{ avatar.class_ }}</i></p>
+          <!--<p class="label-text" style="font-size: 12px; margin-bottom: 10px;">Stat Point<i class="point-text" style="float: right;">0</i></p>-->
+          
+          <table class="stat">
+            <tr>
+              <td class="label-text" style="width: 30px; padding-left: 6px;">STR</td>
+              <td style="width: 28px;"><button class="down">-</button></td>
+              <td class="value-text" style="width: 65px;">{{ avatar.strength }}<b></b></td>
+              <td style="width: 28px;"><button class="up">+</button></td>
+            </tr>
           </table>
+          <table class="stat">
+            <tr>
+              <td class="label-text" style="width: 30px; padding-left: 6px;">DEX</td>
+              <td style="width: 28px;"><button class="down">-</button></td>
+              <td class="value-text" style="width: 65px;">{{ avatar.dexterity }}<b></b></td>
+              <td style="width: 28px;"><button class="up">+</button></td>
+            </tr>
+          </table>
+          <table class="stat">
+            <tr>
+              <td class="label-text" style="width: 30px; padding-left: 6px;">INT</td>
+              <td style="width: 28px;"><button class="down">-</button></td>
+              <td class="value-text" style="width: 65px;">{{ avatar.intelligence }}<b></b></td>
+              <td style="width: 28px;"><button class="up">+</button></td>
+            </tr>
+          </table>
+          <table class="stat">
+            <tr>
+              <td class="label-text" style="width: 30px; padding-left: 6px;">CON</td>
+              <td style="width: 28px;"><button class="down">-</button></td>
+              <td class="value-text" style="width: 65px;">{{ avatar.constitution }}<b></b></td>
+              <td style="width: 28px;"><button class="up">+</button></td>
+            </tr>
+          </table>
+          <table class="stat">
+            <tr>
+              <td class="label-text" style="width: 30px; padding-left: 6px;">LUK</td>
+              <td style="width: 28px;"><button class="down">-</button></td>
+              <td class="value-text" style="width: 65px;">{{ avatar.luck }}<b></b></td>
+              <td style="width: 28px;"><button class="up">+</button></td>
+            </tr>
+          </table>
+          <!--<button class="black toggle-infomation label-text" style="width: 179px; margin-top: 8px;">Information ►</button>-->
         </div>
-      </div>
+        
+        
+      </div> <!-- avatar -->
 
       <div class="gold">{{ avatar.gold }}</div>
 

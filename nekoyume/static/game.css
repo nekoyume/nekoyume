@@ -6,27 +6,28 @@
     width: 300px;
 }
 
+.label-text {
+    color: #8591a7;
+    font-size: 14px;
+}
+.value-text {
+    color: #fff9dd;
+    font-size: 14px;
+}
+.point-text {
+    color: #00baff;
+    font-size: 16px;
+}
+
 .avatar {
     padding: 10px;
     position: absolute;
     top: 0;
     left: 0;
-    font-size: 20px;
-    font-weight: 200;
-    /* https://css-tricks.com/adding-stroke-to-web-text/ */
-    text-shadow:
-        0px 2px 1px #000,
-        0px 3px 1px #000,
-        0px 4px 1px #000,
-        -1px -1px 1px #000,
-        1px -1px 1px #000,
-        -1px 1px 1px #000,
-        1px 1px 1px #000,
-        -2px 2px 1px #000,
-        2px 2px 1px #000;
 }
 .avatar-profile {
     margin-bottom: 10px;
+    font-size: 20px;
 }
 .avatar-profile-image {
     width: 20px;
@@ -37,8 +38,7 @@
 }
 .avatar .hp-bar, .avatar .exp-bar {
     clear: left;
-    border: 7px solid;
-    width: 200px;
+    width: 180px;
     margin-left: -4px;
 }
 .avatar .hp-bar .bar, .avatar .exp-bar .bar {
@@ -46,46 +46,61 @@
     position: relative;
     top: -9px;
     left: -7px;
-    border: 7px solid;
-    width: 200px;
-}
-.avatar label {
-    float: left;
-    clear: left;
-    font-size: 14px;
+    width: 180px;
 }
 .avatar .hp {
+    float: left;
     color: #00e607;
 }
 .avatar .hp-less {
+    float: left;
     color: #ff2116;
 }
 .avatar .exp {
+    float: left;
     color: #3ca6ff;
 }
-.avatar button {
-    margin: 4px 10px;
-    padding: 4px;
-}
 
-button.stats {
-    border: 7px solid;
-    width: 200px;
-    margin-left: -4px;
-}
 .stats {
-    
+    width: 180px;
 }
-.stats button {
-    display: none;
+.stats p {
+    margin: 0 0 0 10px;
 }
-.stats table {
-    border: 1px solid #ddd;
+.stats p i {
+    margin: 0 10px 0 0;
+}
+.stats i {
+    font-style: normal;
+}
+.stats .stat {
     width: 100%;
-    height: 100%;
+    margin-top: -2px;
 }
-.stats table td {
-    padding: 10px;
+.stats .stat tr {
+    margin: 0;
+    padding: 0;
+}
+.stats .stat td {
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+}
+.stats .stat .label-text {
+    font-size: 12px;
+}
+.stats .stat .value-text {
+    text-align: center;
+}
+.stats .stat .value-text b {
+    margin-left: 8px;
+}
+.stats .stat button {
+    text-indent: -9999px;
+    border: none;
+    width: 28px;
+    height: 28px;
+    display: none;
 }
 
 .gold {

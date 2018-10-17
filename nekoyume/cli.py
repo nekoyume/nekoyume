@@ -5,7 +5,6 @@ from babel.messages.frontend import compile_catalog
 from click import IntRange, ParamType, argument, echo, group, option
 from coincurve import PrivateKey
 from ptpython.repl import embed
-from raven import Client
 
 from .app import app
 from .block import Block
@@ -44,7 +43,6 @@ def cli():
 @option('--sleep', default=0, type=float)
 def mine(private_key: PrivateKey, sleep: float):
     app.app_context().push()
-    Client(os.environ.get('SENTRY_DSN'))
 
     while True:
         Block.sync()
@@ -102,7 +100,6 @@ def init(seed, sync):
         default=DEFAULT_SEED_NODE_URL,
         help='Seed node URL to connect')
 def sync(seed: str):
-    Client(os.environ.get('SENTRY_DSN'))
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")

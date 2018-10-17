@@ -1,7 +1,8 @@
 import os
 
 from flask import Flask
-from raven.contrib.flask import Sentry
+from sentry_sdk import init as sentry_init
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from .api import api
 from .game import babel, game
@@ -30,6 +31,11 @@ def make_celery(app):
 
 
 def create_app():
+    if os.environ.get('SENTRY_DSN'):
+            sentry_init(
+                dsn=os.environ['SENTRY_DSN'],
+                integrations=[FlaskIntegration()]
+            )
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
         'DATABASE_URL', 'sqlite:///yume.db')
@@ -80,7 +86,6 @@ else:
     }
 
 cache.init_app(app, cache_config)
-sentry = Sentry(app)
 
 
 def run():

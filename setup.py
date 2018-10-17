@@ -32,7 +32,7 @@ install_requires = [
     'psycopg2 >= 2.7.5, < 2.8.0',
     'ptpython == 0.41',
     'pytz >= 2018.3',
-    'raven==6.9.0',
+    'sentry-sdk[flask] == 0.4.1',
     'redis >= 2.10.6, < 2.11.0',
     'requests >= 2.18.4, < 2.19.0',
     'coincurve >= 9.0.0',

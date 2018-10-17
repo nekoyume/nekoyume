@@ -91,14 +91,14 @@ button.close {
     <div class="bottom">
       <button class="bag block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="toggleInventory();">Inventory</button>
-      <button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
+      <!--button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>Hack And Slash</button>
       <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect"
-              onclick="sleep();">Sleep</button>
+              onclick="sleep();">Sleep</button-->
     </div>
   </div>
 
-  <div class="status"></div>
+  <div class="status-root"></div>
 
   <div>
     {{ g.user.address }}
@@ -112,18 +112,75 @@ button.close {
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
     var inProgress = true;
+    var MAX_QUEUE_LENGTH = 4;
+
+    var gs = { // game status
+        unityInit: false,
+        inProgress: false,
+        dead: false,
+        renderQueue: [],
+        renderInProgress: false
+    }
 
     function init() {
-      $('.status').load('/status .status', function () {
+      $('.status-root').load('/status .status', function () {
         $.get('/in_progress', function (data) {
-          if (data == "false") {
-            setInProgress(false);
-          } else {
-            setInProgress(true);
-            update();
-          }
+            autoBattle();
         });
       });
+    }
+
+    function autoBattle() {
+      console.log("starting autoBattle");
+      setInterval(_autoBattle, 1000);
+    }
+
+    function _autoBattle() {
+      if (!gs.unityInit) return;
+
+      // always render something
+      if (!gs.renderInProgress) {
+        if (gs.renderQueue.length > 0) {
+          // render action
+          console.log("▶️: (queue " + (gs.renderQueue.length - 1) + ")");
+          renderBattle(gs.renderQueue.shift());
+        } else {
+          if (gs.dead) { // sleep
+            gameInstance.SendMessage("Battle", "Sleep", "");
+          } else { // walk
+            gameInstance.SendMessage("Battle", "Walking", "");
+          }
+        }
+      }
+
+      if (inProgress) return;
+
+      if (gs.renderQueue.length < MAX_QUEUE_LENGTH) {
+        if (gs.dead) {
+          queueSleep();
+        } else {
+          queueHackAndSlash();
+        }
+      }
+
+    }
+
+    function renderBattle(json) {
+      gameInstance.SendMessage("Battle", "Play", json);
+      gs.renderInProgress = true;
+    }
+
+    function handleBattleData(json) {
+      gs.renderQueue.push(json);
+      console.log("queue size = " + gs.renderQueue.length);
+      var battle = JSON.parse(json);
+      for (var action in battle["status"]) {
+          if (action["type"] == "dead" && action["id"] == 1) {
+          gs.dead = true;
+        } else {
+          gs.dead = false;
+        }
+      }
     }
 
     function loading(gameInstance, progress) {
@@ -152,6 +209,7 @@ button.close {
     }
 
     function onLoadUnity() {
+      gs.unityInit = true;
       setInProgress(false);
       gameInstance.SendMessage("Battle", "Home", "novice");
     }
@@ -159,6 +217,8 @@ button.close {
     function onMessage(msg) {
       // message from unity
       if (msg == "end_battle") {
+        console.log("render finished");
+        gs.renderInProgress = false;
         $('.message').text('');
       }
     }
@@ -174,7 +234,7 @@ button.close {
       var hasEl = $($('.moves div')[0]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
-        gameInstance.SendMessage("Battle", "Play", json);
+        handleBattleData(json);
       } else {
         gameInstance.SendMessage("Battle", "Home", "novice");
       }
@@ -189,33 +249,40 @@ button.close {
     }
 
     function update() {
-      var interval = setInterval(function() {
-        $.get('/in_progress', function (data) {
-          if (data == "false") {
-            clearInterval(interval);
-            setInProgress(false);
-            $('.status').load('/status .status', play);
-          }
-        });
-      }, 2000);
+      // HAX: delay added here because /in_progress usually returns false
+      // if we call immediately. also vulnerable to race condition.
+      setTimeout(_update(), 2000);
     }
 
-    function hack_and_slash() {
+    function _update() {
+      $.get('/in_progress', function (data) {
+        console.log("🚶");
+        if (data == "false") {
+          console.log("❗: not in progress, loading status");
+          setInProgress(false);
+          $('.status-root').load('/status .status', play);
+        } else {
+          setTimeout(_update, 2000);
+        }
+      });
+    }
+
+    function queueHackAndSlash() {
       if (inProgress)
         return;
 
-      gameInstance.SendMessage("Battle", "Walking", "");
+      console.log("⚔");
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'hack_and_slash'
       }, update);
     }
 
-    function sleep() {
+    function queueSleep() {
       if (inProgress)
         return;
 
-      gameInstance.SendMessage("Battle", "Sleep", "");
+      console.log("💭");
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'sleep'
@@ -261,7 +328,7 @@ button.close {
       alert(ev);
       //var data = ev.dataTransfer.getData("text");
       //ev.target.appendChild(document.getElementById(data));
-  }
+    }
 
     function strDown() {
 

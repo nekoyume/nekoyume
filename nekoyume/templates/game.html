@@ -228,9 +228,6 @@ button.close {
     }
 
     function play() {
-      if (inProgress)
-        return;
-
       var hasEl = $($('.moves div')[0]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();

@@ -147,4 +147,6 @@ workflows:
             - build
           filters:
             branches:
-              only: /dev-.*/
+              only:
+                - dev
+                - /dev-*/

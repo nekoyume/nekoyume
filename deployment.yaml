@@ -28,6 +28,11 @@ spec:
               secretKeyRef:
                 name: node-credentials
                 key: seed_node_url
+          - name: SENTRY_DNS
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: sentry_dsn
           - name: POSTGRES_DB_HOST
             valueFrom:
               secretKeyRef:

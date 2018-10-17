@@ -2,27 +2,27 @@
 
 {% macro create_item_table(prefix, cols) %}
 {% if cols > avatar.items|length %}
-    {% set cols = avatar.items|length %}
+  {% set cols = avatar.items|length %}
 {% endif %}
 <table class="items" style="width: {{ cols * 52 }}px;">
-    <tbody>
-    {% for item in avatar.items %}
-        {% if (loop.index - 1) % cols == 0 %}
-        <tr>
-        {% endif %}
-        <td>
-            <div id="{{ prefix }}-{{ item.name.lower() }}"
-                class="item item-{{ item.name.lower() }}">
-                <span class="equip" style="display: none;">E</span>
-                <span class="amount">{{ item.amount }}</span>
-            </div>
-            <div>{{ name }}</div>
-        </td>
-        {% if loop.index % cols == 0 %}
-        </tr>
-        {% endif %}
-    {% endfor %}    
-    </tbody>
+  <tbody>
+  {% for item in avatar.items %}
+    {% if (loop.index - 1) % cols == 0 %}
+    <tr>
+    {% endif %}
+    <td>
+      <div id="{{ prefix }}-{{ item.name.lower() }}"
+          class="item item-{{ item.name.lower() }}">
+          <span class="equip" style="display: none;">E</span>
+          <span class="amount">{{ item.amount }}</span>
+      </div>
+      <div>{{ name }}</div>
+    </td>
+    {% if loop.index % cols == 0 %}
+    </tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
 </table>
 {% endmacro %}
 
@@ -38,7 +38,7 @@
 
       <div class="avatar">
         <div class="avatar-profile">
-          LV. {{ avatar.level }} 
+          LV. {{ avatar.level }}
           <img class="avatar-profile-image" src="{{ avatar.profile_image_url }}" alt="{{ avatar.name }} profile image">
           {{ avatar.name }}
         </div>
@@ -50,11 +50,11 @@
         <div class="exp-bar">
           <div class="bar" style="width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
         </div>
-        <button class="black toggle-stats label-text" style="width: 191px; margin-bottom: 4px;" onclick="toggleStats();"> Stats ▼ </button></center>
+        <button class="black toggle-stats label-text" style="width: 191px; margin-bottom: 4px;" onclick="toggleStats();"> Stats <i>▼</i> </button></center>
         <div class="stats" style="display: none;">
           <p class="label-text">Class <i class="value-text" style="float: right;">{{ avatar.class_ }}</i></p>
           <!--<p class="label-text" style="font-size: 12px; margin-bottom: 10px;">Stat Point<i class="point-text" style="float: right;">0</i></p>-->
-          
+
           <table class="stat">
             <tr>
               <td class="label-text" style="width: 30px; padding-left: 6px;">STR</td>
@@ -95,10 +95,8 @@
               <td style="width: 28px;"><button class="up">+</button></td>
             </tr>
           </table>
-          <!--<button class="black toggle-infomation label-text" style="width: 179px; margin-top: 8px;">Information ►</button>-->
+          <!--<button class="black toggle-infomation label-text" style="width: 179px; margin-top: 8px;">Information <i>►</i></button>-->
         </div>
-        
-        
       </div> <!-- avatar -->
 
       <div class="gold">{{ avatar.gold }}</div>
@@ -130,7 +128,8 @@
       {% endif %}
 
       <div class="inventory popup">
-        <h2>INVENTORY</h2>
+        <button class="close" onclick="toggleInventory();">x</button>
+        <div class="title">Inventory</div>
         {{ create_item_table("inventory", 4) }}
       </div>
 
@@ -138,7 +137,7 @@
         <div class="item">
         </div>
       </div>
-      
+
       <!-- start moves -->
       <div class="moves">
         {% for move in feed.limit(10) %}

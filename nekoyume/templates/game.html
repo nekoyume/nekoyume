@@ -21,6 +21,14 @@ button.black {
   border: 6px solid;
   border-image: url("{{ url_for('static', filename='dist/images/button_black_01.png') }}") 6 fill;
 }
+button.close {
+  float: right;
+  width: 30px;
+  height: 30px;
+  text-indent: -9999px;
+  background: url("{{ url_for('static', filename='dist/images/button_black_close.png') }}") no-repeat center;
+  border: none;
+}
 .stats {
   border: 6px solid;
   border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
@@ -42,10 +50,15 @@ button.black {
 .gold {
   background: url("{{ url_for('static', filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;
 }
-.inventory .items {
-  background: url("{{ url_for('static', filename='dist/images/item_frame.png') }}") repeat 2px 3px;
+.inventory {
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
-.inventory .items  .item {
+.inventory .title {
+  border-bottom: 1px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_line_02.png') }}") 1 fill;
+}
+.inventory .items .item {
   background-image: url("{{ url_for('static', filename='dist/images/tf_icon_32.png') }}");
 }
 .game .gradient-left {
@@ -78,9 +91,9 @@ button.black {
     <div class="bottom">
       <button class="bag block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="toggleInventory();">Inventory</button>
-      <button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect" 
+      <button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>Hack And Slash</button>
-      <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect" 
+      <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="sleep();">Sleep</button>
     </div>
   </div>
@@ -243,12 +256,19 @@ button.black {
       $('.inventory').toggle();
     }
 
+    function drop(ev) {
+      ev.preventDefault();
+      alert(ev);
+      //var data = ev.dataTransfer.getData("text");
+      //ev.target.appendChild(document.getElementById(data));
+  }
+
     function strDown() {
 
     }
 
     function strUp() {
-      
+
     }
 
     function dexDown() {
@@ -256,7 +276,7 @@ button.black {
     }
 
     function dexUp() {
-      
+
     }
 
     function intDown() {
@@ -264,7 +284,7 @@ button.black {
     }
 
     function intUp() {
-      
+
     }
 
     function conDown() {
@@ -272,7 +292,7 @@ button.black {
     }
 
     function conUp() {
-      
+
     }
 
     function lukDown() {
@@ -280,7 +300,7 @@ button.black {
     }
 
     function lukUp() {
-      
+
     }
 
     init();

@@ -94,7 +94,7 @@
         var copyText = document.getElementById("private_key");
         copyText.select();
         document.execCommand("copy");
-        
+
         var data = {message: 'Copied "' + copyText.value + '"'};
         var snackbarContainer = document.querySelector('#toast');
         snackbarContainer.MaterialSnackbar.showSnackbar(data);

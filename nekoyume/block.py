@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+import os
 from typing import Callable, Optional, Type, Union
 
 from bencode import bencode
@@ -19,8 +20,10 @@ from .orm import db
 from .user import User
 
 
-MIN_BLOCK_INTERVAL = datetime.timedelta(0, 5)
-MAX_BLOCK_INTERVAL = datetime.timedelta(0, 15)
+MIN_BLOCK_INTERVAL = \
+    datetime.timedelta(seconds=int(os.environ.get('MIN_BLOCK_INTERVAL', 5)))
+MAX_BLOCK_INTERVAL = \
+    datetime.timedelta(seconds=int(os.environ.get('MAX_BLOCK_INTERVAL', 15)))
 PROTOCOL_VERSION: int = 2
 
 
@@ -354,15 +357,15 @@ def find_branch_point(
         return 0
     mid = int((value + high) / 2)
     response = get(f"{node.url}{Node.get_blocks_endpoint}/{mid}")
-    if response.status_code != 200:
-        raise NodeUnavailable
-    block = session.query(Block).get(mid)
-    if (
-            response.json()['block'] and block and
-            block.hash == response.json()['block']['hash']
-    ):
-        if value == mid:
-            return value
-        return find_branch_point(node, session, mid, high)
-    else:
+    if response.status_code == 200:
+        block = session.query(Block).get(mid)
+        node_block = response.json().get('block')
+        if block and node_block and block.hash == node_block['hash']:
+            if value == mid:
+                return value
+            return find_branch_point(node, session, mid, high)
+        else:
+            return find_branch_point(node, session, value, mid - 1)
+    elif response.status_code == 404:
         return find_branch_point(node, session, value, mid - 1)
+    raise NodeUnavailable

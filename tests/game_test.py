@@ -8,7 +8,6 @@ from sqlalchemy.orm.session import Session
 from typeguard import typechecked
 
 from nekoyume.block import Block
-from nekoyume.broadcast import MoveBroadcaster
 from nekoyume.game import get_unconfirmed_move
 from nekoyume.move import Move
 from nekoyume.node import Node
@@ -142,27 +141,31 @@ def test_get_new_novice_broadcasting(
         fx_test_client: FlaskClient, fx_user: User, fx_private_key: PrivateKey,
         fx_session: scoped_session,
 ):
-    MoveBroadcaster.broadcast = m = unittest.mock.Mock()
-    fx_test_client.post('/login', data={
-        'private_key': fx_private_key.to_hex(),
-        'name': 'test_user',
-    }, follow_redirects=True)
-    res = fx_test_client.get('/new')
-    assert res.status_code == 200
-    move = fx_session.query(Move).filter(
-        Move.name == 'create_novice',
-    ).first()
-    assert move
-    serialized = move.serialize(
-        use_bencode=False,
-        include_signature=True,
-        include_id=True,
-    )
-    assert m.called
-    assert serialized == m.call_args[0][0]
-    my_node = m.call_args[1]['my_node']
-    assert isinstance(my_node, Node)
-    assert my_node.url == 'http://localhost'
+    with unittest.mock.patch('nekoyume.game.multicast') as m:
+        fx_test_client.post('/login', data={
+            'private_key': fx_private_key.to_hex(),
+            'name': 'test_user',
+        }, follow_redirects=True)
+        res = fx_test_client.get('/new')
+        assert res.status_code == 200
+        move = fx_session.query(Move).filter(
+            Move.name == 'create_novice',
+        ).first()
+        assert move
+        serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+        )
+        assert m.called
+        args = m.call_args[1]
+        assert serialized == args['serialized']
+        my_node = args['my_node']
+        assert isinstance(my_node, Node)
+        assert my_node.url == 'http://localhost'
+        broadcast = args['broadcast']
+        assert isinstance(broadcast, typing.Callable)
+        assert broadcast.__name__ == 'broadcast_move'
 
 
 @typechecked
@@ -170,30 +173,34 @@ def test_post_move_broadcasting(
         fx_test_client: FlaskClient, fx_user: User, fx_private_key: PrivateKey,
         fx_session: scoped_session,
 ):
-    fx_test_client.post('/login', data={
-        'private_key': fx_private_key.to_hex(),
-        'name': 'test_user',
-    }, follow_redirects=True)
-    fx_test_client.post('/new')
-    Block.create(fx_user,
-                 fx_session.query(Move).filter_by(block_id=None).all())
-    assert not get_unconfirmed_move(fx_user.address)
-    MoveBroadcaster.broadcast = m = unittest.mock.Mock()
-    res = fx_test_client.post('/session_moves', data={
-        'name': 'hack_and_slash'
-    })
-    assert res.status_code == 302
-    assert m.called
-    move = fx_session.query(Move).filter(
-        Move.name == 'hack_and_slash',
-    ).first()
-    assert move
-    serialized = move.serialize(
-        use_bencode=False,
-        include_signature=True,
-        include_id=True,
-    )
-    assert serialized == m.call_args[0][0]
-    my_node = m.call_args[1]['my_node']
-    assert isinstance(my_node, Node)
-    assert my_node.url == 'http://localhost'
+    with unittest.mock.patch('nekoyume.game.multicast') as m:
+        fx_test_client.post('/login', data={
+            'private_key': fx_private_key.to_hex(),
+            'name': 'test_user',
+        }, follow_redirects=True)
+        fx_test_client.post('/new')
+        Block.create(fx_user,
+                     fx_session.query(Move).filter_by(block_id=None).all())
+        assert not get_unconfirmed_move(fx_user.address)
+        res = fx_test_client.post('/session_moves', data={
+            'name': 'hack_and_slash'
+        })
+        assert res.status_code == 302
+        move = fx_session.query(Move).filter(
+            Move.name == 'hack_and_slash',
+        ).first()
+        assert move
+        serialized = move.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+        )
+        assert m.called
+        args = m.call_args[1]
+        assert serialized == args['serialized']
+        my_node = args['my_node']
+        assert isinstance(my_node, Node)
+        assert my_node.url == 'http://localhost'
+        broadcast = args['broadcast']
+        assert isinstance(broadcast, typing.Callable)
+        assert broadcast.__name__ == 'broadcast_move'

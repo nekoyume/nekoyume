@@ -116,11 +116,14 @@ button.close {
 
     var gs = { // game status
         unityInit: false,
-        inProgress: false,
         dead: false,
         battleResults: [],
-        renderInProgress: false
+        userCreatedMoveQueue: [], // functions to execute
+        renderInProgress: false,
+        sleeping: false
     }
+
+    window.gs = gs;
 
     function init() {
       $('.status-root').load('/status .status', function () {
@@ -155,7 +158,13 @@ button.close {
 
       if (inProgress) return;
 
-      if (gs.battleResults.length < MAX_QUEUE_LENGTH) {
+      // execute moves
+      if (gs.userCreatedMoveQueue.length > 0) {
+          // if user has explicitly called a move (such as move_zone)
+          // we put it into the queue, where it is executed before
+          // battle related actions
+          gs.userCreatedMoveQueue.shift()();
+      } else if (gs.battleResults.length < MAX_QUEUE_LENGTH) {
         if (gs.dead) {
           queueSleep();
         } else {
@@ -174,9 +183,12 @@ button.close {
       gs.battleResults.push(json);
       console.log("queue size = " + gs.battleResults.length);
       var battle = JSON.parse(json);
-      for (var action in battle["status"]) {
-          if (action["type"] == "dead" && action["id"] == 1) {
+
+      // HAX: determine if player is dead or alive
+      for (var action of battle["status"]) {
+        if (action["type"] == "dead" && action["id_"] == 1) {
           gs.dead = true;
+          return;
         } else {
           gs.dead = false;
         }
@@ -220,6 +232,8 @@ button.close {
         console.log("render finished");
         gs.renderInProgress = false;
         $('.message').text('');
+      } else {
+          console.log("received some other message from unity " + msg);
       }
     }
 
@@ -228,12 +242,22 @@ button.close {
     }
 
     function play() {
+      // HAX: even after sleep, .moves is still set to the previous battle data
+      // in which the player has just died. For now, we add a variable `sleeping`
+      // and assume that if this method is called after sleep, the player is
+      // alive.
+      if (gs.sleeping) {
+          gs.sleeping = false;
+          gs.dead = false;
+          return;
+      }
       var hasEl = $($('.moves div')[0]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
         handleBattleData(json);
       } else {
-        gameInstance.SendMessage("Battle", "Home", "novice");
+        // this should be queued, but battle takes care of it
+        //gameInstance.SendMessage("Battle", "Home", "novice");
       }
     }
 
@@ -280,6 +304,7 @@ button.close {
         return;
 
       console.log("💭");
+      gs.sleeping = true;
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'sleep'
@@ -300,11 +325,15 @@ button.close {
     }
 
     function moveZone(zone) {
-      if (inProgress)
-        return;
-
+      //if (inProgress)
+      //  return;
+      console.log("enqueue move " + zone)
       $('.zone button').prop('disabled', true);
-      gameInstance.SendMessage("Battle", "Walking", "");
+      gs.userCreatedMoveQueue.push(function () {queueMoveZone(zone);});
+    }
+
+    function queueMoveZone(zone) {
+      console.log("moving to " + zone)
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'move_zone',

@@ -255,7 +255,7 @@ button.close {
           gs.dead = false;
           return;
       }
-      var hasEl = $($('.moves div')[0]).children('input');
+      var hasEl = $($('.history div')[1]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
         handleBattleData(json);

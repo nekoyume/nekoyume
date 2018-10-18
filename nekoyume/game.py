@@ -6,7 +6,7 @@ from flask import (Blueprint, Response, g, redirect, render_template, request,
 from flask_babel import Babel
 from sqlalchemy import func
 
-from .broadcast import broadcast_move
+from .broadcast import MoveBroadcaster
 from .move import LevelUp, Move
 from .node import Node
 from .orm import db
@@ -158,7 +158,7 @@ def get_new_novice():
                 include_signature=True,
                 include_id=True,
             )
-            broadcast_move(
+            MoveBroadcaster.broadcast(
                 serialized,
                 my_node=Node(url=f'{request.scheme}://{request.host}')
             )
@@ -217,7 +217,7 @@ def post_move():
             include_signature=True,
             include_id=True,
         )
-        broadcast_move(
+        MoveBroadcaster.broadcast(
             serialized,
             my_node=Node(url=f'{request.scheme}://{request.host}')
         )

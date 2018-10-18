@@ -8,7 +8,7 @@ from ptpython.repl import embed
 
 from .app import app
 from .block import Block
-from .broadcast import broadcast_block, broadcast_node
+from .broadcast import BlockBroadcaster, NodeBroadcaster
 from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
@@ -61,7 +61,7 @@ def mine(private_key: PrivateKey, sleep: float):
                 include_moves=True,
                 include_hash=True
             )
-            broadcast_block(serialized=serialized)
+            BlockBroadcaster.broadcast(serialized=serialized)
             echo(block)
 
 
@@ -103,7 +103,7 @@ def sync(seed: str):
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")
-        broadcast_node(serialized={'url': public_url})
+        NodeBroadcaster.broadcast(serialized={'url': public_url})
     Node.update(Node.get(url=seed))
     engine = db.engine
     if not engine.dialect.has_table(engine.connect(), Block.__tablename__):

@@ -13,9 +13,9 @@ from typeguard import typechecked
 
 from nekoyume.block import Block
 from nekoyume.broadcast import (
-    broadcast_block,
-    broadcast_move,
-    broadcast_node
+    BlockBroadcaster,
+    MoveBroadcaster,
+    NodeBroadcaster,
 )
 from nekoyume.move import Move
 from nekoyume.node import Node
@@ -47,7 +47,7 @@ def test_broadcast_node(
     fx_other_session.add(node2)
     fx_other_session.commit()
     assert not fx_session.query(Node).filter(Node.url == node2.url).first()
-    broadcast_node(serialized={'url': fx_other_server.url})
+    NodeBroadcaster.broadcast(serialized={'url': fx_other_server.url})
     assert fx_session.query(Node).filter(Node.url == node2.url).first()
     assert node.last_connected_at > now
 
@@ -60,7 +60,7 @@ def test_broadcast_node_same_url(fx_session: scoped_session):
     fx_session.add(node)
     fx_session.commit()
     with Mocker() as m:
-        broadcast_node(serialized={'url': url}, sent_node=node)
+        NodeBroadcaster.broadcast(serialized={'url': url}, sent_node=node)
         assert not m.called
     assert node.last_connected_at == now
 
@@ -74,7 +74,7 @@ def test_broadcast_my_node(fx_session: scoped_session):
     fx_session.commit()
     with Mocker() as m:
         m.post('http://test.neko/nodes', json={'result': 'success'})
-        broadcast_node({'url': url}, my_node=node)
+        NodeBroadcaster.broadcast({'url': url}, my_node=node)
         assert node.last_connected_at > now
         # check request.json value
         assert m.request_history[0].json() == {
@@ -98,7 +98,7 @@ def broadcast_node_failed(fx_session: scoped_session,
     assert not fx_session.query(Node).filter(Node.url == node2.url).first()
     with Mocker() as m:
         m.post('http://test.neko', exc=error)
-        broadcast_node(serialized={'url': fx_other_server.url})
+        NodeBroadcaster.broadcast(serialized={'url': fx_other_server.url})
     assert not fx_session.query(Node).filter(Node.url == node2.url).first()
     assert node.last_connected_at == now
 
@@ -121,7 +121,7 @@ def test_broadcast_block(
     fx_session.flush()
     assert fx_session.query(Block).get(block.id)
     assert not fx_other_session.query(Block).get(block.id)
-    broadcast_block(
+    BlockBroadcaster.broadcast(
         block.serialize(
             use_bencode=False,
             include_suffix=True,
@@ -150,7 +150,7 @@ def test_broadcast_block_my_node(fx_session: scoped_session, fx_user: User):
             include_moves=True,
             include_hash=True
         )
-        broadcast_block(serialized, my_node=node)
+        BlockBroadcaster.broadcast(serialized, my_node=node)
         expected['sent_node'] = url
         assert node.last_connected_at > now
         assert node.last_connected_at > now
@@ -166,7 +166,7 @@ def test_broadcast_block_same_node(fx_session: scoped_session, fx_user: User):
     node = Node(url=url, last_connected_at=now)
     fx_session.add(node)
     fx_session.flush()
-    broadcast_block(
+    BlockBroadcaster.broadcast(
         block.serialize(
             use_bencode=False,
             include_suffix=True,
@@ -191,7 +191,7 @@ def test_broadcast_block_raise_exception(
     fx_session.flush()
     with Mocker() as m:
         m.post('http://test.neko/blocks', exc=error)
-        broadcast_block(
+        BlockBroadcaster.broadcast(
             block.serialize(
                 use_bencode=False,
                 include_suffix=True,
@@ -235,7 +235,7 @@ def test_broadcast_block_retry(
                 'status_code': 200
             }
         ])
-        broadcast_block(
+        BlockBroadcaster.broadcast(
             block.serialize(
                 use_bencode=False,
                 include_suffix=True,
@@ -270,7 +270,7 @@ def test_broadcast_move(
         include_signature=True,
         include_id=True,
     )
-    broadcast_move(serialized=serialized)
+    MoveBroadcaster.broadcast(serialized=serialized)
     assert fx_other_session.query(Move).get(move.id)
     assert node.last_connected_at > now
 
@@ -291,7 +291,7 @@ def test_broadcast_move_same_url(fx_session: scoped_session,
             include_signature=True,
             include_id=True,
         )
-        broadcast_move(serialized=serialized, sent_node=node)
+        MoveBroadcaster.broadcast(serialized=serialized, sent_node=node)
         assert not m.called
     assert node.last_connected_at == now
 
@@ -313,7 +313,7 @@ def test_broadcast_move_my_node(fx_session: scoped_session,
             include_signature=True,
             include_id=True,
         )
-        broadcast_move(serialized=serialized, my_node=node)
+        MoveBroadcaster.broadcast(serialized=serialized, my_node=node)
         expected['sent_node'] = 'http://test.neko'
         assert node.last_connected_at > now
         # check request.json value
@@ -338,5 +338,5 @@ def broadcast_move_failed(fx_session: scoped_session,
             include_id=True,
         )
         m.post('http://test.neko', exc=error)
-        broadcast_move(serialized=serialized)
+        MoveBroadcaster.broadcast(serialized=serialized)
     assert node.last_connected_at == now

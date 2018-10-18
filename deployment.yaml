@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: nekoyume-web
-        image: gcr.io/$GOOGLE_PROJECT_ID/nekoyume:dev
+        image: gcr.io/$GOOGLE_PROJECT_ID/nekoyume:$TAG
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -28,6 +28,11 @@ spec:
               secretKeyRef:
                 name: node-credentials
                 key: seed_node_url
+          - name: SENTRY_DNS
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: sentry_dsn
           - name: POSTGRES_DB_HOST
             valueFrom:
               secretKeyRef:

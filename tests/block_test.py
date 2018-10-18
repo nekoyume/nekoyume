@@ -1,6 +1,14 @@
-from pytest import raises
+import typing
 
-from nekoyume.block import Block
+from pytest import mark, raises
+from pytest_localserver.http import WSGIServer
+from requests_mock import Mocker
+from sqlalchemy.orm.scoping import scoped_session
+from sqlalchemy.orm.session import Session
+from typeguard import typechecked
+
+from nekoyume.block import Block, find_branch_point
+from nekoyume.exc import NodeUnavailable
 from nekoyume.move import Move
 from nekoyume.node import Node
 from nekoyume.user import User
@@ -44,6 +52,88 @@ def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
     assert fx_other_session.query(Move).count() == 1
     assert fx_session.query(Block).count() == 3
     assert fx_session.query(Move).count() == 1
+
+
+@typechecked
+@mark.parametrize('code', [500, 503])
+def test_sync_node_unavailable_on_get_last_block(
+        fx_user: User, fx_session: scoped_session,
+        fx_other_session: Session, fx_server: WSGIServer,
+        fx_novice_status: typing.Mapping[str, str],
+        code: int
+):
+    move = fx_user.create_novice(fx_novice_status)
+    Block.create(fx_user, [move])
+    with Mocker() as m:
+        m.get(url=f'{fx_server.url}/blocks/last', status_code=code)
+        Block.sync(Node(url=fx_server.url), fx_other_session)
+        assert fx_other_session.query(Block).count() == 0
+
+
+@typechecked
+@mark.parametrize('code', [500, 503])
+def test_sync_node_unaviable_on_branch_point(
+        fx_user: User, fx_session: scoped_session,
+        fx_server: WSGIServer, fx_other_session: Session,
+        fx_novice_status: typing.Mapping[str, str],
+        code: int
+):
+    move = fx_user.create_novice(fx_novice_status)
+    block = Block.create(fx_user, [move])
+    Block.sync(Node(url=fx_server.url), fx_other_session)
+    assert fx_other_session.query(Block).count() == 1
+    serialized = block.serialize(
+        use_bencode=False,
+        include_suffix=True,
+        include_moves=True,
+        include_hash=True
+    )
+    serialized['id'] = block.id + 1
+    with Mocker() as m:
+        m.register_uri(
+            'GET', f'{fx_server.url}/blocks/last',
+            json={'block': serialized},
+            status_code=200,
+        )
+        m.register_uri(
+            'GET', f'{fx_server.url}/blocks/1',
+            status_code=code,
+        )
+        assert not Block.sync(Node(url=fx_server.url), fx_other_session)
+
+
+@typechecked
+@mark.parametrize('code', [500, 503])
+def test_sync_node_unavailable_on_get_blocks(
+        fx_user: User, fx_session: scoped_session,
+        fx_server: WSGIServer, fx_other_session: Session,
+        fx_novice_status: typing.Mapping[str, str],
+        code: int
+):
+    move = fx_user.create_novice(fx_novice_status)
+    block = Block.create(fx_user, [move])
+    Block.sync(Node(url=fx_server.url), fx_other_session)
+    serialized = block.serialize(
+        use_bencode=False,
+        include_suffix=True,
+        include_moves=True,
+        include_hash=True
+    )
+    serialized['id'] = block.id + 1
+    with Mocker() as m:
+        m.register_uri(
+            'GET', f'{fx_server.url}/blocks/last',
+            json={'block': serialized},
+            status_code=200,
+        )
+        m.register_uri(
+            'GET', f'{fx_server.url}/blocks/1',
+            json={'block': serialized},
+            status_code=200,
+        )
+        m.get(url=f'{fx_server.url}/blocks', status_code=code)
+        Block.sync(Node(url=fx_server.url), fx_other_session)
+        assert not fx_other_session.query(Block).get(serialized['id'])
 
 
 def test_flush_session_while_syncing(fx_user, fx_session, fx_other_session,
@@ -124,3 +214,27 @@ def test_ensure_block(fx_user: User):
     assert move.block_id
     with raises(NotImplementedError):
         move.execute()
+
+
+@typechecked
+@mark.parametrize('value, high, expected', [
+    (0, 1, 0),
+    (1, 1, 1),
+    (2, 1, 0),
+])
+def test_find_branch_point(
+        fx_session: scoped_session, fx_server: WSGIServer,
+        fx_user: User, value: int, high: int, expected: int
+):
+    node = Node(url=fx_server.url)
+    Block.create(fx_user, [])
+    assert find_branch_point(node, fx_session, value, high) == expected
+
+
+@typechecked
+@mark.parametrize('code', [500, 502, 503])
+def test_find_branch_point_raise_error(fx_session: scoped_session, code: int):
+    node = Node(url='http://test.neko')
+    with raises(NodeUnavailable), Mocker() as m:
+        m.get('http://test.neko/blocks/1', status_code=500)
+        find_branch_point(node, fx_session, 1, 1)

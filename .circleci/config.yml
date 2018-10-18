@@ -20,9 +20,9 @@ references:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - v1-dependencies-{{ checksum "requirements.txt" }}
+        - v2-dependencies-{{ checksum "requirements.txt" }}
         # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
+        - v2-dependencies-
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v2-dependencies-{{ checksum "requirements.txt" }}
 
       - run:
           name: run tests
@@ -112,13 +112,14 @@ jobs:
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
           name: Build & Upload docker image
-          command: gcloud --quiet builds submit --tag gcr.io/${GOOGLE_PROJECT_ID}/nekoyume:dev .
+          command: gcloud --quiet builds submit --tag gcr.io/${GOOGLE_PROJECT_ID}/nekoyume:${CIRCLE_SHA1} .
       - run:
           name: Replace args
           command: |
             sed -i 's/$GOOGLE_PROJECT_ID/'"$GOOGLE_PROJECT_ID"'/g' deployment.yaml
             sed -i 's/$COMPUTE_ZONE/'"$COMPUTE_ZONE"'/g' deployment.yaml
             sed -i 's/$GOOGLE_COMPUTE_INSTANCE/'"$GOOGLE_COMPUTE_INSTANCE"'/g' deployment.yaml
+            sed -i 's/$TAG/'"$CIRCLE_SHA1"'/g' deployment.yaml
       - run:
           name: Deploy Dev server
           command: |
@@ -142,6 +143,10 @@ workflows:
             branches:
               ignore: /.*/
       - dev-deploy:
+          requires:
+            - build
           filters:
             branches:
-              only: /dev-.*/
+              only:
+                - dev
+                - /dev-*/

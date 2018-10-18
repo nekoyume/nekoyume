@@ -95,14 +95,14 @@ button.close {
     <div class="bottom">
       <button class="bag block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="toggleInventory();">Inventory</button>
-      <button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
+      <!--button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>Hack And Slash</button>
       <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect"
-              onclick="sleep();">Sleep</button>
+              onclick="sleep();">Sleep</button-->
     </div>
   </div>
 
-  <div class="status"></div>
+  <div class="status-root"></div>
 
   <nav class="no-shadow">
     {{ g.user.address }}
@@ -116,18 +116,87 @@ button.close {
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
     var inProgress = true;
+    var MAX_QUEUE_LENGTH = 4;
+
+    var gs = { // game status
+        unityInit: false,
+        dead: false,
+        battleResults: [],
+        userCreatedMoveQueue: [], // functions to execute
+        renderInProgress: false,
+        sleeping: false
+    }
+
+    window.gs = gs;
 
     function init() {
-      $('.status').load('/status .status', function () {
+      $('.status-root').load('/status .status', function () {
         $.get('/in_progress', function (data) {
-          if (data == "false") {
-            setInProgress(false);
-          } else {
-            setInProgress(true);
-            update();
-          }
+            autoBattle();
         });
       });
+    }
+
+    function autoBattle() {
+      console.log("starting idle mode");
+      setInterval(_autoBattle, 1000);
+    }
+
+    function _autoBattle() {
+      if (!gs.unityInit) return;
+
+      // always render something
+      if (!gs.renderInProgress) {
+        if (gs.battleResults.length > 0) {
+          // render battle result
+          console.log("▶️: (queue " + (gs.battleResults.length - 1) + ")");
+          renderBattle(gs.battleResults.shift());
+        } else {
+          if (gs.dead) { // sleep
+            gameInstance.SendMessage("Battle", "Sleep", "");
+          } else { // walk
+            gameInstance.SendMessage("Battle", "Walking", "");
+          }
+        }
+      }
+
+      if (inProgress) return;
+
+      // execute moves
+      if (gs.userCreatedMoveQueue.length > 0) {
+          // if user has explicitly called a move (such as move_zone)
+          // we put it into the queue, where it is executed before
+          // battle related actions
+          gs.userCreatedMoveQueue.shift()();
+      } else if (gs.battleResults.length < MAX_QUEUE_LENGTH) {
+        if (gs.dead) {
+          queueSleep();
+        } else {
+          queueHackAndSlash();
+        }
+      }
+
+    }
+
+    function renderBattle(json) {
+      gameInstance.SendMessage("Battle", "Play", json);
+      gs.renderInProgress = true;
+    }
+
+    function handleBattleData(json) {
+      gs.battleResults.push(json);
+      console.log("queue size = " + gs.battleResults.length);
+      var battle = JSON.parse(json);
+
+      // HAX: determine if player is dead or alive
+      for (var action of battle["status"]) {
+        if (action["type"] == "dead" && action["id_"] == 1) {
+          gs.dead = true;
+          return;
+        } else {
+          gs.dead = false;
+        }
+      }
     }
 
     function loading(gameInstance, progress) {
@@ -156,6 +225,7 @@ button.close {
     }
 
     function onLoadUnity() {
+      gs.unityInit = true;
       setInProgress(false);
       gameInstance.SendMessage("Battle", "Home", "novice");
     }
@@ -163,7 +233,11 @@ button.close {
     function onMessage(msg) {
       // message from unity
       if (msg == "end_battle") {
+        console.log("render finished");
+        gs.renderInProgress = false;
         $('.message').text('');
+      } else {
+          console.log("received some other message from unity " + msg);
       }
     }
 
@@ -172,15 +246,22 @@ button.close {
     }
 
     function play() {
-      if (inProgress)
-        return;
-
+      // HAX: even after sleep, .moves is still set to the previous battle data
+      // in which the player has just died. For now, we add a variable `sleeping`
+      // and assume that if this method is called after sleep, the player is
+      // alive.
+      if (gs.sleeping) {
+          gs.sleeping = false;
+          gs.dead = false;
+          return;
+      }
       var hasEl = $($('.moves div')[0]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
-        gameInstance.SendMessage("Battle", "Play", json);
+        handleBattleData(json);
       } else {
-        gameInstance.SendMessage("Battle", "Home", "novice");
+        // this should be queued, but battle takes care of it
+        //gameInstance.SendMessage("Battle", "Home", "novice");
       }
     }
 
@@ -193,33 +274,41 @@ button.close {
     }
 
     function update() {
-      var interval = setInterval(function() {
-        $.get('/in_progress', function (data) {
-          if (data == "false") {
-            clearInterval(interval);
-            setInProgress(false);
-            $('.status').load('/status .status', play);
-          }
-        });
-      }, 2000);
+      // HAX: delay added here because /in_progress usually returns false
+      // if we call immediately. also vulnerable to race condition.
+      setTimeout(_update(), 2000);
     }
 
-    function hack_and_slash() {
+    function _update() {
+      $.get('/in_progress', function (data) {
+        console.log("🚶");
+        if (data == "false") {
+          console.log("❗: not in progress, loading status");
+          setInProgress(false);
+          $('.status-root').load('/status .status', play);
+        } else {
+          setTimeout(_update, 2000);
+        }
+      });
+    }
+
+    function queueHackAndSlash() {
       if (inProgress)
         return;
 
-      gameInstance.SendMessage("Battle", "Walking", "");
+      console.log("⚔");
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'hack_and_slash'
       }, update);
     }
 
-    function sleep() {
+    function queueSleep() {
       if (inProgress)
         return;
 
-      gameInstance.SendMessage("Battle", "Sleep", "");
+      console.log("💭");
+      gs.sleeping = true;
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'sleep'
@@ -240,12 +329,15 @@ button.close {
     }
 
     function moveZone(zone) {
-      if (inProgress)
-        return;
-
-      $('div.zone').hide();
+      //if (inProgress)
+      //  return;
+      console.log("enqueue move " + zone)
       $('.zone button').prop('disabled', true);
-      gameInstance.SendMessage("Battle", "Walking", "");
+      gs.userCreatedMoveQueue.push(function () {queueMoveZone(zone);});
+    }
+
+    function queueMoveZone(zone) {
+      console.log("moving to " + zone)
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'move_zone',

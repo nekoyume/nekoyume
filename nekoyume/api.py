@@ -4,7 +4,6 @@ from flask import Blueprint, jsonify, request
 from requests import get
 from requests.exceptions import ConnectionError
 from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import NotFound
 
 from .block import Block
 from .broadcast import (
@@ -128,14 +127,12 @@ def get_block_by_id(block_id):
 
 @api.route('/blocks/last')
 def get_last_block():
-    block = Block.query.order_by(Block.id.desc()).first()
-    if block:
-        block = block.serialize(use_bencode=False,
-                                include_suffix=True,
-                                include_moves=True,
-                                include_hash=True)
-        return jsonify(block=block)
-    raise NotFound
+    block = Block.query.order_by(Block.id.desc()).first_or_404()
+    block = block.serialize(use_bencode=False,
+                            include_suffix=True,
+                            include_moves=True,
+                            include_hash=True)
+    return jsonify(block=block)
 
 
 @api.route('/moves/<string:move_id>')

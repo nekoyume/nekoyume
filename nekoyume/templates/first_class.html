@@ -1,154 +1,232 @@
 {% extends 'layout.html' %}
 {% block title %}New{% endblock %}
 {% block style %}
+<link rel="stylesheet" href="{{ static_url(filename='game.css') }}">
 <style>
-  .character-select {
-    background: url("{{ static_url(filename='dist/images/bg_character_select.png') }}") no-repeat;
-    width: 1136px;
-    height: 640px;
-    margin: 0 auto;
+  body {
+    background: #000 url("{{ static_url(filename='dist/images/bg_character_select_01.png') }}") no-repeat;
   }
   .gradient {
     position: absolute;
     width: 100%;
-    top: 580px;
+    top: 570px;
     left: 0;
     height: 70px;
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
     background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
     background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
     background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
   }
-  .gradient-left {
-    float: left;
-    width: 70px;
-    height: 100%;
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
-    background: -moz-linear-gradient(right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(right, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-  }
-  .gradient-right {
-    float: right;
-    width: 70px;
-    height: 100%;
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
-    background: -moz-linear-gradient(left, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-  }
-  .character {
-    width: 100%;
+
+  .class-character {
+    padding-top: 76px;
     height: 250px;
-    padding-top: 100px;
   }
-  .character.swordman {
-    background: url("{{ static_url(filename='dist/images/character_swordman.png') }}") no-repeat center center;
+  .class-character div {
+    width: 100%;
+    height: 100%;
   }
-  .character.mage {
-    background: url("{{ static_url(filename='dist/images/character_mage.png') }}") no-repeat center center;
+  .class-character .swordman {
+    background: url("{{ static_url(filename='dist/images/character_swordman.png') }}") no-repeat 330px bottom;
   }
-  .character.archer {
-    background: url("{{ static_url(filename='dist/images/character_archer.png') }}") no-repeat center center;
+  .class-character .mage {
+    background: url("{{ static_url(filename='dist/images/character_mage.png') }}") no-repeat 300px bottom;
   }
-  .character.acolyte {
-    background: url("{{ static_url(filename='dist/images/character_acolyte.png') }}") no-repeat center center;
+  .class-character .archer {
+    background: url("{{ static_url(filename='dist/images/character_archer.png') }}") no-repeat 310px bottom;
   }
-  .first-class {
-    padding-top: 40px;
+  .class-character .acolyte {
+    background: url("{{ static_url(filename='dist/images/character_acolyte.png') }}") no-repeat 300px bottom;
+  }
+
+  .status {
+    float: right;
+    overflow: hidden;
+    margin: 20px 100px 0 0;
+    width: 280px;
     text-align: center;
   }
-  .first-class button {
+  .class-icon div {
     width: 130px;
     height: 130px;
-    text-indent: -9999px;
-    padding: 0 4px;
+    margin: 0 auto;
+  }
+  .class-icon .swordman {
+    background: url("{{ static_url(filename='dist/images/icon_swordman.png') }}") no-repeat center bottom;
+  }
+  .class-icon .mage {
+    background: url("{{ static_url(filename='dist/images/icon_mage.png') }}") no-repeat center bottom;
+  }
+  .class-icon .archer {
+    background: url("{{ static_url(filename='dist/images/icon_archer.png') }}") no-repeat center bottom;
+  }
+  .class-icon .acolyte {
+    background: url("{{ static_url(filename='dist/images/icon_acolyte.png') }}") no-repeat center bottom;
+  }
+  .status .desc-1 {
+    margin: 10px 0;
+    font-size: 18px;
+  }
+  .status .desc-2 {
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  .stats {
+    margin: 20px auto 30px;
+  }
+  .stats table tr {
+    border: 6px solid;
+    border-image: url("{{ static_url(filename='dist/images/UI_box_01.png') }}") 6 fill;
+  }
+  .stats .stat {
+    border: 5px solid;
+    border-image: url("{{ static_url(filename='dist/images/UI_box_01.png') }}") 5 fill;
+    padding: 2px;
+    text-align: center;
+  }
+
+  .bottom {
+    margin-left: 200px;
+    width: 600px;
+  }
+  .bottom .selected {
+    background: url("{{ static_url(filename='dist/images/icon_select_01.png') }}") no-repeat center -30px;
+  }
+  .class-btn-container, .class-btn-container button {
+    width: 100px;
+    height: 100px;
+    float: left;
+  }
+  .class-btn-container button {
+    background-position: center bottom;
+    background-repeat: no-repeat;
   }
   button.swordman {
-    background: url("{{ static_url(filename='dist/images/icon_swordman.png') }}") no-repeat center center;
+    background-image: url("{{ static_url(filename='dist/images/icon_swordman_01.png') }}");
+  }
+  .selected button.swordman {
+    background-image: url("{{ static_url(filename='dist/images/icon_swordman_02.png') }}");
   }
   button.mage {
-    background: url("{{ static_url(filename='dist/images/icon_mage.png') }}") no-repeat center center;
+    background-image: url("{{ static_url(filename='dist/images/icon_mage_01.png') }}");
+  }
+  .selected button.mage {
+    background-image: url("{{ static_url(filename='dist/images/icon_mage_02.png') }}");
   }
   button.archer {
-    background: url("{{ static_url(filename='dist/images/icon_archer.png') }}") no-repeat center center;
+    background-image: url("{{ static_url(filename='dist/images/icon_archer_01.png') }}");
+  }
+  .selected button.archer {
+    background-image: url("{{ static_url(filename='dist/images/icon_archer_02.png') }}");
   }
   button.acolyte {
-    background: url("{{ static_url(filename='dist/images/icon_acolyte.png') }}") no-repeat center center;
+    background-image: url("{{ static_url(filename='dist/images/icon_acolyte_01.png') }}");
   }
-  .character-info, .character-stats {
-    position: absolute;
-    top: 60px;
-    padding: 20px 40px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    width: 160px;
-    height: 280px;
-    overflow: hidden;
+  .selected button.acolyte {
+    background-image: url("{{ static_url(filename='dist/images/icon_acolyte_02.png') }}");
   }
-  .character-info {
-    left: 50%;
-    margin-left: -500px;
+
+  .go-btn-container {
+    margin: 0 auto;
+    width: 223px;
+    height: 89px;
+    background: url("{{ static_url(filename='dist/images/button_blue_effect_01.png') }}");
   }
-  .character-stats {
-    right: 50%;
-    margin-right: -500px;
-  }
-  dd {
-    clear: left;
-    float: left;
-    width: 100px;
-  }
-  dt {
-    float: left;
+  .go-btn-container button {
+    margin: 20px auto 0;
+    width: 184px;
+    height: 50px;
+    background: none;
+    border: 5px solid;
+    border-image: url("{{ static_url(filename='dist/images/button_blue_02.png') }}") 5 fill;
+    font-size: 24px;
   }
 </style>
 {% endblock %}
 {% set avatar = g.user.avatar() %}
 {% block body %}
-<center>
-<div style="position: absolute; top: 200px; display: none;"
+<div class="gradient"></div>
+<div style="position: absolute; top: 250px; left: 400px; display: none;"
      class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
-</center>
-<div class="character-info" style="display: none;">
-  <p>{% trans %}Hello! Welcome to the world of Nekoyume.{% endtrans %}</p>
+<div class="status">
+  <div class="class-icon">
+    <div class=""></div>
+  </div>
+  <div class="desc-1">
+    독수리도 내 민첩함은 못 따라온다냥
+  </div>
+  <div class="desc-2 label-text">
+    활 공격에 능통한 고양이 종족이다.<br />
+    DEX가 높은것이 특징인 캐릭터이다.
+  </div>
+  <div class="stats" style="width: 140px;">
+    <table class="stat">
+      <tr>
+        <td class="label-text" style="width: 30px; padding-left: 6px;">STR</td>
+        <td class="value-text" style="width: 80px;">{{ avatar.strength }}<b></b></td>
+      </tr>
+    </table>
+    <table class="stat">
+      <tr>
+        <td class="label-text" style="width: 30px; padding-left: 6px;">DEX</td>
+        <td class="value-text" style="width: 80px;">{{ avatar.dexterity }}<b></b></td>
+      </tr>
+    </table>
+    <table class="stat">
+      <tr>
+        <td class="label-text" style="width: 30px; padding-left: 6px;">INT</td>
+        <td class="value-text" style="width: 80px;">{{ avatar.intelligence }}<b></b></td>
+      </tr>
+    </table>
+    <table class="stat">
+      <tr>
+        <td class="label-text" style="width: 30px; padding-left: 6px;">CON</td>
+        <td class="value-text" style="width: 80px;">{{ avatar.constitution }}<b></b></td>
+      </tr>
+    </table>
+    <table class="stat">
+      <tr>
+        <td class="label-text" style="width: 30px; padding-left: 6px;">LUK</td>
+        <td class="value-text" style="width: 80px;">{{ avatar.luck }}<b></b></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="go-btn-container">
+    <button onclick="confirmClass();">go!</button>
+  </div>
+</div> <!--end status-->
+
+<div class="class-character">
+  <div class=""></div>
 </div>
-<div class="character-stats" style="display: none;">
-  <h6>Stats</h6>
-  <dl>
-    <dd>STR</dd>
-    <dt>10</dt>
-    <dd>DEX</dd>
-    <dt>10</dt>
-    <dd>INT</dd>
-    <dt>10</dt>
-    <dd>CON</dd>
-    <dt>10</dt>
-    <dd>LUK</dd>
-    <dt>10</dt>
-  </dl>
-</div>
-<div class="character-select">
-  <div class="gradient"></div>
-  <div class="gradient-left"></div>
-  <div class="gradient-right"></div>
-  <div class="character"></div>
-  <center>
-    <button style="visibility: hidden; font-size: 1.6em; width: 140px; height: 48px;"
-          class="select-class mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-          onclick="confirmClass()"
-          type="submit">{% trans %}OK{% endtrans %}</button>
-  </center>
-  <div class="first-class">
-    <button disabled class="swordman mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('swordman');">Swordman</button>
-    <button disabled class="mage mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('mage');">Mage</button>
-    <button disabled class="archer mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('archer');">Archer</button>
-    <button disabled class="acolyte mdl-button mdl-js-button mdl-js-ripple-effect" onclick="selectClass('acolyte');">Acolyte</button>
+
+<div class="bottom">
+  <div class="class-btn-container">
+      <button class="swordman mdl-button mdl-js-button mdl-js-ripple-effect"
+              onclick="selectClass('swordman');">
+              swordman
+      </button>
+  </div>
+  <div class="class-btn-container">
+      <button class="archer mdl-button mdl-js-button mdl-js-ripple-effect"
+              onclick="selectClass('archer');">
+              archer
+      </button>
+  </div>
+  <div class="class-btn-container">
+      <button class="mage mdl-button mdl-js-button mdl-js-ripple-effect"
+              onclick="selectClass('mage');">
+              mage
+      </button>
+  </div>
+  <div class="class-btn-container">
+      <button class="acolyte mdl-button mdl-js-button mdl-js-ripple-effect"
+              onclick="selectClass('acolyte');">
+              acolyte
+      </button>
   </div>
 </div>
+
 <div style="display: none;" class="check-unconfirmed"></div>
 <div style="display: none;" class="selected-class"></div>
 {% endblock %}
@@ -156,10 +234,10 @@
 <script>
   $('.check-unconfirmed').load('/in_progress', function (data) {
     if (data == "false") {
-      $('.first-class button').prop('disabled', false);
+      $('button').prop('disabled', false);
     } else {
       $('.mdl-spinner').show();
-      $('.first-class button').prop('disabled', true);
+      $('button').prop('disabled', true);
       update();
     }
   });
@@ -176,25 +254,31 @@
   }
 
   function selectClass(c) {
-    $('.select-class').css('visibility', 'visible');
-    $('.character-info').show();
-    $('.character-stats').show();
     $('.selected-class').text(c);
-    var $character = $('.character');
+
+    $('.class-btn-container').removeClass('selected');
+    $('button.' + c).parent().addClass('selected');
+
+    var $character = $('.class-character div');
     $character.removeAttr('class');
-    $character.addClass('character');
     $character.addClass(c);
+
+    var $icon = $('.class-icon div');
+    $icon.removeAttr('class');
+    $icon.addClass(c);
   }
 
   function confirmClass() {
     $('.mdl-spinner').show();
-    $('.first-class button').prop('disabled', false);
+    $('button').prop('disabled', false);
     $('.select-class').css('visibility', 'hidden');
-    $('.first-class button').prop('disabled', true);
+    $('button').prop('disabled', true);
     $.post("{{ url_for('game.post_move') }}", {
       name: 'first_class',
       class_: $('.selected-class').text()
     }, update);
   }
+
+  selectClass('swordman');
 </script>
 {% endblock %}

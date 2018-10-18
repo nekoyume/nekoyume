@@ -140,3 +140,13 @@ def test_post_node_status_not_200(fx_test_client: FlaskClient,
         assert not fx_session.query(Node).filter(
             Node.url == url
         ).first()
+
+
+def test_get_last_blocks_no_result(fx_test_client: FlaskClient):
+    res = fx_test_client.get('/blocks/last')
+    assert res.status_code == 404
+
+
+def test_get_moves_no_result(fx_test_client: FlaskClient):
+    res = fx_test_client.get('/moves/0')
+    assert res.status_code == 404

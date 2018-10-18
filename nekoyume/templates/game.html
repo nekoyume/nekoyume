@@ -50,11 +50,11 @@ button.close {
 .gold {
   background: url("{{ static_url(filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;
 }
-.inventory {
+.popup {
   border: 6px solid;
   border-image: url("{{ static_url(filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
-.inventory .title {
+.popup .title {
   border-bottom: 1px solid;
   border-image: url("{{ static_url(filename='dist/images/UI_line_02.png') }}") 1 fill;
 }
@@ -104,14 +104,14 @@ button.close {
 
   <div class="status"></div>
 
-  <div>
+  <nav class="no-shadow">
     {{ g.user.address }}
     <a href="https://nekoyu.me/">{% trans -%}Homepage{%- endtrans %}</a>
     <a href="https://nekoyu.me/token">{% trans -%}Buy Gold{%- endtrans %}</a>
     <a href="https://github.com/nekoyume">Github</a>
     <a href="{{ url_for('game.export_private_key') }}">{% trans -%}Export Private Key{%- endtrans %}</a>
     <a href="{{ url_for('game.get_logout') }}">{% trans -%}Logout{%- endtrans %}</a>
-  </div>
+  </nav>
 
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
@@ -243,6 +243,7 @@ button.close {
       if (inProgress)
         return;
 
+      $('div.zone').hide();
       $('.zone button').prop('disabled', true);
       gameInstance.SendMessage("Battle", "Walking", "");
       setInProgress(true);
@@ -262,6 +263,10 @@ button.close {
 
     function toggleZone() {
       $('div.zone').toggle();
+    }
+
+    function toggleHistory() {
+      $('div.history').toggle();
     }
 
     function strDown() {

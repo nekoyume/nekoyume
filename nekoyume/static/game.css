@@ -1,3 +1,15 @@
+nav {
+    padding: 10px;
+}
+nav a {
+    margin: 0 10px;
+    text-decoration-line: none;
+}
+
+.no-shadow, .no-shadow button {
+    text-shadow: none;
+}
+
 .popup {
     display: none;
     position: absolute;
@@ -5,6 +17,14 @@
     left: 0;
     min-width: 100px;
     min-height: 100px;
+}
+.popup .title {
+    padding-top: 4px;
+    padding-left: 30px;
+    margin-bottom: 20px;
+    height: 30px;
+    text-align: center;
+    font-size: 16px;
 }
 
 .label-text {
@@ -147,14 +167,6 @@ div.zone {
     left: 220px;
     width: 216px;
 }
-.inventory .title {
-    padding-top: 4px;
-    padding-left: 30px;
-    margin-bottom: 20px;
-    height: 30px;
-    text-align: center;
-    font-size: 16px;
-}
 .inventory .items {
     float: left;
 }
@@ -164,7 +176,7 @@ div.zone {
     text-align: center;
     overflow: hidden;
 }
-.inventory .items  .item {
+.inventory .items .item {
     margin: auto;
     display: block;
     width: 32px;
@@ -172,7 +184,7 @@ div.zone {
     background-repeat: no-repeat;
     text-shadow: 0px 0px 4px #000;
 }
-.inventory .items  .amount {
+.inventory .items .amount {
     float: right;
     color: #fff;
     margin-top: 14px;
@@ -241,17 +253,50 @@ div.zone {
     float: left;
 }
 
-.moves {
-    width: 1136px;
+button.history {
+    position: absolute;
+    top: 582px;
+    left: 920px;
+    width: 100px;
+    line-height: 36px;
 }
-.moves button {
-    padding: 4px;
+div.history {
+    position: absolute;
+    top: 680px;
+    left: 20px;
 }
-.moves hr {
-    clear: left;
-    border: 1px solid #5c553c;
-    margin: 10px 0;
+div.history .title {
+    margin-left: 20px;
 }
-.moves .move {
-    padding: 10px 20px;
+div.history .move {
+    margin: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #666;
+}
+div.history .move p {
+    margin: 0;
+}
+div.history .move i {
+    font-style: normal;
+}
+div.history .move button {
+    color: black;
+}
+div.history .character-1 {
+    color: #a2b4d6;
+}
+div.history .character-2 {
+    color: #ff2116;
+}
+div.history .character-1::after {
+    content: ",";
+}
+div.history .character-1:nth-child(3)::after {
+    content: " ⚔️ ";
+}
+div.history .character-2::after {
+    content: ",";
+}
+div.history .character-2:last-child::after {
+    content: "";
 }

@@ -135,34 +135,37 @@
       </div>
 
       <!-- start moves -->
-      <div class="moves">
+      <!--<button onclick="toggleHistory();" class="history black label-text">History</button>-->
+      <div class="history">
+        <div class="title">History</div>
         {% for move in feed.limit(10) %}
-        <div class="move move-{{ move.id }}">
+        <div class="move move-{{ move.id }} no-shadow">
           {% set move_avatar, result = move.execute() %}
           {% if result.type == 'create_novice' %}
           {% elif result.type == 'hack_and_slash' %}
-          ⚔️ {% trans -%}Battle was finished.{%- endtrans %}
+          <p>💥 {% trans -%}Battle{%- endtrans %}</p>
           <input type="hidden" name="play_{{ move.block_id }}" value="{{ result.battle_logger.json_dump() }}">
           <button onclick="replay({{ move.block_id }});">Replay</button>
+          <div class="characters">
           {% set characters = result.battle_logger.get_characters() %}
           {% for i in characters %}
-          {{ characters[i].name }}
+            <i class="character-{{ characters[i].type|int }}">{{ characters[i].name }}</i>
           {% endfor %}
-          <dl>
+          </div>
           {% for status in result.battle_logger.logs %}
             {% if status.type == 'get_exp' %}
-            <li>🤔(EXP +{{ status['exp'] }})</li>
+            <p>🤔 EXP +{{ status['exp'] }}</p>
             {% elif status.type == 'get_item' %}
-            <li>🎁 {{ characters[status.id_].name }} << {{ status.item }}.</li>
+            <p>🎁 {{ characters[status.id_].name }} get {{ status.item }}.</p>
             {% elif status.type == 'item_use' %}
-            <li>🎁 {{ characters[status.id_].name }} >> {{ status.item }}. <small>({{ status_change }})</small></li>
+            <p>🎁 {{ characters[status.id_].name }} use {{ status.item }}. <small>({{ status_change }})</small></p>
             {% endif %}
           {% endfor %}
-        </dl>
           {% elif result.type == 'sleep' %}
-          💤{% trans -%}HP was recovered by sleep.{%- endtrans %}
+          <p>💤{% trans -%}HP was recovered by sleep.{%- endtrans %}</p>
+          {% elif result.type == 'move_zone' %}
+          <p>🐾{% trans -%}Move{%- endtrans %}</p>
           {% endif %}
-          <hr />
         </div>
         {% endfor %}
       </div>

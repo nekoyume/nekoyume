@@ -50,16 +50,20 @@ button.close {
 .gold {
   background: url("{{ static_url(filename='dist/images/icon_coin.png') }}") no-repeat 4px 4px;
 }
-.inventory {
+.popup {
   border: 6px solid;
   border-image: url("{{ static_url(filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
-.inventory .title {
+.popup .title {
   border-bottom: 1px solid;
   border-image: url("{{ static_url(filename='dist/images/UI_line_02.png') }}") 1 fill;
 }
 .inventory .items .item {
   background-image: url("{{ static_url(filename='dist/images/tf_icon_32.png') }}");
+}
+.zone {
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .game .gradient-left {
   background: url("{{ static_url(filename='dist/images/UI_black_bg.png') }}") repeat-y;
@@ -100,14 +104,14 @@ button.close {
 
   <div class="status-root"></div>
 
-  <div>
+  <nav class="no-shadow">
     {{ g.user.address }}
     <a href="https://nekoyu.me/">{% trans -%}Homepage{%- endtrans %}</a>
     <a href="https://nekoyu.me/token">{% trans -%}Buy Gold{%- endtrans %}</a>
     <a href="https://github.com/nekoyume">Github</a>
     <a href="{{ url_for('game.export_private_key') }}">{% trans -%}Export Private Key{%- endtrans %}</a>
     <a href="{{ url_for('game.get_logout') }}">{% trans -%}Logout{%- endtrans %}</a>
-  </div>
+  </nav>
 
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
@@ -346,14 +350,15 @@ button.close {
     }
 
     function toggleInventory() {
-      $('.inventory').toggle();
+      $('div.inventory').toggle();
     }
 
-    function drop(ev) {
-      ev.preventDefault();
-      alert(ev);
-      //var data = ev.dataTransfer.getData("text");
-      //ev.target.appendChild(document.getElementById(data));
+    function toggleZone() {
+      $('div.zone').toggle();
+    }
+
+    function toggleHistory() {
+      $('div.history').toggle();
     }
 
     function strDown() {

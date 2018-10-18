@@ -10,5 +10,9 @@ class InvalidBlockError(Exception):
     pass
 
 
+class NodeUnavailable(Exception):
+    pass
+
+
 class OutOfRandomError(Exception):
     pass

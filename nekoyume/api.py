@@ -117,31 +117,28 @@ def get_block_by_hash(block_hash):
 
 @api.route('/blocks/<int:block_id>')
 def get_block_by_id(block_id):
-    block = Block.query.get(block_id)
-    if block:
-        block = block.serialize(use_bencode=False,
-                                include_suffix=True,
-                                include_moves=True,
-                                include_hash=True)
+    block = Block.query.get_or_404(block_id)
+    block = block.serialize(use_bencode=False,
+                            include_suffix=True,
+                            include_moves=True,
+                            include_hash=True)
     return jsonify(block=block)
 
 
 @api.route('/blocks/last')
 def get_last_block():
-    block = Block.query.order_by(Block.id.desc()).first()
-    if block:
-        block = block.serialize(use_bencode=False,
-                                include_suffix=True,
-                                include_moves=True,
-                                include_hash=True)
+    block = Block.query.order_by(Block.id.desc()).first_or_404()
+    block = block.serialize(use_bencode=False,
+                            include_suffix=True,
+                            include_moves=True,
+                            include_hash=True)
     return jsonify(block=block)
 
 
 @api.route('/moves/<string:move_id>')
 def get_moves(move_id):
-    move = Move.query.get(move_id)
-    if move:
-        move = move.serialize(False, True, True, True)
+    move = Move.query.get_or_404(move_id)
+    move = move.serialize(False, True, True, True)
     return jsonify(move=move)
 
 

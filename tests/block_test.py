@@ -55,7 +55,7 @@ def test_sync(fx_user, fx_session, fx_other_user, fx_other_session, fx_server,
 
 
 @typechecked
-@mark.parametrize('code', [500, 503])
+@mark.parametrize('code', [404, 500, 503])
 def test_sync_node_unavailable_on_get_last_block(
         fx_user: User, fx_session: scoped_session,
         fx_other_session: Session, fx_server: WSGIServer,
@@ -238,3 +238,10 @@ def test_find_branch_point_raise_error(fx_session: scoped_session, code: int):
     with raises(NodeUnavailable), Mocker() as m:
         m.get('http://test.neko/blocks/1', status_code=500)
         find_branch_point(node, fx_session, 1, 1)
+
+
+def test_find_branch_point_404(fx_session: scoped_session):
+    node = Node(url='http://test.neko')
+    with Mocker() as m:
+        m.get('http://test.neko/blocks/1', status_code=404)
+        assert find_branch_point(node, fx_session, 1, 1) == 0

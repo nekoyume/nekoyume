@@ -1,6 +1,6 @@
 import datetime
 import os
-from typing import Mapping, Optional
+from typing import Callable, Mapping, Optional
 import urllib.parse
 
 from requests import Response, post
@@ -20,12 +20,30 @@ __all__ = (
     'broadcast_block',
     'broadcast_move',
     'broadcast_node',
+    'multicast',
 )
 
 BROADCAST_LIMIT = os.environ.get('BROADCAST_LIMIT', 100)
 POST_BLOCK_ENDPOINT = '/blocks'
 POST_MOVE_ENDPOINT = '/moves'
 POST_NODE_ENDPOINT = '/nodes'
+
+
+def multicast(
+        serialized: Mapping[str, object],
+        broadcast: Callable[
+            [Mapping[str, object], Optional[Node], Optional[Node]],
+            None
+        ],
+        sent_node: Optional[Node]=None,
+        my_node: Optional[Node]=None,
+) -> None:
+    for node in filter_nodes(sent_node):
+        try:
+            broadcast(serialized, node, my_node)
+        except (ConnectionError, Timeout):
+            continue
+    db.session.commit()
 
 
 def broadcast_node(
@@ -44,14 +62,8 @@ def broadcast_node(
                             received node ignore my node when they
                             broadcast received object.
     """
-    for node in filter_nodes(sent_node):
-        try:
-            url = urllib.parse.urljoin(node.url, POST_NODE_ENDPOINT)
-            broadcast(url, serialized, node, my_node)
-        except (ConnectionError, Timeout):
-            continue
-
-    db.session.commit()
+    url = urllib.parse.urljoin(sent_node.url, POST_NODE_ENDPOINT)
+    _broadcast(url, serialized, sent_node, my_node)
 
 
 def broadcast_block(
@@ -70,37 +82,32 @@ def broadcast_block(
                             received node ignore my node when they
                             broadcast received object.
     """
-    for node in filter_nodes(sent_node):
-        try:
-            url = urllib.parse.urljoin(node.url, POST_BLOCK_ENDPOINT)
-            res = broadcast(url, serialized, node, my_node)
-            if res.status_code == 403:
-                result = res.json()
-                # 0 is Genesis block.
-                block_id = result.get('block_id', 0)
-                query = db.session.query(Block).filter(
-                    Block.id.between(block_id, serialized['id'])
-                ).order_by(Block.id)
-                offset = 0
-                while True:
-                    sync_blocks = query[
-                        offset:offset+BROADCAST_LIMIT
-                    ]
-                    # TODO bulk api
-                    for block in sync_blocks:
-                        s = block.serialize(
-                            use_bencode=False,
-                            include_suffix=True,
-                            include_moves=True,
-                            include_hash=True
-                        )
-                        broadcast(url, s)
-                    offset += BROADCAST_LIMIT
-                    if len(sync_blocks) < BROADCAST_LIMIT:
-                        break
-        except (ConnectionError, Timeout):
-            continue
-    db.session.commit()
+    url = urllib.parse.urljoin(sent_node.url, POST_BLOCK_ENDPOINT)
+    res = _broadcast(url, serialized, sent_node, my_node)
+    if res.status_code == 403:
+        result = res.json()
+        # 0 is Genesis block.
+        block_id = result.get('block_id', 0)
+        query = db.session.query(Block).filter(
+            Block.id.between(block_id, serialized['id'])
+        ).order_by(Block.id)
+        offset = 0
+        while True:
+            sync_blocks = query[
+                offset:offset+BROADCAST_LIMIT
+            ]
+            # TODO bulk api
+            for block in sync_blocks:
+                s = block.serialize(
+                    use_bencode=False,
+                    include_suffix=True,
+                    include_moves=True,
+                    include_hash=True
+                )
+                _broadcast(url, s)
+            offset += BROADCAST_LIMIT
+            if len(sync_blocks) < BROADCAST_LIMIT:
+                break
 
 
 def broadcast_move(
@@ -119,14 +126,8 @@ def broadcast_move(
                             received node ignore my node when they
                             broadcast received object.
     """
-    for node in filter_nodes(sent_node):
-        try:
-            url = urllib.parse.urljoin(node.url, POST_MOVE_ENDPOINT)
-            broadcast(url, serialized, node, my_node)
-        except (ConnectionError, Timeout):
-            continue
-
-    db.session.commit()
+    url = urllib.parse.urljoin(sent_node.url, POST_MOVE_ENDPOINT)
+    _broadcast(url, serialized, sent_node, my_node)
 
 
 def filter_nodes(sent_node: Optional[Node]=None) -> Query:
@@ -138,9 +139,9 @@ def filter_nodes(sent_node: Optional[Node]=None) -> Query:
     return query
 
 
-def broadcast(url: str, serialized: Mapping[str, object],
-              node: Optional[Node]=None,
-              sent_node: Optional[Node]=None) -> Response:
+def _broadcast(url: str, serialized: Mapping[str, object],
+               node: Optional[Node]=None,
+               sent_node: Optional[Node]=None) -> Response:
     if sent_node:
         serialized['sent_node'] = sent_node.url
     res = post(url, json=serialized, timeout=3)

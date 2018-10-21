@@ -14,7 +14,7 @@ def test_block_broadcast(fx_session: scoped_session,
     block = Block.create(fx_user, [])
     fx_session.add(block)
     fx_session.commit()
-    with unittest.mock.patch('nekoyume.tasks.broadcast_block') as m:
+    with unittest.mock.patch('nekoyume.tasks.multicast') as m:
         block_broadcast(block.id,
                         'http://localhost:5000',
                         'http://localhost:5001',
@@ -32,10 +32,13 @@ def test_block_broadcast(fx_session: scoped_session,
         assert args['sent_node'].url == 'http://localhost:5000'
         assert isinstance(args['my_node'], Node)
         assert args['my_node'].url == 'http://localhost:5001'
+        broadcast = args['broadcast']
+        assert isinstance(broadcast, typing.Callable)
+        assert broadcast.__name__ == 'broadcast_block'
 
 
 def test_block_broadcast_no_block(fx_session: scoped_session):
-    with unittest.mock.patch('nekoyume.tasks.broadcast_block') as m:
+    with unittest.mock.patch('nekoyume.tasks.multicast') as m:
         block_broadcast(0,
                         'http://localhost:5000',
                         'http://localhost:5001',
@@ -49,7 +52,7 @@ def test_move_broadcast(fx_session: scoped_session,
     move = fx_user.create_novice(fx_novice_status)
     fx_session.add(move)
     fx_session.commit()
-    with unittest.mock.patch('nekoyume.tasks.broadcast_move') as m:
+    with unittest.mock.patch('nekoyume.tasks.multicast') as m:
         move_broadcast(move.id,
                        'http://localhost:5000',
                        'http://localhost:5001',
@@ -66,10 +69,13 @@ def test_move_broadcast(fx_session: scoped_session,
         assert args['sent_node'].url == 'http://localhost:5000'
         assert isinstance(args['my_node'], Node)
         assert args['my_node'].url == 'http://localhost:5001'
+        broadcast = args['broadcast']
+        assert isinstance(broadcast, typing.Callable)
+        assert broadcast.__name__ == 'broadcast_move'
 
 
 def test_move_broadcast_no_move(fx_session: scoped_session):
-    with unittest.mock.patch('nekoyume.tasks.broadcast_move') as m:
+    with unittest.mock.patch('nekoyume.tasks.multicast') as m:
         move_broadcast(0,
                        'http://localhost:5000',
                        'http://localhost:5001',

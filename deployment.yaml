@@ -33,7 +33,7 @@ spec:
               secretKeyRef:
                 name: node-credentials
                 key: sentry_dsn
-          - name: SYNC_INTERVAL:
+          - name: SYNC_INTERVAL
             valueFrom:
               secretKeyRef:
                 name: node-credentials

@@ -102,6 +102,7 @@ def init(seed, sync):
         help='Seed node URL to connect')
 @option('--interval',
         default=DEFAULT_SYNC_INTERVAL,
+        type=float,
         help='Sync interval')
 def sync(seed: str, interval: float):
     public_url = get_my_public_url()

@@ -19,6 +19,7 @@ DEFAULT_SEED_NODE_URL = os.environ.get(
     'SEED_NODE_URL',
     'http://seed.nekoyu.me'
 )
+DEFAULT_SYNC_INTERVAL = os.environ.get('SYNC_INTERVAL', 7.5)
 
 
 class PrivateKeyType(ParamType):
@@ -99,7 +100,10 @@ def init(seed, sync):
 @option('--seed',
         default=DEFAULT_SEED_NODE_URL,
         help='Seed node URL to connect')
-def sync(seed: str):
+@option('--interval',
+        default=DEFAULT_SYNC_INTERVAL,
+        help='Sync interval')
+def sync(seed: str, interval: float):
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")
@@ -118,7 +122,7 @@ def sync(seed: str):
         try:
             if prev_id == Block.query.order_by(Block.id.desc()).first().id:
                 echo("The blockchain is up to date.")
-                time.sleep(15)
+                time.sleep(interval)
         except AttributeError:
             echo(("There is no well-connected node. "
                   "please check you network."))

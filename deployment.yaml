@@ -33,6 +33,16 @@ spec:
               secretKeyRef:
                 name: node-credentials
                 key: sentry_dsn
+          - name: SYNC_INTERVAL:
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: sync_interval
+          - name: MAX_BLOCK_INTERVAL
+            valueFrom:
+              secretKeyRef:
+                name: node-credentials
+                key: max_block_interval
           - name: POSTGRES_DB_HOST
             valueFrom:
               secretKeyRef:

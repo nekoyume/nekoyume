@@ -188,9 +188,9 @@ div.history button.replay {
           renderBattle(gs.battleResults.shift());
         } else {
           if (gs.dead) { // sleep
-            gameInstance.SendMessage("Battle", "Sleep", "");
+            gameInstance.SendMessage("Battle", "Sleep", "{{ avatar.class_ }}");
           } else { // walk
-            gameInstance.SendMessage("Battle", "Walking", "");
+            gameInstance.SendMessage("Battle", "Walking", "{{ avatar.class_ }}");
           }
         }
       }
@@ -260,7 +260,7 @@ div.history button.replay {
     function onLoadUnity() {
       gs.unityInit = true;
       setInProgress(false);
-      gameInstance.SendMessage("Battle", "Home", "novice");
+      gameInstance.SendMessage("Battle", "Home", "{{ avatar.class_ }}");
     }
 
     function onMessage(msg) {

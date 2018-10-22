@@ -55,8 +55,9 @@ button.close {
   border-image: url("{{ static_url(filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .popup .title {
+  border: none;
   border-bottom: 1px solid;
-  border-image: url("{{ static_url(filename='dist/images/UI_line_02.png') }}") 1 fill;
+  border-image: url("{{ static_url(filename='dist/images/UI_line_02.png') }}") 0 0 1 0 fill;
 }
 .inventory .items .item {
   background-image: url("{{ static_url(filename='dist/images/tf_icon_32.png') }}");
@@ -77,6 +78,36 @@ button.close {
 .bottom button.sleep {
   background: url("{{ static_url(filename='dist/images/icon_sleep.png') }}") no-repeat bottom center;
 }
+div.history .move {
+  border: 20px solid;
+  border-image: url("{{ static_url(filename='dist/images/UI_textbg_01.png') }}") 20 fill;
+}
+div.history .win {
+  padding-left: 66px;
+  background: url("{{ static_url(filename='dist/images/icon_text_01.png') }}") no-repeat 12px 4px;
+}
+div.history .lose {
+  padding-left: 52px;
+  background: url("{{ static_url(filename='dist/images/icon_text_02.png') }}") no-repeat 12px 4px;
+}
+div.history .finish {
+  padding-left: 52px;
+  background: url("{{ static_url(filename='dist/images/icon_text_02.png') }}") no-repeat 12px 4px;
+}
+div.history .item {
+  background: url("{{ static_url(filename='dist/images/icon_text_04.png') }}") no-repeat 33px 4px;
+  padding-left: 60px;
+}
+div.history .exp {
+  background: url("{{ static_url(filename='dist/images/icon_text_03.png') }}") no-repeat 30px 0px;
+  padding-left: 60px;
+}
+div.history button.replay {
+  float: right;
+  border: 6px solid;
+  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
+  background: none;
+}
 </style>
 <script src="{{ static_url(filename='dist/build/UnityLoader.js') }}"></script>
 <script
@@ -88,6 +119,7 @@ button.close {
 {% block body %}
   <div class="game">
     <div class="gradient-left"></div>
+    <div class="gradient"></div>
     <div id="gameContainer" style="width: 1136px; height: 640px"></div>
     <div style="position: absolute; top: 320px; left: 568px; display: none;"
          class="progress mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
@@ -104,6 +136,7 @@ button.close {
 
   <div class="status-root"></div>
 
+  <!--
   <nav class="no-shadow">
     {{ g.user.address }}
     <a href="https://nekoyu.me/">{% trans -%}Homepage{%- endtrans %}</a>
@@ -112,6 +145,7 @@ button.close {
     <a href="{{ url_for('game.export_private_key') }}">{% trans -%}Export Private Key{%- endtrans %}</a>
     <a href="{{ url_for('game.get_logout') }}">{% trans -%}Logout{%- endtrans %}</a>
   </nav>
+  -->
 
   <script>
     var gameInstance = UnityLoader.instantiate("gameContainer", "{{ static_url(filename='dist/build/webgl.json') }}", {onProgress: loading});
@@ -124,7 +158,8 @@ button.close {
         battleResults: [],
         userCreatedMoveQueue: [], // functions to execute
         renderInProgress: false,
-        sleeping: false
+        sleeping: false,
+        popup: {}
     }
 
     window.gs = gs;
@@ -215,12 +250,10 @@ button.close {
       {
         $('.progress').show();
         $('.message').text('');
-        $('.game button').prop('disabled', true);
       }
       else
       {
         $('.progress').hide();
-        $('.game button').prop('disabled', false);
       }
     }
 
@@ -255,13 +288,18 @@ button.close {
           gs.dead = false;
           return;
       }
-      var hasEl = $($('.history div')[1]).children('input');
+      var hasEl = $($('div.move')[0]).children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
         handleBattleData(json);
       } else {
         // this should be queued, but battle takes care of it
         //gameInstance.SendMessage("Battle", "Home", "novice");
+      }
+
+      for (var i in gs.popup) {
+        if (gs.popup[i])
+            $('#' + i).show();
       }
     }
 
@@ -285,6 +323,12 @@ button.close {
         if (data == "false") {
           console.log("❗: not in progress, loading status");
           setInProgress(false);
+
+          // save current state
+          $('.popup').each(function (k, v) {
+            gs.popup[$(v).attr('id')] = $(v).is(':visible');
+          });
+
           $('.status-root').load('/status .status', play);
         } else {
           setTimeout(_update, 2000);
@@ -312,19 +356,6 @@ button.close {
       setInProgress(true);
       $.post("{{ url_for('game.post_move') }}", {
         name: 'sleep'
-      }, update);
-    }
-
-    function firstClass(c) {
-      if (inProgress)
-        return;
-
-      $('.first-class button').prop('disabled', true);
-      gameInstance.SendMessage("Battle", "Clear", "");
-      setInProgress(true);
-      $.post("{{ url_for('game.post_move') }}", {
-        name: 'first_class',
-        class_: c
       }, update);
     }
 
@@ -359,46 +390,6 @@ button.close {
 
     function toggleHistory() {
       $('div.history').toggle();
-    }
-
-    function strDown() {
-
-    }
-
-    function strUp() {
-
-    }
-
-    function dexDown() {
-
-    }
-
-    function dexUp() {
-
-    }
-
-    function intDown() {
-
-    }
-
-    function intUp() {
-
-    }
-
-    function conDown() {
-
-    }
-
-    function conUp() {
-
-    }
-
-    function lukDown() {
-
-    }
-
-    function lukUp() {
-
     }
 
     init();

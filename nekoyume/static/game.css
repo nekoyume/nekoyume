@@ -13,10 +13,8 @@ nav a {
 .popup {
     display: none;
     position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 100px;
-    min-height: 100px;
+    min-width: 40px;
+    min-height: 40px;
 }
 .popup .title {
     padding-top: 4px;
@@ -216,6 +214,18 @@ div.zone {
     width: 205px;
     height: 640px;
 }
+.game .gradient {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    top: 580px;
+    left: 0;
+    height: 70px;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+99&0+0,1+80 */
+    background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 80%, rgba(0,0,0,1) 99%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
 
 .menus button {
     margin-right: 10px;
@@ -229,6 +239,7 @@ div.zone {
     position: absolute;
     top: 500px;
     left: 0;
+    z-index: 2;
     width: 1136px;
     height: 140px;
     text-align: center;
@@ -262,16 +273,13 @@ button.history {
 }
 div.history {
     position: absolute;
-    top: 680px;
-    left: 20px;
-}
-div.history .title {
-    margin-left: 20px;
+    top: 640px;
+    width: 1136px;
+    z-index: 3;
 }
 div.history .move {
-    margin: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #666;
+    padding-bottom: 16px;
+    margin-top: -10px;
 }
 div.history .move p {
     margin: 0;
@@ -279,8 +287,9 @@ div.history .move p {
 div.history .move i {
     font-style: normal;
 }
-div.history .move button {
-    color: black;
+div.history .characters {
+    padding-left: 40px;
+    margin-bottom: 10px;
 }
 div.history .character-1 {
     color: #a2b4d6;
@@ -299,4 +308,18 @@ div.history .character-2::after {
 }
 div.history .character-2:last-child::after {
     content: "";
+}
+div.history .name {
+    color: #c7b7b7;
+    font-size: 22px;
+    height: 40px;
+    line-height: 38px;
+}
+div.history .item {
+    color: #00e607;
+    font-size: 16px;
+}
+div.history .exp {
+    color: #3ca6ff;
+    font-size: 16px;
 }

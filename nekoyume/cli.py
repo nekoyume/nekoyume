@@ -8,7 +8,7 @@ from ptpython.repl import embed
 
 from .app import app
 from .block import Block
-from .broadcast import broadcast_block, broadcast_node
+from .broadcast import broadcast_block, broadcast_node, multicast
 from .move import Move, get_my_public_url
 from .node import Node
 from .orm import db
@@ -19,6 +19,7 @@ DEFAULT_SEED_NODE_URL = os.environ.get(
     'SEED_NODE_URL',
     'http://seed.nekoyu.me'
 )
+DEFAULT_SYNC_INTERVAL = os.environ.get('SYNC_INTERVAL', 7.5)
 
 
 class PrivateKeyType(ParamType):
@@ -61,7 +62,7 @@ def mine(private_key: PrivateKey, sleep: float):
                 include_moves=True,
                 include_hash=True
             )
-            broadcast_block(serialized=serialized)
+            multicast(serialized=serialized, broadcast=broadcast_block)
             echo(block)
 
 
@@ -99,11 +100,15 @@ def init(seed, sync):
 @option('--seed',
         default=DEFAULT_SEED_NODE_URL,
         help='Seed node URL to connect')
-def sync(seed: str):
+@option('--interval',
+        default=DEFAULT_SYNC_INTERVAL,
+        type=float,
+        help='Sync interval')
+def sync(seed: str, interval: float):
     public_url = get_my_public_url()
     if public_url:
         echo(f"You have a public node url. ({public_url})")
-        broadcast_node(serialized={'url': public_url})
+        multicast(serialized={'url': public_url}, broadcast=broadcast_node)
     Node.update(Node.get(url=seed))
     engine = db.engine
     if not engine.dialect.has_table(engine.connect(), Block.__tablename__):
@@ -118,7 +123,7 @@ def sync(seed: str):
         try:
             if prev_id == Block.query.order_by(Block.id.desc()).first().id:
                 echo("The blockchain is up to date.")
-                time.sleep(15)
+                time.sleep(interval)
         except AttributeError:
             echo(("There is no well-connected node. "
                   "please check you network."))

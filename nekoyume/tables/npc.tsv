@@ -1,7 +1,4 @@
 id	level	class_
-npc_novice_1	1	novice
-npc_novice_2	2	novice
-npc_novice_3	3	novice
 npc_swordman_1	3	swordman
 npc_swordman_2	4	swordman
 npc_swordman_3	5	swordman

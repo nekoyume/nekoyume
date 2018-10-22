@@ -3,13 +3,44 @@
 {% block style %}
 <link rel="stylesheet" href="{{ static_url(filename='common.css') }}">
 <style>
-.background {
-    background: #000000 url("{{ static_url(filename='dist/images/bg_stage_01.png') }}") repeat-x;
+.zone00 {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: url("{{ static_url(filename='dist/images/zone_0_0.png') }}") repeat-x;
+}
+.zone01 {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background: url("{{ static_url(filename='dist/images/zone_0_1.png') }}") repeat-x;
+}
+.zone02 {
+    position: absolute;
+    top: 460px;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background: url("{{ static_url(filename='dist/images/zone_0_2.png') }}") repeat-x;
+}
+.zone03 {
+    position: absolute;
+    top: 472px;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    background: url("{{ static_url(filename='dist/images/zone_0_3.png') }}") repeat-x;
 }
 </style>
 {% endblock %}
 {% block body %}
-<div class="background forest">
+<div class="background">
+    <div class="zone00"></div>
+    <div class="zone01"></div>
+    <div class="zone02"></div>
+    <div class="zone03"></div>
     <div class="gradient"></div>
 </div>
 
@@ -35,12 +66,33 @@ var interval = setInterval(function() {
     });
 }, 3000);
 
+function scrollBg(name) {
+    var position = $(name).css('background-position-x');
+    console.log(position);
+    if (!position)
+        position = '0';
+    var x = Number(position.replace(/[^0-9-]/g, '')) - 1;
+    $(name).css('background-position-x', x +'px');
+}
+
 $(document).ready(function(){
-    var bg_position = 0;
     setInterval(function () {
-        $('.background').css('background-position', bg_position +'px 0');
-        bg_position-=1;
-    }, 50);
+        scrollBg('.zone00');
+    }, 80);
+
+    setInterval(function () {
+        scrollBg('.zone01');
+    }, 60);
+
+    setInterval(function () {
+        scrollBg('.zone02');
+    }, 24);
+
+    setInterval(function () {
+        scrollBg('.zone03');
+    }, 20);
+
+    $('.copy-private-key').click(copyPrivateKey);
 });
 </script>
 {% endblock %}

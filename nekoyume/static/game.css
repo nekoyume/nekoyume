@@ -41,6 +41,7 @@ nav a {
 .avatar {
     padding: 10px;
     position: absolute;
+    z-index: 2;
     top: 0;
     left: 0;
 }
@@ -122,7 +123,6 @@ button i {
 }
 .stats .stat button {
     text-indent: -9999px;
-    border: none;
     width: 28px;
     height: 28px;
     display: none;
@@ -209,6 +209,7 @@ div.zone {
 }
 .game .gradient-left {
     position: absolute;
+    z-index: 1;
     top: 0;
     left: 0;
     width: 205px;
@@ -264,13 +265,6 @@ div.zone {
     float: left;
 }
 
-button.history {
-    position: absolute;
-    top: 582px;
-    left: 920px;
-    width: 100px;
-    line-height: 36px;
-}
 div.history {
     position: absolute;
     top: 640px;
@@ -322,4 +316,7 @@ div.history .item {
 div.history .exp {
     color: #3ca6ff;
     font-size: 16px;
+}
+div.history button.replay {
+    float: right;
 }

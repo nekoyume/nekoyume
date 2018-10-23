@@ -137,9 +137,13 @@
     width: 184px;
     height: 50px;
     background: none;
-    border: 5px solid;
-    border-image: url("{{ static_url(filename='dist/images/button_blue_02.png') }}") 5 fill;
+    border: 10px solid;
+    border-image: url("{{ static_url(filename='dist/images/button_blue_02.png') }}") 10 fill;
+  }
+  .go-btn-container button p {
     font-size: 24px;
+    position: relative;
+    top: -2px;
   }
 </style>
 {% endblock %}
@@ -193,7 +197,7 @@
   </div>
 
   <div class="go-btn-container">
-    <button onclick="confirmClass();">go!</button>
+    <button onclick="confirmClass();"><p>go!</p></button>
   </div>
 </div> <!--end status-->
 

@@ -50,7 +50,7 @@
         <div class="exp-bar">
           <div class="bar" style="width: {{ avatar.exp / avatar.exp_max * 100 }}%;"></div>
         </div>
-        <button class="black toggle-stats label-text" style="width: 191px; margin-bottom: 4px;" onclick="toggleStats();"> Stats <i>▼</i> </button></center>
+        <button class="black toggle-stats label-text" style="width: 191px; margin-bottom: 4px;" onclick="togglePopup('stats');"> Stats <i>▼</i> </button></center>
         <div id="stats" class="stats popup" style="display: none;">
           <p class="label-text">Class <i class="value-text" style="float: right;">{{ avatar.class_ }}</i></p>
           <!--<p class="label-text" style="font-size: 12px; margin-bottom: 10px;">Stat Point<i class="point-text" style="float: right;">0</i></p>-->
@@ -111,7 +111,7 @@
       {% endif %}
 
       <div id="inventory" class="inventory popup">
-        <button class="close" onclick="toggleInventory();">x</button>
+        <button class="close" onclick="togglePopup('inventory');">x</button>
         <div class="title">Inventory</div>
         {{ create_item_table("inventory", 4) }}
       </div>
@@ -128,7 +128,7 @@
           {% if result.type == 'create_novice' %}
           {% elif result.type == 'hack_and_slash' %}
           <div class="move move-{{ move.id }}">
-            <button class="replay label-text" onclick="replay({{ move.block_id }});">Replay</button>
+            <!--<button class="replay black label-text" onclick="replay({{ move.block_id }});">Replay</button>-->
             {% if result.result == 'win' %}
             <p class="name win">{% trans -%}You won the battle!{%- endtrans %}</p>
             {% elif result.result == 'finish' %}

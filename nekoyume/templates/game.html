@@ -67,6 +67,7 @@ button.close {
   border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
 }
 .game .gradient-left {
+  z-index: 1;
   background: url("{{ static_url(filename='dist/images/UI_black_bg.png') }}") repeat-y;
 }
 .bottom button.bag {
@@ -102,12 +103,6 @@ div.history .exp {
   background: url("{{ static_url(filename='dist/images/icon_text_03.png') }}") no-repeat 30px 0px;
   padding-left: 60px;
 }
-div.history button.replay {
-  float: right;
-  border: 6px solid;
-  border-image: url("{{ url_for('static', filename='dist/images/UI_box_bg.png') }}") 6 fill;
-  background: none;
-}
 </style>
 <script src="{{ static_url(filename='dist/build/UnityLoader.js') }}"></script>
 <script
@@ -126,7 +121,7 @@ div.history button.replay {
     <div class="message"></div>
     <div class="bottom">
       <button class="bag block mdl-button mdl-js-button mdl-js-ripple-effect"
-              onclick="toggleInventory();">Inventory</button>
+              onclick="togglePopup('inventory');">Inventory</button>
       <!--button class="hack-and-slash block mdl-button mdl-js-button mdl-js-ripple-effect"
               onclick="hack_and_slash();" {% if avatar.dead -%}disabled{%- endif -%}>Hack And Slash</button>
       <button class="sleep block mdl-button mdl-js-button mdl-js-ripple-effect"
@@ -275,6 +270,8 @@ div.history button.replay {
     }
 
     function onSkill(name) {
+      name = name[0].toUpperCase() + name.substr(1);
+      name = name.replace(/(\_\w)/g, function(m){return ' ' + m[1].toUpperCase();});
       $('.message').text(name);
     }
 
@@ -288,7 +285,10 @@ div.history button.replay {
           gs.dead = false;
           return;
       }
-      var hasEl = $($('div.move')[0]).children('input');
+      var $first = $($('div.move')[0]);
+      $first.hide();
+      $first.slideDown();
+      var hasEl = $first.children('input');
       if (hasEl.length > 0) {
         var json = $(hasEl).val();
         handleBattleData(json);
@@ -323,11 +323,6 @@ div.history button.replay {
         if (data == "false") {
           console.log("❗: not in progress, loading status");
           setInProgress(false);
-
-          // save current state
-          $('.popup').each(function (k, v) {
-            gs.popup[$(v).attr('id')] = $(v).is(':visible');
-          });
 
           $('.status-root').load('/status .status', play);
         } else {
@@ -376,20 +371,10 @@ div.history button.replay {
       }, update);
     }
 
-    function toggleStats() {
-      $('div.stats').toggle();
-    }
-
-    function toggleInventory() {
-      $('div.inventory').toggle();
-    }
-
-    function toggleZone() {
-      $('div.zone').toggle();
-    }
-
-    function toggleHistory() {
-      $('div.history').toggle();
+    function togglePopup(div) {
+      $div = $('div.' + div);
+      $div.toggle();
+      gs.popup[div] = $div.is(':visible');
     }
 
     init();

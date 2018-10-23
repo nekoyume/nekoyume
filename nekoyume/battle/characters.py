@@ -14,6 +14,7 @@ class Character(ComponentContainer):
         self.id_ = 0
         self.type_ = CharacterType.NONE
         self.class_ = ''
+        self.npc = False
         self.name = 'Character'
         self.behavior = None
 
@@ -123,6 +124,7 @@ class Factory:
         character.type_ = CharacterType.PLAYER
         character.class_ = data.class_
         character.name = id
+        character.npc = True
         character.add_component(PlayerStats(data.class_, data.level, 0, 0))
         stats = character.get_component(Stats)
         stats.hp = stats.calc_hp_max()

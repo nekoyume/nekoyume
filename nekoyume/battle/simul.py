@@ -71,6 +71,13 @@ class Simulator:
                                 id_=character.id_,
                                 item=item.name
                             ))
+                        if len(bag.items) == 0 and not character.npc:
+                            item = Weapon('sword_1')
+                            bag.add(item)
+                            self.logger.log(GetItem(
+                                id_=character.id_,
+                                item=item.name
+                            ))
                 break
             if is_lose:
                 self.result = 'lose'

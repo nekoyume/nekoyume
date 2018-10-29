@@ -1,3 +1,4 @@
+import json
 import typing
 import unittest.mock
 
@@ -19,13 +20,15 @@ def test_login(fx_test_client):
     rv = fx_test_client.post('/login', data={
         'private_key': 'test'
     }, follow_redirects=False)
-
-    assert rv.status == '302 FOUND'
+    assert rv.status_code == 200
+    data = json.loads(rv.get_data())
+    assert data['result'] == 1
+    assert data['message'] == 'invalid-private-key'
 
 
 def test_new_character_creation(fx_test_client, fx_session):
     privkey = PrivateKey()
-    fx_test_client.post('/login', data={
+    fx_test_client.post('/join', data={
         'private_key': privkey.to_hex(),
         'name': 'test_user',
     }, follow_redirects=True)
@@ -38,28 +41,29 @@ def test_new_character_creation(fx_test_client, fx_session):
 
 
 def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
-    rv = fx_test_client.post('/login', data={
+    rv = fx_test_client.post('/join', data={
         'private_key': fx_private_key.to_hex(),
         'name': 'test_user',
-    }, follow_redirects=True)
-    rv = fx_test_client.post('/new')
+    })
+    assert rv.status_code == 200
+    data = json.loads(rv.get_data())
+    assert data['result'] == 0
     Block.create(fx_user,
                  fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.post('/session_moves', data={
+        'private_key': fx_private_key.to_hex(),
         'name': 'first_class',
         'class_': 'swordman',
-    }, follow_redirects=True)
+    })
     Block.create(fx_user,
                  fx_session.query(Move).filter_by(block_id=None).all())
 
     avatar = fx_user.avatar()
     assert avatar.class_ == 'swordman'
 
-    rv = fx_test_client.get('/')
-    assert rv.status == '200 OK'
-
     rv = fx_test_client.post('/session_moves', data={
+        'private_key': fx_private_key.to_hex(),
         'name': 'hack_and_slash'
     }, follow_redirects=True)
     assert rv.status == '200 OK'
@@ -67,6 +71,7 @@ def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
                  fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.post('/session_moves', data={
+        'private_key': fx_private_key.to_hex(),
         'name': 'sleep'
     }, follow_redirects=True)
     assert rv.status == '200 OK'
@@ -74,22 +79,13 @@ def test_move(fx_test_client, fx_session, fx_user, fx_private_key):
                  fx_session.query(Move).filter_by(block_id=None).all())
 
     rv = fx_test_client.post('/session_moves', data={
+        'private_key': fx_private_key.to_hex(),
         'name': 'say',
         'content': 'hi!',
     }, follow_redirects=True)
     assert rv.status == '200 OK'
     Block.create(fx_user,
                  fx_session.query(Move).filter_by(block_id=None).all())
-
-
-def test_logout(fx_test_client, fx_session, fx_user):
-    rv = fx_test_client.post('/login', data={
-        'private_key': 'test'
-    }, follow_redirects=True)
-
-    rv = fx_test_client.get('/logout')
-    rv = fx_test_client.get('/')
-    assert rv.status == '302 FOUND'
 
 
 def test_get_unconfirmed_move(fx_session, fx_user, fx_novice_status):
@@ -117,20 +113,25 @@ def test_prevent_hack_and_slash_when_dead(
     assert fx_user.avatar().dead is True
 
     response = fx_test_client.post('/session_moves', data={
+        'private_key': fx_private_key.to_hex(),
         'name': 'hack_and_slash'
     })
-    assert response.status_code == 302
+    assert response.status_code == 200
+    data = json.loads(response.get_data())
+    assert data['result'] == 1
+    assert data['message'] == 'avatar is dead'
 
 
 def test_export_private_key(
         fx_test_client: FlaskClient, fx_session: Session, fx_user: User,
         fx_private_key: PrivateKey
 ):
+    key = fx_private_key.to_hex()
     fx_test_client.post('/login', data={
-        'private_key': fx_private_key.to_hex(),
+        'private_key': key,
         'name': 'test_user',
     }, follow_redirects=True)
-    response = fx_test_client.get('/export/')
+    response = fx_test_client.get(f'/export/?private_key={key}')
     assert response.headers['Content-Disposition'] == \
         f'attachment;filename={fx_user.address}.csv'
     assert response.headers['Content-Type'] == 'text/csv'
@@ -143,11 +144,10 @@ def test_get_new_novice_broadcasting(
         fx_session: scoped_session,
 ):
     with unittest.mock.patch('nekoyume.game.multicast') as m:
-        fx_test_client.post('/login', data={
+        res = fx_test_client.post('/join', data={
             'private_key': fx_private_key.to_hex(),
             'name': 'test_user',
-        }, follow_redirects=True)
-        res = fx_test_client.get('/new')
+        })
         assert res.status_code == 200
         move = fx_session.query(Move).filter(
             Move.name == 'create_novice',
@@ -175,7 +175,7 @@ def test_post_move_broadcasting(
         fx_session: scoped_session,
 ):
     with unittest.mock.patch('nekoyume.game.multicast') as m:
-        fx_test_client.post('/login', data={
+        fx_test_client.post('/join', data={
             'private_key': fx_private_key.to_hex(),
             'name': 'test_user',
         }, follow_redirects=True)
@@ -184,9 +184,10 @@ def test_post_move_broadcasting(
                      fx_session.query(Move).filter_by(block_id=None).all())
         assert not get_unconfirmed_move(fx_user.address)
         res = fx_test_client.post('/session_moves', data={
-            'name': 'hack_and_slash'
+            'name': 'hack_and_slash',
+            'private_key': fx_private_key.to_hex(),
         })
-        assert res.status_code == 302
+        assert res.status_code == 200
         move = fx_session.query(Move).filter(
             Move.name == 'hack_and_slash',
         ).first()

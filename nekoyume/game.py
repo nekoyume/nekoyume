@@ -2,8 +2,7 @@ import enum
 import functools
 
 from coincurve import PrivateKey
-from flask import (Blueprint, Response, g, jsonify,
-                   redirect, request, session, url_for)
+from flask import (Blueprint, Response, g, jsonify, request)
 from flask_babel import Babel
 from sqlalchemy import func
 
@@ -33,7 +32,10 @@ def get_locale():
 def login_required(f):
     @functools.wraps(f)
     def decorated_function(*args, **kwargs):
-        private_key_hex = request.values.get('private_key')
+        if request.method == 'GET':
+            private_key_hex = request.args.get('private_key')
+        else:
+            private_key_hex = request.values.get('private_key')
         error = None
         if private_key_hex is not None:
             if private_key_hex.startswith(('0x', '0X')):
@@ -151,11 +153,12 @@ def post_move():
     unconfirmed_move = get_unconfirmed_move(g.user.address)
 
     if unconfirmed_move:
-        return redirect(url_for('.get_game'))
+        return jsonify(result=ResultCode.ERROR,
+                       message='waiting for previous move')
 
     if request.values.get('name') == 'hack_and_slash':
         if g.user.avatar().dead:
-            return redirect(url_for('.get_game'))
+            return jsonify(result=ResultCode.ERROR, message='avatar is dead')
         move = g.user.hack_and_slash(request.values.get('weapon'),
                                      request.values.get('armor'),
                                      request.values.get('food'),)
@@ -195,7 +198,7 @@ def post_move():
 @game.route('/export/', methods=['GET'])
 @login_required
 def export_private_key():
-    key = session['private_key']
+    key = request.args['private_key']
     file_name = f'{g.user.address}.csv'
     return Response(
         key,

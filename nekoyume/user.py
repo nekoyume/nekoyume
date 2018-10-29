@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import datetime
+import json
 from typing import List
 
 from coincurve import PrivateKey, PublicKey
@@ -222,6 +223,25 @@ class Avatar:
                 avatar, result = move.receive(avatar)
 
         return avatar
+
+    def json_dump(self):
+        return json.dumps({
+            'name': self.name,
+            'class_': self.class_,
+            'level': self.level,
+            'gold': self.gold,
+            'exp': self.exp,
+            'exp_max': self.exp_max,
+            'hp': self.hp,
+            'hp_max': self.hp_max,
+            'strength': self.strength,
+            'dexterity': self.dexterity,
+            'intelligence': self.intelligence,
+            'constitution': self.constitution,
+            'luck': self.luck,
+            'items': [],  # TODO: get items
+            'zone': self.zone,
+        })
 
     def get_item(self, item):
         """

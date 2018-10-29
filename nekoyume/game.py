@@ -1,8 +1,9 @@
+import enum
 import functools
 
 from coincurve import PrivateKey
-from flask import (Blueprint, Response, g, redirect, render_template, request,
-                   session, url_for)
+from flask import (Blueprint, Response, g, jsonify,
+                   redirect, request, session, url_for)
 from flask_babel import Babel
 from sqlalchemy import func
 
@@ -17,6 +18,11 @@ game = Blueprint('game', __name__, template_folder='templates')
 babel = Babel()
 
 
+class ResultCode(enum.IntEnum):
+    OK = 0
+    ERROR = 1
+
+
 @babel.localeselector
 def get_locale():
     langs = {babel.default_locale}
@@ -27,7 +33,7 @@ def get_locale():
 def login_required(f):
     @functools.wraps(f)
     def decorated_function(*args, **kwargs):
-        private_key_hex = session.get('private_key')
+        private_key_hex = request.values.get('private_key')
         error = None
         if private_key_hex is not None:
             if private_key_hex.startswith(('0x', '0X')):
@@ -40,30 +46,50 @@ def login_required(f):
             else:
                 g.user = User(private_key)
                 return f(*args, **kwargs)
-        return redirect(url_for('.get_login', next=request.url, error=error))
+        return jsonify(result=ResultCode.ERROR, message=error)
     return decorated_function
 
 
-@game.route('/login', methods=['GET'])
-def get_login():
-    return render_template('login.html')
+@game.route('/join', methods=['POST'])
+@login_required
+def get_new_novice():
+    if not g.user.avatar():
+        move = Move.query.filter_by(
+            user_address=g.user.address,
+            name='create_novice',
+        ).first()
+        if not move:
+            name = request.values.get('name')
+            move = g.user.create_novice({'name': name})
+            db.session.add(move)
+            db.session.commit()
+            serialized = move.serialize(
+                use_bencode=False,
+                include_signature=True,
+                include_id=True,
+            )
+            multicast(
+                serialized=serialized,
+                my_node=Node(url=f'{request.scheme}://{request.host}'),
+                broadcast=broadcast_move,
+            )
+        return jsonify(result=ResultCode.OK)
+    return jsonify(result=ResultCode.ERROR, message='already exists')
 
 
 @game.route('/login', methods=['POST'])
+@login_required
 def post_login():
-    session['name'] = request.values.get('name')
-    session['private_key'] = request.values.get('private_key')
-    if 'next' in request.values:
-        return redirect(request.values.get('next'))
-    else:
-        return redirect(url_for('.get_game'))
+    avatar = g.user.avatar()
+    if not avatar:
+        return jsonify(result=ResultCode.ERROR, message='avatar not exists')
+    return jsonify(result=ResultCode.OK, avatar=avatar.json_dump())
 
 
-@game.route('/logout', methods=['GET'])
+@game.route('/logout', methods=['POST'])
 @login_required
 def get_logout():
-    del session['private_key']
-    return redirect(url_for('game.get_login'))
+    return jsonify(result=ResultCode.OK)
 
 
 @cache.memoize(60)
@@ -85,98 +111,38 @@ def get_unconfirmed_move(address):
     return None
 
 
-@game.route('/dashboard')
-@login_required
-def get_dashboard():
-    if not g.user.avatar():
-        return redirect(url_for('.get_new_novice'))
-
-    unconfirmed_move = get_unconfirmed_move(g.user.address)
-
-    feed = g.user.moves
-    # for caching
-    for move in reversed(feed.limit(10).all()):
-        avatar, result = move.execute()
-    return render_template('dashboard.html',
-                           unconfirmed_move=unconfirmed_move,
-                           feed=feed.order_by(Move.block_id.desc()),
-                           rank=get_rank())
-
-
-@game.route('/')
-@login_required
-def get_game():
-    avatar = g.user.avatar()
-    if not avatar:
-        return redirect(url_for('.get_new_novice'))
-    if avatar.class_ == 'novice':
-        return redirect(url_for('.get_first_class'))
-
-    return render_template('game.html')
-
-
-@game.route('/status')
+@game.route('/last_status', methods=['POST'])
 @login_required
 def get_status():
     if not g.user.avatar():
-        return redirect(url_for('.get_new_novice'))
+        return jsonify(result='error', message='avatar not exists')
 
     feed = g.user.moves
     # for caching
-    for move in reversed(feed.limit(10).all()):
+    for move in reversed(feed.limit(1).all()):
         avatar, result = move.execute()
-    return render_template('status.html',
-                           feed=feed.order_by(Move.block_id.desc()))
+    resultCode = ResultCode.OK
+    if result['result'] == 'failed':
+        resultCode = ResultCode.ERROR
+    status = None
+    if result['type'] == 'hack_and_slash':
+        status = result['battle_logger'].json_dump()
+    return jsonify(result=resultCode,
+                   avatar=avatar.json_dump(),
+                   type=result['type'],
+                   message=result.get('message', ''),
+                   status=status)
 
 
-@game.route('/in_progress')
+@game.route('/in_progress', methods=['POST'])
 @login_required
 def get_unconfirmed():
     if not g.user.avatar():
-        return redirect(url_for('.get_new_novice'))
-
+        return jsonify(result=ResultCode.OK, message="true")
     unconfirmed_move = get_unconfirmed_move(g.user.address)
     if unconfirmed_move:
-        return "true"
-    return "false"
-
-
-@game.route('/new')
-@login_required
-def get_new_novice():
-    if not g.user.avatar():
-        move = Move.query.filter_by(
-            user_address=g.user.address,
-            name='create_novice',
-        ).first()
-        if not move:
-            move = g.user.create_novice({'name': session.get('name', '')})
-            db.session.add(move)
-            db.session.commit()
-            serialized = move.serialize(
-                use_bencode=False,
-                include_signature=True,
-                include_id=True,
-            )
-            multicast(
-                serialized=serialized,
-                my_node=Node(url=f'{request.scheme}://{request.host}'),
-                broadcast=broadcast_move,
-            )
-        return render_template('new.html', move=move)
-    return redirect(url_for('.get_game'))
-
-
-@game.route('/first_class')
-@login_required
-def get_first_class():
-    avatar = g.user.avatar()
-    if not avatar:
-        return redirect(url_for('.get_new_novice'))
-    if avatar.class_ != 'novice':
-        return redirect(url_for('.get_game'))
-
-    return render_template('first_class.html')
+        return jsonify(result=ResultCode.OK, message="true")
+    return jsonify(result=ResultCode.OK, message="false")
 
 
 @game.route('/session_moves', methods=['POST'])
@@ -223,7 +189,7 @@ def post_move():
             my_node=Node(url=f'{request.scheme}://{request.host}'),
             broadcast=broadcast_move,
         )
-    return redirect(url_for('.get_game'))
+    return jsonify(result=ResultCode.OK)
 
 
 @game.route('/export/', methods=['GET'])

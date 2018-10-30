@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from flask import Blueprint, jsonify, request
 from requests import get
@@ -231,3 +232,8 @@ def post_move():
         my_node_url=f'{request.scheme}://{request.host}'
     )
     return jsonify(result='success')
+
+
+@api.route('/version/', methods=['GET'])
+def version():
+    return jsonify(os.environ.get('_COMMIT_HASH', ''))

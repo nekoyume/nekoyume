@@ -150,3 +150,9 @@ def test_get_last_blocks_no_result(fx_test_client: FlaskClient):
 def test_get_moves_no_result(fx_test_client: FlaskClient):
     res = fx_test_client.get('/moves/0')
     assert res.status_code == 404
+
+
+def test_get_version(fx_test_client: FlaskClient):
+    res = fx_test_client.get('/version/')
+    assert res.status_code == 200
+    assert json.loads(res.get_data()) == ''

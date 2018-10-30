@@ -112,7 +112,7 @@ jobs:
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
           name: Build & Upload docker image
-          command: gcloud --quiet builds submit --tag gcr.io/${GOOGLE_PROJECT_ID}/nekoyume:${CIRCLE_SHA1} .
+          command: gcloud --quiet builds submit --config=config.yaml --substitutions=_COMMIT_HASH=${CIRCLE_SHA1}
       - run:
           name: Replace args
           command: |

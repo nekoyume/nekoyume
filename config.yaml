@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '--build-arg',
+         '_COMMIT_HASH=${_COMMIT_HASH}',
+         '--tag',
+         'gcr.io/${PROJECT_ID}/nekoyume:${_COMMIT_HASH}',
+         '.']
+substitutions:
+  _COMMIT_HASH: ''
+images:
+- 'gcr.io/${PROJECT_ID}/nekoyume:${_COMMIT_HASH}'

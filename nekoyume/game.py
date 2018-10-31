@@ -83,7 +83,7 @@ def post_login():
     avatar = g.user.avatar()
     if not avatar:
         return jsonify(result=ResultCode.ERROR, message='avatar not exists')
-    return jsonify(result=ResultCode.OK, avatar=avatar.json_dump())
+    return jsonify(result=ResultCode.OK, avatar=avatar.get_dict())
 
 
 @game.route('/logout', methods=['POST'])
@@ -126,9 +126,9 @@ def get_status():
         resultCode = ResultCode.ERROR
     status = None
     if result['type'] == 'hack_and_slash':
-        status = result['battle_logger'].json_dump()
+        status = result['battle_logger'].get_dict()
     return jsonify(result=resultCode,
-                   avatar=avatar.json_dump(),
+                   avatar=avatar.get_dict(),
                    type=result['type'],
                    message=result.get('message', ''),
                    status=status)

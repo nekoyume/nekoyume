@@ -1,6 +1,9 @@
-from coincurve import PublicKey
+import datetime
 
-from nekoyume.util import get_address
+from coincurve import PublicKey
+from pytest import mark
+
+from nekoyume.util import deserialize_datetime, get_address
 
 
 def test_get_address():
@@ -10,3 +13,14 @@ def test_get_address():
     )
     pubkey = PublicKey(raw_key)
     assert '0x80e0b0a7cc8001086a37648f993b2bd855d0ab59' == get_address(pubkey)
+
+
+@mark.parametrize('time, expected', [
+    ('2018-10-31 15:42:08', datetime.datetime(2018, 10, 31, 15, 42, 8)),
+    (
+        '2018-10-31 15:42:20.301968',
+        datetime.datetime(2018, 10, 31, 15, 42, 20, 301968)
+    ),
+])
+def test_deserialized_datetime(time, expected):
+    assert deserialize_datetime(time) == expected

@@ -1,3 +1,4 @@
+import datetime
 import functools
 from typing import Callable
 
@@ -21,3 +22,13 @@ def ensure_block(f: Callable) -> Callable:
             raise InvalidMoveError
         return f(self, *args, **kwargs)
     return decorator
+
+
+def deserialize_datetime(serialized: str) -> datetime.datetime:
+    formatter = '%Y-%m-%d %H:%M:%S.%f'
+    try:
+        deserialized = datetime.datetime.strptime(serialized, formatter)
+    except ValueError:
+        formatter = formatter.replace('.%f', '')
+        deserialized = datetime.datetime.strptime(serialized, formatter)
+    return deserialized

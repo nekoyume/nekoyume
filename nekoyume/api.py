@@ -234,6 +234,6 @@ def post_move():
     return jsonify(result='success')
 
 
-@api.route('/version/', methods=['GET'])
+@api.route('/version/')
 def version():
     return jsonify(os.environ.get('_COMMIT_HASH', ''))

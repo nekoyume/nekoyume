@@ -3,6 +3,7 @@ import functools
 from typing import Callable
 
 from coincurve import PublicKey
+from iso8601 import parse_date
 from keccak import sha3_256
 
 from nekoyume.exc import InvalidMoveError
@@ -25,10 +26,6 @@ def ensure_block(f: Callable) -> Callable:
 
 
 def deserialize_datetime(serialized: str) -> datetime.datetime:
-    formatter = '%Y-%m-%d %H:%M:%S.%f'
-    try:
-        deserialized = datetime.datetime.strptime(serialized, formatter)
-    except ValueError:
-        formatter = formatter.replace('.%f', '')
-        deserialized = datetime.datetime.strptime(serialized, formatter)
+    parsed = parse_date(serialized)
+    deserialized = parsed.replace(tzinfo=None)
     return deserialized

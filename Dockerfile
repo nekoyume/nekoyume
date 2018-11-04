@@ -33,7 +33,9 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 EXPOSE 8080
 
 # Define environment variable
+ARG _COMMIT_HASH
 ENV PORT 8080
+ENV _COMMIT_HASH ${_COMMIT_HASH}
 
 # Run app.py when the container launches
 ENTRYPOINT ["bash", "-c"]

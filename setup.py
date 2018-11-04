@@ -29,6 +29,7 @@ install_requires = [
     'Flask-SQLAlchemy >= 2.3.2, < 2.4.0',
     'gevent == 1.3.5',
     'gunicorn >= 19.9.0',
+    'iso8601 >= 0.1.12, < 0.2',
     'psycopg2 >= 2.7.5, < 2.8.0',
     'ptpython == 0.41',
     'pytz >= 2018.3',

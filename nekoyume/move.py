@@ -23,7 +23,7 @@ from .battle.simul import Simulator
 from .exc import InvalidMoveError, OutOfRandomError
 from .orm import db
 from .tables import Tables
-from .util import ensure_block, get_address
+from .util import deserialize_datetime, ensure_block, get_address
 
 
 NUM_HACK_AND_SLASH_MONSTERS: int = 3
@@ -107,9 +107,7 @@ class Move(db.Model):
             signature=bytes.fromhex(serialized['signature']),
             tax=serialized['tax'],
             details=serialized['details'],
-            created_at=datetime.datetime.strptime(
-                serialized['created_at'],
-                '%Y-%m-%d %H:%M:%S.%f'),
+            created_at=deserialize_datetime(serialized['created_at']),
             block_id=block_id,
         )
 

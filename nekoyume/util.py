@@ -1,7 +1,9 @@
+import datetime
 import functools
 from typing import Callable
 
 from coincurve import PublicKey
+from iso8601 import parse_date
 from keccak import sha3_256
 
 from nekoyume.exc import InvalidMoveError
@@ -21,3 +23,9 @@ def ensure_block(f: Callable) -> Callable:
             raise InvalidMoveError
         return f(self, *args, **kwargs)
     return decorator
+
+
+def deserialize_datetime(serialized: str) -> datetime.datetime:
+    parsed = parse_date(serialized)
+    deserialized = parsed.replace(tzinfo=None)
+    return deserialized

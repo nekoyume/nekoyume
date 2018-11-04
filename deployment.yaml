@@ -28,7 +28,7 @@ spec:
               secretKeyRef:
                 name: node-credentials
                 key: seed_node_url
-          - name: SENTRY_DNS
+          - name: SENTRY_DSN
             valueFrom:
               secretKeyRef:
                 name: node-credentials

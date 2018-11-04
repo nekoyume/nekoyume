@@ -18,6 +18,7 @@ from .exc import (
 from .node import Node
 from .orm import db
 from .user import User
+from .util import deserialize_datetime
 
 
 MIN_BLOCK_INTERVAL = \
@@ -67,10 +68,7 @@ class Block(db.Model):
             id=serialized['id'],
             version=serialized['version'],
             creator=serialized['creator'],
-            created_at=datetime.datetime.strptime(
-                serialized['created_at'],
-                '%Y-%m-%d %H:%M:%S.%f'
-            ),
+            created_at=deserialize_datetime(serialized['created_at']),
             prev_hash=serialized['prev_hash'],
             hash=serialized['hash'],
             difficulty=serialized['difficulty'],

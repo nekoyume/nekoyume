@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 import datetime
-import json
 from typing import List
 
 from coincurve import PrivateKey, PublicKey

@@ -147,6 +147,26 @@ def get_unconfirmed():
     return jsonify(result=ResultCode.OK, message="false")
 
 
+@game.route('/users/<user_address>/moves/')
+def get_user_moves(user_address: str):
+    block_offset = request.args.get('block_offset', type=int)
+    moves = [
+        m.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+            include_block=True
+        )
+        for m in db.session.query(Move).filter(
+            Move.block != None,  # noqa: E711
+            Move.user_address == user_address,
+            Move.block_id > block_offset if block_offset else True
+        ).order_by(Move.created_at.desc())
+    ]
+
+    return jsonify(result=ResultCode.OK, moves=moves)
+
+
 @game.route('/session_moves', methods=['POST'])
 @login_required
 def post_move():

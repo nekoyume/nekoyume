@@ -18,7 +18,8 @@ WORKDIR /app
 
 # Cache dependencies if possible
 COPY setup.py /app
-RUN python -c 'from setup import *; print("\n".join(install_requires))' \
+COPY setup.cfg /app
+RUN python -c 'from setup import *; print_install_requires()' \
         > /tmp/requirements.txt && \
     pip install -r /tmp/requirements.txt && \
     rm /tmp/requirements.txt

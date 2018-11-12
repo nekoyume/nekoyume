@@ -12,6 +12,7 @@ references:
         sudo apt-get install libgmp3-dev
         python3 -m venv venv
         . venv/bin/activate
+        pip install -U setuptools
         pip install -r requirements.txt
         pip install -e .[test,dev]
   docker: &docker

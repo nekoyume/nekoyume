@@ -107,7 +107,7 @@ class User():
         return self.move(Sleep())
 
     def send(self, item_index, amount, receiver):
-        item = self.avatar.items[item_index]
+        item = self.avatar().items[item_index]
         if item.amount < int(amount) or int(amount) <= 0:
             raise InvalidMoveError
 

@@ -161,7 +161,7 @@ def get_user_moves(user_address: str):
                 Move.block != None,  # noqa: E711
                 Move.block_id > block_offset if block_offset else True,
                 Move.of(user_address)
-        ).order_by(Move.created_at.desc())
+        ).order_by(Move.created_at)
     ]
     return jsonify(result=ResultCode.OK, moves=moves)
 

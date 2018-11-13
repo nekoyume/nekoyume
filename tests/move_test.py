@@ -12,7 +12,6 @@ from nekoyume.move import (
     Move,
     Say,
     Sleep,
-    filter_moves,
 )
 from nekoyume.user import User
 
@@ -115,13 +114,13 @@ def test_ensure_block_raise_invalid_move_error():
         InvalidMove().execute()
 
 
-def test_filter_moves(fx_user: User,
-                      fx_novice_status: typing.Mapping[str, str], fx_session):
+def test_move_of(fx_user: User,
+                 fx_novice_status: typing.Mapping[str, str], fx_session):
     move = fx_user.create_novice(fx_novice_status)
     user = User(PrivateKey())
     move2 = user.create_novice(fx_novice_status)
     has = fx_user.hack_and_slash()
     Block.create(fx_user, [move, move2, has])
-    assert filter_moves(user.address, fx_session.query(Move)).count() == 1
+    assert fx_session.query(Move).filter(Move.of(user.address)).count() == 1
     fx_user.send(0, 1, user.address)
-    assert filter_moves(user.address, fx_session.query(Move)).count() == 2
+    assert fx_session.query(Move).filter(Move.of(user.address)).count() == 2

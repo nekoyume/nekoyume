@@ -20,7 +20,6 @@ from .move import (
     Sell,
     Send,
     Sleep,
-    filter_moves,
 )
 from .orm import db
 from .tables import Tables
@@ -199,8 +198,8 @@ class Avatar:
         ).first()
         if not create_move or block_id < create_move.block_id:
             return None
-        query = filter_moves(user_addr, session.query(Move))
-        moves = query.filter(
+        moves = session.query(Move).filter(
+            Move.of(user_addr),
             Move.block_id >= create_move.block_id,
             Move.block_id <= block_id
         ).order_by(Move.block_id.asc())

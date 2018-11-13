@@ -208,7 +208,8 @@ def test_post_move_broadcasting(
         assert broadcast.__name__ == 'broadcast_move'
 
 
-def test_get_moves(fx_test_client, fx_user, fx_session):
+def test_get_moves(fx_test_client: FlaskClient, fx_user: User,
+                   fx_session: scoped_session):
     rv = fx_test_client.get(f'/users/{fx_user.address}/moves/')
     assert rv.status_code == 200
     data = json.loads(rv.get_data())
@@ -236,8 +237,8 @@ def test_get_moves(fx_test_client, fx_user, fx_session):
     assert data['result'] == 0
     assert len(data['moves']) == 2
 
-    assert data['moves'][0]['name'] == 'hack_and_slash'
-    assert data['moves'][1]['name'] == 'sleep'
+    assert data['moves'][0]['name'] == 'sleep'
+    assert data['moves'][1]['name'] == 'hack_and_slash'
 
     # create anohter move
     Block.create(fx_user, [fx_user.say('another one bites the dust')])
@@ -248,5 +249,5 @@ def test_get_moves(fx_test_client, fx_user, fx_session):
     assert data['result'] == 0
     assert len(data['moves']) == 2
 
-    assert data['moves'][0]['name'] == 'say'
-    assert data['moves'][1]['name'] == 'hack_and_slash'
+    assert data['moves'][0]['name'] == 'hack_and_slash'
+    assert data['moves'][1]['name'] == 'say'

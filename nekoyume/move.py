@@ -16,7 +16,9 @@ from coincurve import PublicKey
 from requests import get
 from requests.exceptions import ConnectionError, Timeout
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.sql.expression import and_, or_
 
 from .battle.characters import Factory as CharacterFactory
 from .battle.simul import Simulator
@@ -239,6 +241,18 @@ class Move(db.Model):
     @ensure_block
     def execute(self):
         raise NotImplementedError()
+
+    @hybrid_method
+    def of(cls, user_address: str):
+        return or_(
+            cls.user_address == user_address,
+            cls.details.any(
+                and_(
+                    MoveDetail.key == 'receiver',
+                    MoveDetail.value == user_address,
+                )
+            )
+        )
 
 
 class MoveDetail(db.Model):

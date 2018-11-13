@@ -4,7 +4,7 @@ import functools
 from coincurve import PrivateKey
 from flask import (Blueprint, Response, g, jsonify, request)
 from flask_babel import Babel
-from sqlalchemy import func
+from sqlalchemy.sql.expression import func
 
 from .broadcast import broadcast_move, multicast
 from .move import LevelUp, Move
@@ -158,12 +158,11 @@ def get_user_moves(user_address: str):
             include_block=True
         )
         for m in db.session.query(Move).filter(
-            Move.block != None,  # noqa: E711
-            Move.user_address == user_address,
-            Move.block_id > block_offset if block_offset else True
-        ).order_by(Move.created_at.desc())
+                Move.block != None,  # noqa: E711
+                Move.block_id > block_offset if block_offset else True,
+                Move.of(user_address)
+        ).order_by(Move.created_at)
     ]
-
     return jsonify(result=ResultCode.OK, moves=moves)
 
 

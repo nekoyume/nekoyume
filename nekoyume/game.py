@@ -4,10 +4,10 @@ import functools
 from coincurve import PrivateKey
 from flask import (Blueprint, Response, g, jsonify, request)
 from flask_babel import Babel
-from sqlalchemy import func
+from sqlalchemy.sql.expression import func
 
 from .broadcast import broadcast_move, multicast
-from .move import LevelUp, Move
+from .move import LevelUp, Move, filter_moves
 from .node import Node
 from .orm import db
 from .user import User, cache
@@ -150,6 +150,11 @@ def get_unconfirmed():
 @game.route('/users/<user_address>/moves/')
 def get_user_moves(user_address: str):
     block_offset = request.args.get('block_offset', type=int)
+    query = db.session.query(Move).filter(
+        Move.block != None,  # noqa: E711
+        Move.block_id > block_offset if block_offset else True
+    )
+    query = filter_moves(user_address, query)
     moves = [
         m.serialize(
             use_bencode=False,
@@ -157,13 +162,8 @@ def get_user_moves(user_address: str):
             include_id=True,
             include_block=True
         )
-        for m in db.session.query(Move).filter(
-            Move.block != None,  # noqa: E711
-            Move.user_address == user_address,
-            Move.block_id > block_offset if block_offset else True
-        ).order_by(Move.created_at.desc())
+        for m in query.order_by(Move.created_at.desc())
     ]
-
     return jsonify(result=ResultCode.OK, moves=moves)
 
 

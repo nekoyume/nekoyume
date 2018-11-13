@@ -4,7 +4,6 @@ from typing import List
 
 from coincurve import PrivateKey, PublicKey
 from flask_caching import Cache
-from sqlalchemy import or_
 
 from .battle.enums import ItemType
 from .exc import InvalidMoveError, InvalidNameError
@@ -16,12 +15,12 @@ from .move import (
     HackAndSlash,
     LevelUp,
     Move,
-    MoveDetail,
     MoveZone,
     Say,
     Sell,
     Send,
-    Sleep
+    Sleep,
+    filter_moves,
 )
 from .orm import db
 from .tables import Tables
@@ -200,11 +199,8 @@ class Avatar:
         ).first()
         if not create_move or block_id < create_move.block_id:
             return None
-        moves = session.query(Move).filter(
-            or_(Move.user_address == user_addr, Move.id.in_(
-                    db.session.query(MoveDetail.move_id).filter_by(
-                        key='receiver', value=user_addr)))
-        ).filter(
+        query = filter_moves(user_addr, session.query(Move))
+        moves = query.filter(
             Move.block_id >= create_move.block_id,
             Move.block_id <= block_id
         ).order_by(Move.block_id.asc())

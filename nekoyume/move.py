@@ -17,6 +17,8 @@ from requests import get
 from requests.exceptions import ConnectionError, Timeout
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm.query import Query
+from sqlalchemy.sql.expression import or_
 
 from .battle.characters import Factory as CharacterFactory
 from .battle.simul import Simulator
@@ -505,3 +507,17 @@ class Buy(Move):
     __mapper_args__ = {
         'polymorphic_identity': 'buy',
     }
+
+
+def filter_moves(user_address: str, query: Query):
+    return query.filter(
+        or_(
+            Move.user_address == user_address,
+            Move.id.in_(
+                db.session.query(MoveDetail.move_id).filter(
+                    MoveDetail.key == 'receiver',
+                    MoveDetail.value == user_address
+                )
+            )
+        )
+    )

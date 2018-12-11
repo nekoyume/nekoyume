@@ -1,11 +1,9 @@
 from dataclasses import dataclass, field
 import datetime
-import json
 from typing import List
 
 from coincurve import PrivateKey, PublicKey
 from flask_caching import Cache
-from sqlalchemy import or_
 
 from .battle.enums import ItemType
 from .exc import InvalidMoveError, InvalidNameError
@@ -17,12 +15,11 @@ from .move import (
     HackAndSlash,
     LevelUp,
     Move,
-    MoveDetail,
     MoveZone,
     Say,
     Sell,
     Send,
-    Sleep
+    Sleep,
 )
 from .orm import db
 from .tables import Tables
@@ -108,7 +105,7 @@ class User():
         return self.move(Sleep())
 
     def send(self, item_index, amount, receiver):
-        item = self.avatar.items[item_index]
+        item = self.avatar().items[item_index]
         if item.amount < int(amount) or int(amount) <= 0:
             raise InvalidMoveError
 
@@ -202,10 +199,7 @@ class Avatar:
         if not create_move or block_id < create_move.block_id:
             return None
         moves = session.query(Move).filter(
-            or_(Move.user_address == user_addr, Move.id.in_(
-                    db.session.query(MoveDetail.move_id).filter_by(
-                        key='receiver', value=user_addr)))
-        ).filter(
+            Move.of(user_addr),
             Move.block_id >= create_move.block_id,
             Move.block_id <= block_id
         ).order_by(Move.block_id.asc())
@@ -224,8 +218,8 @@ class Avatar:
 
         return avatar
 
-    def json_dump(self):
-        return json.dumps({
+    def get_dict(self):
+        return {
             'name': self.name,
             'class_': self.class_,
             'level': self.level,
@@ -241,7 +235,7 @@ class Avatar:
             'luck': self.luck,
             'items': [],  # TODO: get items
             'zone': self.zone,
-        })
+        }
 
     def get_item(self, item):
         """

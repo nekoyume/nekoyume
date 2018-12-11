@@ -4,7 +4,7 @@ import functools
 from coincurve import PrivateKey
 from flask import (Blueprint, Response, g, jsonify, request)
 from flask_babel import Babel
-from sqlalchemy import func
+from sqlalchemy.sql.expression import func
 
 from .broadcast import broadcast_move, multicast
 from .move import LevelUp, Move
@@ -85,7 +85,7 @@ def post_login():
     avatar = g.user.avatar()
     if not avatar:
         return jsonify(result=ResultCode.ERROR, message='avatar not exists')
-    return jsonify(result=ResultCode.OK, avatar=avatar.json_dump())
+    return jsonify(result=ResultCode.OK, avatar=avatar.get_dict())
 
 
 @game.route('/logout', methods=['POST'])
@@ -128,9 +128,9 @@ def get_status():
         resultCode = ResultCode.ERROR
     status = None
     if result['type'] == 'hack_and_slash':
-        status = result['battle_logger'].json_dump()
+        status = result['battle_logger'].get_dict()
     return jsonify(result=resultCode,
-                   avatar=avatar.json_dump(),
+                   avatar=avatar.get_dict(),
                    type=result['type'],
                    message=result.get('message', ''),
                    status=status)
@@ -145,6 +145,25 @@ def get_unconfirmed():
     if unconfirmed_move:
         return jsonify(result=ResultCode.OK, message="true")
     return jsonify(result=ResultCode.OK, message="false")
+
+
+@game.route('/users/<user_address>/moves/')
+def get_user_moves(user_address: str):
+    block_offset = request.args.get('block_offset', type=int)
+    moves = [
+        m.serialize(
+            use_bencode=False,
+            include_signature=True,
+            include_id=True,
+            include_block=True
+        )
+        for m in db.session.query(Move).filter(
+                Move.block != None,  # noqa: E711
+                Move.block_id > block_offset if block_offset else True,
+                Move.of(user_address)
+        ).order_by(Move.created_at)
+    ]
+    return jsonify(result=ResultCode.OK, moves=moves)
 
 
 @game.route('/session_moves', methods=['POST'])

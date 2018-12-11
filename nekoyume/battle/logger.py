@@ -12,11 +12,14 @@ class Logger:
         if self.print:
             print(log)
 
-    def json_dump(self):
+    def get_dict(self):
         status = []
         for log in self.logs:
             status.append(asdict(log))
-        return json.dumps({'status': status})
+        return status
+
+    def json_dump(self):
+        return json.dumps({'status': self.get_dict()})
 
     def get_characters(self):
         characters = {}
